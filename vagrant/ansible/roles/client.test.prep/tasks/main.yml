@@ -3,7 +3,7 @@
   - name: Fetch repo/switch to master branch
     git:
       repo: "{{ test_repo }}"
-      version: "master"
+      version: "{{ test_repo_branch }}"
       dest: /root/samba-integration-tests
 
   - name: Fetching PR

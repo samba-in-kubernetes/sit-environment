@@ -33,3 +33,9 @@
     group: root
     state: link
 
+- name: Check if only sanity tests required
+  copy:
+    content: 'sanity'
+    dest: /root/samba-integration-tests/testcases/tests
+    force: true
+  when: test_sanity_only is defined

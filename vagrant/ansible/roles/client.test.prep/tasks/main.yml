@@ -5,12 +5,14 @@
       repo: "{{ test_repo }}"
       version: "{{ test_repo_branch }}"
       dest: /root/samba-integration-tests
+      force: true
 
   - name: Fetching PR
     git:
       repo: "{{ test_repo }}"
       refspec: +pull/{{ test_repo_pr }}/head:pr{{ test_repo_pr }}
       dest: /root/samba-integration-tests
+      force: true
 
   - set_fact:
       test_repo_branch: "pr{{ test_repo_pr }}"
@@ -24,6 +26,7 @@
     repo: "{{ test_repo }}"
     version: "{{ test_repo_branch }}"
     dest: /root/samba-integration-tests
+    force: true
 
 - name: Create a symlink for test-info.yml file
   file:

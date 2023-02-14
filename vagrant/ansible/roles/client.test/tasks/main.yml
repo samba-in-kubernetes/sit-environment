@@ -3,3 +3,10 @@
   command:
     chdir: /root/samba-integration-tests
     cmd: make test
+  when: test_sanity_only is undefined
+
+- name: Run sanity tests
+  command:
+    chdir: /root/samba-integration-tests
+    cmd: make sanity_test
+  when: test_sanity_only is defined

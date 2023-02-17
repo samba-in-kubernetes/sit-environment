@@ -47,11 +47,11 @@
     permanent: yes
     state: enabled
 
-- name: Add recovery lock to ctdb.conf
+- name: Add cluster lock to ctdb.conf
   lineinfile:
     dest: /etc/ctdb/ctdb.conf
-    line: "\trecovery lock = /gluster/lock/recovery.lock"
-    regexp: "recovery lock"
+    line: "\tcluster lock = /gluster/lock/cluster.lock"
+    regexp: "cluster lock"
     insertafter: '\[cluster\]'
 
 - name: Enable check consistency of databases during startup

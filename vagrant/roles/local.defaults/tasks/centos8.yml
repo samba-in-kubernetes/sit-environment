@@ -1,2 +1,2 @@
-vagrant_image: "centos/stream8"
+vagrant_image: "generic/centos8s"
 actions_file: "centos8.yml"

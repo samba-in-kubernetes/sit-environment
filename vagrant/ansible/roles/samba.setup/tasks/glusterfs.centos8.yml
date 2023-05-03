@@ -1,0 +1,4 @@
+- name: Install python3-libsemanage. This is needed for the seboolean ansible command
+  yum: name=python3-libsemanage state=present
+
+- include_tasks: glusterfs.yml

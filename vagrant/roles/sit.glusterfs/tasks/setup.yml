@@ -1,0 +1,8 @@
+- name: Install yum copr plugin
+  yum:
+    name: yum-plugin-copr
+    state: latest
+
+- name: Run distro specific tasks
+  include_tasks:
+    file: "{{ distro.actions_file }}"

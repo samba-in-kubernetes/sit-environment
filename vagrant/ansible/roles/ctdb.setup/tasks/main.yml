@@ -1,8 +1,4 @@
 ---
-- name: Run distro specific tasks for ctdb.setup
-  include_tasks:
-    file: "{{ distro.actions_file }}"
-
 - name: Check for required variables
   block:
     - fail:
@@ -24,22 +20,21 @@
         msg: "Please provide these required variable: ctdb_cluster_replica_count"
       when: ctdb_cluster_replica_count is undefined
 
-- name: Create the ctdb replicated volume
-  gluster_volume:
-    state: present
-    name: "{{ ctdb_cluster_volume }}"
-    bricks: '{{ ctdb_brick_location }}/ctdb'
-    cluster: "{{ cluster_hosts }}"
-    replicas: "{{ ctdb_cluster_replica_count }}"
-  run_once: yes
+- name: Process filesystem/distro-dependent tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files:
+      - "{{ filesystem }}.{{ ansible_os_family }}.yml"
+      - "{{ filesystem }}.{{ distro.actions_file }}"
+      - "{{ filesystem }}.yml"
+      skip: True
+  loop_control:
+    loop_var: include_file
 
-- name: Mount and add CTDB lock volume to fstab
-  mount:
-    path: /gluster/lock/
-    src: 'localhost:/ctdb'
-    fstype: glusterfs
-    opts: '_netdev,transport=tcp,xlator-option=*client*.ping-timeout=10'
-    state: mounted
+- name: Add ctdb package
+  yum:
+    name: ctdb
+    state: present
 
 - name: Add ctdb rules to firewalld
   firewalld:
@@ -50,7 +45,7 @@
 - name: Add cluster lock to ctdb.conf
   lineinfile:
     dest: /etc/ctdb/ctdb.conf
-    line: "\tcluster lock = /gluster/lock/cluster.lock"
+    line: "\tcluster lock = /ctdb/lock/cluster.lock"
     regexp: "cluster lock"
     insertafter: '\[cluster\]'
 
@@ -68,14 +63,6 @@
 
 - name: Enable samba management by ctdb
   command: '/bin/ctdb event script enable legacy 50.samba'
-
-- include_role:
-    name: gluster.features
-  vars:
-    gluster_features_ctdb_nodes: "{{ ctdb_network_private_interfaces | join(',') }}"
-    gluster_features_ctdb_publicaddr: "{{ ctdb_network_public_interfaces | map('regex_replace','(^.*$)','\\1/' + ctdb_network_public_interface_subnet_mask + ' ' + ctdb_network_public_interface_name) | list |join (',') }}"
-    gluster_features_ctdb_volume: "{{ ctdb_cluster_volume }}"
-    gluster_features_ctdb_enable_hook_scripts: false
 
 - name: Restart ctdb
   service: name=ctdb state=restarted enabled=yes

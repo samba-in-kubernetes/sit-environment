@@ -2,6 +2,11 @@
   include_tasks:
     file: "{{ distro.actions_file }}"
 
+- name: Process infrastructure specific tasks for nodes
+  include_role:
+    name: 'sit.{{ filesystem }}'
+    tasks_from: common
+
 - name: create ansible directory (for ssh key)
   file:
     path: /home/vagrant/ansible

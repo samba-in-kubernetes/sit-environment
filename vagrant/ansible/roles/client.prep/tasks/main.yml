@@ -2,6 +2,11 @@
   include_tasks:
     file: "{{ distro.actions_file }}"
 
+- name: Process infrastructure specific tasks for clients
+  include_role:
+    name: 'sit.{{ filesystem }}'
+    tasks_from: client
+
 - debug:
     msg: "{{ ctdb_network_public_interfaces }}"
 

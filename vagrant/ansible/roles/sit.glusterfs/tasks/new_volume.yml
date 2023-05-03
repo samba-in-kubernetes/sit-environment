@@ -1,0 +1,37 @@
+- name: Create Replicate Volumes
+  gluster_volume:
+    state: present
+    name: "{{ volume.name }}"
+    bricks: '{{ volume.backends }}'
+    cluster: '{{ cluster_hosts }}'
+    replicas: "{{ volume.replica_count }}"
+  run_once: yes
+  when: volume.type == 'replicate'
+
+- name: Create Dispersed Volumes
+  gluster_volume:
+    state: present
+    name: "{{ volume.name }}"
+    bricks: "{{ volume.backends }}"
+    cluster: "{{ cluster_hosts }}"
+    disperses: "{{ volume.disperse_count }}"
+    force: yes
+  run_once: yes
+  when: volume.type == 'disperse'
+
+- name: Set volume options
+  gluster_volume:
+    state: present
+    name: "{{ volume.name }}"
+    options: "{{ volume.options }}"
+  run_once: yes
+  when: volume.options is defined
+
+- name: Mount volume
+  mount:
+    path: "{{ volume.mount }}"
+    src: 'localhost:/{{ volume.name }}'
+    fstype: glusterfs
+    opts: "{{ volume.mount_opts | default('') }}"
+    state: mounted
+  when: volume.mount is defined

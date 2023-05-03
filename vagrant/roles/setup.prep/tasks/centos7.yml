@@ -17,19 +17,3 @@
   pip:
     name: jinja2
     state: latest
-
-- name: add copr to get gluster-ansible from sac
-  block:
-
-    - name: Install yum copr plugin
-      yum:
-        name: yum-plugin-copr
-        state: latest
-
-    - name: add copr to get gluster-ansible
-      command: yum -y copr enable sac/gluster-ansible
-
-- name: Install gluster-ansible
-  yum:
-    name: "gluster-ansible"
-    state: latest

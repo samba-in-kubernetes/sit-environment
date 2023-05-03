@@ -1,7 +1,14 @@
 ---
-- name: Run distro specific tasks for samba-glusterfs.setup
-  include_tasks:
-    file: "{{ distro.actions_file }}"
+- name: Process filesystem/distro-dependent tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files:
+      - "{{ filesystem }}.{{ ansible_os_family }}.yml"
+      - "{{ filesystem }}.{{ distro.actions_file }}"
+      - "{{ filesystem }}.yml"
+      skip: True
+  loop_control:
+    loop_var: include_file
 
 - name: Enable firewall for samba
   firewalld:
@@ -31,7 +38,7 @@
   block:
     - name: Create share conf file
       template:
-        src: smb_share.conf.j2
+        src: "{{ filesystem }}/smb_share.conf.j2"
         dest: "/etc/samba/smb.shares/{{ samba_share }}.conf"
       vars:
         cluster_volume: "{{ item.cluster_volume }}"
@@ -43,14 +50,6 @@
         line: "include = /etc/samba/smb.shares/{{ item.share_name }}.conf"
         insertafter: EOF
       with_items: "{{ samba_shares }}"
-
-- name: Mount glusterfs using fuse mount and set world writable permissions
-  include_tasks:
-    file: "fix_share_permissions.yml"
-  vars:
-    volume: "localhost:/{{ item.cluster_volume }}"
-  with_items: "{{ samba_shares }}"
-  run_once: true
 
 - name: Create test users
   user:

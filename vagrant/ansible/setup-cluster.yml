@@ -7,6 +7,6 @@
   roles:
     - common.prep
     - node.prep
-    - glusterfs.setup
+    - "sit.{{ filesystem }}"
     - ctdb.setup
-    - samba-glusterfs.setup
+    - samba.setup

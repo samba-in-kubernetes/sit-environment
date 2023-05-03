@@ -2,6 +2,11 @@
   include_tasks:
     file: "{{ distro.actions_file }}"
 
+- name: Process infrastructure specific tasks for setup
+  include_role:
+    name: 'sit.{{ filesystem }}'
+    tasks_from: setup
+
 - name: copy ansible playbooks to setup machine
   synchronize:
     src: ansible/

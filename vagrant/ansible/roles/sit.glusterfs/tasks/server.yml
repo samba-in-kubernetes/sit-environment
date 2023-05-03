@@ -1,0 +1,7 @@
+- name: Install GlusterFS rpms
+  yum:
+    name: "{{ gluster_rpms }}"
+    state: latest
+  vars:
+    gluster_rpms:
+      - glusterfs-server

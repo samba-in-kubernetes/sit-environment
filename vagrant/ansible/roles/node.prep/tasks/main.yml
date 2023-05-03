@@ -1,3 +1,8 @@
 - name: Run distro specific tasks for node.prep
   include_tasks:
     file: "{{ distro.actions_file }}"
+
+- name: Process infrastructure specific tasks for servers
+  include_role:
+    name: 'sit.{{ filesystem }}'
+    tasks_from: server

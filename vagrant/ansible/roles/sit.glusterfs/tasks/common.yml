@@ -1,0 +1,18 @@
+- name: Perform a complete update
+  yum:
+    name: '*'
+    state: latest
+
+- name: Enable EPEL repository
+  yum:
+    name: epel-release
+    state: latest
+
+- name: Enable GlusterFS nightly rpms repository
+  command: yum-config-manager --add-repo http://artifacts.ci.centos.org/gluster/nightly/master.repo
+
+# required for dependencies
+- name: Enable GlusterFS repo
+  yum:
+    name: centos-release-gluster
+    state: latest

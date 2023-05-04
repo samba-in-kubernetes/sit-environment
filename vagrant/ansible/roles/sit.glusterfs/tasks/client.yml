@@ -2,9 +2,4 @@
   yum:
     name:
       - glusterfs-fuse
-      - cifs-utils
-      - samba-test
-      - python3-pip
-      - git
-      - make
     state: latest

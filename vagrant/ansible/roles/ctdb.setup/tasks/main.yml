@@ -20,13 +20,13 @@
         msg: "Please provide these required variable: ctdb_cluster_replica_count"
       when: ctdb_cluster_replica_count is undefined
 
-- name: Process filesystem/distro-dependent tasks
+- name: Process backend/distro-dependent tasks
   include_tasks: "{{ include_file }}"
   with_first_found:
     - files:
-      - "{{ filesystem }}.{{ ansible_os_family }}.yml"
-      - "{{ filesystem }}.{{ distro.actions_file }}"
-      - "{{ filesystem }}.yml"
+      - "{{ backend }}.{{ ansible_os_family }}.yml"
+      - "{{ backend }}.{{ distro.actions_file }}"
+      - "{{ backend }}.yml"
       skip: True
   loop_control:
     loop_var: include_file

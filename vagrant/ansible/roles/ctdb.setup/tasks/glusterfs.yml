@@ -6,7 +6,7 @@
 
 - name: Create and mount the ctdb shared volume
   include_role:
-    name: 'sit.{{ filesystem }}'
+    name: 'sit.{{ backend }}'
     tasks_from: new_volume
   vars:
     volume:

@@ -10,3 +10,6 @@
 
 - debug:
     var: distro
+
+- debug:
+    var: backend

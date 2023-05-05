@@ -4,5 +4,5 @@
 
 - name: Process infrastructure specific tasks for servers
   include_role:
-    name: 'sit.{{ filesystem }}'
+    name: 'sit.{{ backend }}'
     tasks_from: server

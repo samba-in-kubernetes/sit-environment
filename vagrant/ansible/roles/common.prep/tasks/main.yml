@@ -4,7 +4,7 @@
 
 - name: Process infrastructure specific tasks for nodes
   include_role:
-    name: 'sit.{{ filesystem }}'
+    name: 'sit.{{ backend }}'
     tasks_from: common
 
 - name: create ansible directory (for ssh key)

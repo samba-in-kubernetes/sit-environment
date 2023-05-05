@@ -14,7 +14,7 @@
 
 - name: Mount glusterfs using fuse mount and set world writable permissions
   include_tasks:
-    file: "glusterfs.fix_share_permissions.yml"
+    file: "glusterfs/fix_share_permissions.yml"
   vars:
     volume: "localhost:/{{ item.cluster_volume }}"
   with_items: "{{ samba_shares }}"

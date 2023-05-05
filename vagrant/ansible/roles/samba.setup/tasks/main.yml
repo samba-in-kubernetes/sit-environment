@@ -3,9 +3,9 @@
   include_tasks: "{{ include_file }}"
   with_first_found:
     - files:
-      - "{{ backend }}.{{ ansible_os_family }}.yml"
-      - "{{ backend }}.{{ distro.actions_file }}"
-      - "{{ backend }}.yml"
+      - "{{ backend }}/{{ ansible_os_family }}.yml"
+      - "{{ backend }}/{{ distro.actions_file }}"
+      - "{{ backend }}/main.yml"
       skip: True
   loop_control:
     loop_var: include_file

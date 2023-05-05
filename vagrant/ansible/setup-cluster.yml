@@ -7,6 +7,6 @@
   roles:
     - common.prep
     - node.prep
-    - "sit.{{ filesystem }}"
+    - "sit.{{ backend }}"
     - ctdb.setup
     - samba.setup

@@ -4,7 +4,7 @@
 
 - name: Process infrastructure specific tasks for setup
   include_role:
-    name: 'sit.{{ filesystem }}'
+    name: 'sit.{{ backend }}'
     tasks_from: setup
 
 - name: copy ansible playbooks to setup machine

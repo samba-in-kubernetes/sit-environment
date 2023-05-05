@@ -4,7 +4,7 @@
 
 - name: Process infrastructure specific tasks for clients
   include_role:
-    name: 'sit.{{ filesystem }}'
+    name: 'sit.{{ backend }}'
     tasks_from: client
 
 - debug:

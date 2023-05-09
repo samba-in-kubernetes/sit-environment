@@ -3,7 +3,7 @@
     name:
       - cifs-utils
       - samba-test
-      - python3-pip
+      - python-pip
       - git
       - make
     state: latest

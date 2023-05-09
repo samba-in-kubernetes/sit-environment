@@ -22,6 +22,13 @@
     owner: vagrant
     group: vagrant
 
+- name: change ownership of ansible directory and files
+  file:
+    path: /home/vagrant/ansible
+    owner: vagrant
+    group: vagrant
+    recurse: yes
+
 - name: copy ssh config in place
   copy:
     src: ansible/ssh-config-setup
@@ -29,3 +36,4 @@
     mode: 0600
     owner: vagrant
     group: vagrant
+

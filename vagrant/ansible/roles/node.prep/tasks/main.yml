@@ -5,4 +5,4 @@
 - name: Process infrastructure specific tasks for servers
   include_role:
     name: 'sit.{{ backend }}'
-    tasks_from: server
+    tasks_from: server/main.yml

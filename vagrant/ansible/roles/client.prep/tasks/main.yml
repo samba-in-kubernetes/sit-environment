@@ -5,7 +5,7 @@
 - name: Process infrastructure specific tasks for clients
   include_role:
     name: 'sit.{{ backend }}'
-    tasks_from: client
+    tasks_from: client/main.yml
 
 - debug:
     msg: "{{ ctdb_network_public_interfaces }}"

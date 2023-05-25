@@ -1,3 +1,13 @@
+- name: Process distro-dependent tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files:
+      - "{{ ansible_os_family }}.yml"
+      - "{{ distro.actions_file }}"
+      skip: True
+  loop_control:
+    loop_var: include_file
+
 - name: SELinux - Allow CTDB to access recovery lockfile from FUSE mount
   seboolean:
     name: use_fusefs_home_dirs

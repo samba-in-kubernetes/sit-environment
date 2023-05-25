@@ -1,3 +1,13 @@
+- name: Process distro-dependent tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files:
+      - "{{ ansible_os_family }}.yml"
+      - "{{ distro.actions_file }}"
+      skip: True
+  loop_control:
+    loop_var: include_file
+
 - name: Selinux - Allow Samba to access glusterfs services
   seboolean:
     name: "{{ item }}"

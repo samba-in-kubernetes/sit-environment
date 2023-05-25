@@ -20,16 +20,8 @@
         msg: "Please provide these required variable: ctdb_cluster_replica_count"
       when: ctdb_cluster_replica_count is undefined
 
-- name: Process backend/distro-dependent tasks
-  include_tasks: "{{ include_file }}"
-  with_first_found:
-    - files:
-      - "{{ backend }}/{{ ansible_os_family }}.yml"
-      - "{{ backend }}/{{ distro.actions_file }}"
-      - "{{ backend }}/main.yml"
-      skip: True
-  loop_control:
-    loop_var: include_file
+- name: Process backend-dependent tasks
+  include_tasks: "{{ backend }}/main.yml"
 
 - name: Add ctdb package
   yum:

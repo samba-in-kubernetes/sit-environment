@@ -1,10 +1,10 @@
 - name: Run distro specific tasks
   include_tasks:
-    file: "{{ distro.actions_file }}"
+    file: "{{ config.os.include }}"
 
 - name: Process infrastructure specific tasks for nodes
   include_role:
-    name: 'sit.{{ backend }}'
+    name: 'sit.{{ config.be.name }}'
     tasks_from: common/main.yml
 
 - name: create ansible directory (for ssh key)

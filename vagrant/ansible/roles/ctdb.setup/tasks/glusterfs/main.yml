@@ -3,7 +3,7 @@
   with_first_found:
     - files:
       - "{{ ansible_os_family }}.yml"
-      - "{{ distro.actions_file }}"
+      - "{{ config.os.include }}"
   loop_control:
     loop_var: include_file
 
@@ -15,7 +15,7 @@
 
 - name: Create and mount the ctdb shared volume
   include_role:
-    name: 'sit.{{ backend }}'
+    name: 'sit.{{ config.be.name }}'
     tasks_from: new_volume
   vars:
     volume:

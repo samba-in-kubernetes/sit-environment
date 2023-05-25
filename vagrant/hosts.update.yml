@@ -5,6 +5,6 @@
   become: yes
   become_method: sudo
   vars_files:
-    - ansible/distro-vars.yml
+    - ansible/config.yml
   roles:
     - hosts.update

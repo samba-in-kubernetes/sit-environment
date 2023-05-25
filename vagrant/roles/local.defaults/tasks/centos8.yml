@@ -1,2 +1,0 @@
-vagrant_image: "generic/centos8s"
-actions_file: "centos8.yml"

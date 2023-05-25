@@ -5,4 +5,4 @@
 
 - name: Run distro specific tasks
   include_tasks:
-    file: "{{ distro.actions_file }}"
+    file: "{{ config.os.include }}"

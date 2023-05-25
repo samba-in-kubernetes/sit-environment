@@ -1,10 +1,10 @@
 - name: Run distro specific tasks for client.prep
   include_tasks:
-    file: "{{ distro.actions_file }}"
+    file: "{{ config.os.include }}"
 
 - name: Process infrastructure specific tasks for clients
   include_role:
-    name: 'sit.{{ backend }}'
+    name: 'sit.{{ config.be.name }}'
     tasks_from: client/main.yml
 
 - debug:

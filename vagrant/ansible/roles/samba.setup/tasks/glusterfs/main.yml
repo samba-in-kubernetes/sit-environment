@@ -1,9 +1,7 @@
-- name: Process distro-dependent tasks
+- name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   with_first_found:
-    - files:
-      - "{{ ansible_os_family }}.yml"
-      - "{{ config.os.include }}"
+    - files: "{{ config.os.includes }}"
   loop_control:
     loop_var: include_file
 

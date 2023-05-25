@@ -1,0 +1,22 @@
+os_names:
+  centos7: centos7
+  centos8: centos8
+
+os_includes:
+  centos7:
+    - centos7.yml
+    - centos.yml
+    - redhat.yml
+    - generic.yml
+  centos8:
+    - centos8.yml
+    - centos.yml
+    - redhat.yml
+    - generic.yml
+
+be_names:
+  glusterfs: glusterfs
+
+vagrant_images:
+  centos7: centos/7
+  centos8: generic/centos8s

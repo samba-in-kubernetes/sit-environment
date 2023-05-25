@@ -1,5 +1,5 @@
 ---
-- name: Process backend-dependent tasks
+- name: Process backend specific tasks
   include_tasks: "{{ config.be.name }}/main.yml"
 
 - name: Enable firewall for samba

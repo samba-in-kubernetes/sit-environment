@@ -1,7 +1,10 @@
 config:
   os:
-    name: "{{ os }}"
-    include: "{{ os }}.yml"
-    vagrant_image: "{% if os == 'centos8' %}generic/centos8s{% else %}centos/7{% endif %}"
+    id: "{{ os }}"
+    name: "{{ os_names[os] }}"
+    includes: {{ os_includes[os] }}
+    vagrant:
+      image: "{{ vagrant_images[os] }}"
   be:
-    name: "{{ be }}"
+    id: "{{ be }}"
+    name: "{{ be_names[be] }}"

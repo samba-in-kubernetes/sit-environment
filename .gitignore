@@ -5,5 +5,5 @@ vagrant/ansible/ssh-config-setup
 vagrant/vagrant_ansible_inventory
 vagrant/ssh-config-host
 vagrant/Vagrantfile
-vagrant/ansible/distro-vars.yml
+vagrant/ansible/config.yml
 devel/authorized_keys

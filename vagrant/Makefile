@@ -48,7 +48,7 @@ clean_vagrant:
 	-rm -rf .vagrant
 
 clean_generated_files:
-	-rm -f Vagrantfile ansible/distro-vars.yml ansible/vagrant_ansible_inventory ansible/ssh-config-setup vagrant_ansible_inventory ssh-config-host
+	-rm -f Vagrantfile ansible/config.yml ansible/vagrant_ansible_inventory ansible/ssh-config-setup vagrant_ansible_inventory ssh-config-host
 
 clean: clean_vagrant clean_generated_files
 

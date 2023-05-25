@@ -21,7 +21,7 @@
       when: ctdb_cluster_replica_count is undefined
 
 - name: Process backend-dependent tasks
-  include_tasks: "{{ backend }}/main.yml"
+  include_tasks: "{{ config.be.name }}/main.yml"
 
 - name: Add ctdb package
   yum:

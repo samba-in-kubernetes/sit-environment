@@ -1,19 +1,15 @@
 ---
-- set_fact:
-    use_distro: "centos8"
-  when: use_distro is undefined
+- name: Generate config.yml in ansible directory
+  template:
+    src: config.yml.j2
+    dest: ./ansible/config.yml
+  vars:
+    os: "{{ use_distro | default('centos8') }}"
+    be: "{{ backend | default('glusterfs') }}"
 
-- set_fact:
-    backend: "glusterfs"
-  when: backend is undefined
-
-- name: Import distro specific defaults
+- name: Load configuration
   include_vars:
-    file: "{{ use_distro }}.yml"
-    name: distro
+    file: "ansible/config.yml"
 
 - debug:
-    var: distro
-
-- debug:
-    var: backend
+    var: config

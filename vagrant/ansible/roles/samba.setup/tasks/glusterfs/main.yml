@@ -3,7 +3,7 @@
   with_first_found:
     - files:
       - "{{ ansible_os_family }}.yml"
-      - "{{ distro.actions_file }}"
+      - "{{ config.os.include }}"
   loop_control:
     loop_var: include_file
 

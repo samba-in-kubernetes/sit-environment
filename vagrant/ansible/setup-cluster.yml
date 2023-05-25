@@ -2,11 +2,11 @@
   become: yes
   become_method: sudo
   vars_files:
-    - distro-vars.yml
+    - config.yml
     - cluster-vars.yml
   roles:
     - common.prep
     - node.prep
-    - "sit.{{ backend }}"
+    - "sit.{{ config.be.name }}"
     - ctdb.setup
     - samba.setup

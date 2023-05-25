@@ -4,7 +4,6 @@
     - files:
       - "{{ ansible_os_family }}.yml"
       - "{{ distro.actions_file }}"
-      skip: True
   loop_control:
     loop_var: include_file
 

@@ -1,5 +1,0 @@
-- name: Perform a complete update
-  yum:
-    name: '*'
-    state: latest
-

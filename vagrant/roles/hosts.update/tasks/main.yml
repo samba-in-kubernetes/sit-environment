@@ -1,3 +1,6 @@
-- name: Run distro specific tasks for host.update
-  include_tasks:
-    file: "{{ config.os.include }}"
+- name: Process OS specific tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files: "{{ config.os.includes }}"
+  loop_control:
+    loop_var: include_file

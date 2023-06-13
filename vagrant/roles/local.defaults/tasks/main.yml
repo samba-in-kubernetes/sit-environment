@@ -3,6 +3,10 @@
     use_distro: "centos8"
   when: use_distro is undefined
 
+- set_fact:
+    backend: "glusterfs"
+  when: backend is undefined
+
 - name: Import distro specific defaults
   include_vars:
     file: "{{ use_distro }}.yml"

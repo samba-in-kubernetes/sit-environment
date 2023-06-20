@@ -6,6 +6,7 @@
       - python-pip
       - git
       - make
+      - python3-pytest
     state: latest
 
 - name: Install Python 3 modules
@@ -15,3 +16,9 @@
       - PyYAML
       - iso8601
     extra_args: --ignore-installed
+
+- name: Link to pytest
+  file:
+    src: /usr/bin/pytest-3
+    dest: /usr/local/bin/pytest
+    state: link

@@ -36,6 +36,13 @@ $ cd samba-integration/
 $ EXTRA_VARS="use_distro=centos7" make
 ```
 
+To run the tests using GlusterFS as the backend
+```
+$ cd samba-integration/
+$ EXTRA_VARS="backend=glusterfs" make
+```
+
+You can also choose the backend filesystem to use
 If you encounter failures bringing up the vagrant vms, you can check for more details by switching into the vagrant directory and manually bring up the machine.
 ```
 $ cd samba-integration/vagrant

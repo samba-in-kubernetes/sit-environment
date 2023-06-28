@@ -25,7 +25,7 @@
     src: ssh-config-setup
     dest: /home/vagrant/.ssh/config
 
-- name: copy /etc/hosts
-  copy:
-    src: etc-hosts
+- name: Create /etc/hosts
+  template:
+    src: hosts.j2
     dest: /etc/hosts

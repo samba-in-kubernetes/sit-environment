@@ -1,0 +1,3 @@
+{% for node in config.groups['cluster'] -%}
+{{ config.nodes[node].networks.private }} {{ node }}
+{% endfor -%}

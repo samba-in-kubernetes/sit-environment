@@ -1,4 +1,4 @@
-- hosts: setup
+- hosts: admin
   become: yes
   become_method: sudo
   roles:

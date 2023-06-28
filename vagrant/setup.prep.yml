@@ -1,7 +1,7 @@
 #
 # prepare the setup machine
 #
-- hosts: setup
+- hosts: admin
   become: yes
   become_method: sudo
   vars_files:

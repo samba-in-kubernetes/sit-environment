@@ -25,23 +25,23 @@ setup.test.only:
 	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} setup.test.yml
 
 setup.cluster.only:
-	@$(VSSH) setup "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible setup.cluster"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible setup.cluster"
 
 setup.cluster: setup.prep setup.test.only setup.cluster.only
 
 setup.clients:
-	@$(VSSH) setup "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible setup.clients"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible setup.clients"
 
 generate.report:
-	@$(VSSH) setup "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible generate.report"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible generate.report"
 
 client.test:
-	@$(VSSH) setup "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible client.test"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible client.test"
 
 setup.site: setup.cluster setup.clients generate.report client.test
 
 client1.test:
-	@$(VSSH) client1 "sudo make -C /root/samba-integration-tests test"
+	@$(VSSH) clients "sudo make -C /root/samba-integration-tests test"
 
 clean_vagrant:
 	-$(VAGRANT) destroy -f

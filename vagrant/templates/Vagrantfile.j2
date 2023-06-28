@@ -2,20 +2,6 @@
 # vi: set ft=ruby :
 #
 
-HOST_OS = "{{ host_os }}"
-HOST_OS_VERS = "{{ host_os_version }}"
-
-NODES = 2
-DISKS = 3
-NODE_RAM = 1024
-NODE_CPUS = 2
-PRIVATE_NETWORK_BASE = "192.168.122"
-PUBLIC_NETWORK_BASE = "192.168.123"
-#LIBVIRT_STORAGE_POOL = "data"
-
-SETUP_IP = "#{PRIVATE_NETWORK_BASE}.200"
-CLIENT_IP = "#{PUBLIC_NETWORK_BASE}.5"
-
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
     config.vm.provider :libvirt do |v,override|
@@ -25,9 +11,7 @@ Vagrant.configure("2") do |config|
         # We can not use qemu_use_session universally. See section "Upgrade/compatibility impact"
         # from the following Fedora doc:
         # https://fedoraproject.org/wiki/Changes/Vagrant_2.2_with_QEMU_Session
-        if not HOST_OS == "CentOS" && HOST_OS_VERS == "7"
-          v.qemu_use_session = false
-        end
+        v.qemu_use_session = false
 
         # change cpu mode to passthrough as workaround for problems in the ci,
         # refer to bugs:
@@ -38,56 +22,45 @@ Vagrant.configure("2") do |config|
         # https://github.com/heketi/heketi/pull/1008
         v.cpu_mode = 'host-passthrough'
     end
-
-    (0..NODES-1).each do |i|
-        config.vm.define "storage#{i}" do |storage|
-            storage.vm.hostname = "storage#{i}"
-            storage.vm.network :private_network, ip: "#{PRIVATE_NETWORK_BASE}.10#{i}"
-            storage.vm.network :private_network, ip: "#{PUBLIC_NETWORK_BASE}.10#{i}"
-            (0..DISKS-1).each do |d|
-                storage.vm.provider :virtualbox do |vb|
-                    vb.customize [ "createhd", "--filename", "disk-#{i}#{d}.vdi", "--size", 10*1024 ]
-                    vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", 3+d, "--device", 0, "--type", "hdd", "--medium", "disk-#{i}#{d}.vdi" ]
-                    vb.memory = NODE_RAM
-                    vb.cpus = NODE_CPUS
-                end
-
-                driverletters = ('b'..'z').to_a
-                storage.vm.provider :libvirt do  |lv|
-                    if defined?(LIBVIRT_STORAGE_POOL)
-                      lv.storage_pool_name = "#{LIBVIRT_STORAGE_POOL}"
-                    end
-                    lv.storage :file, :device => "vd#{driverletters[d]}", :path => "disk-#{i}#{d}.disk", :size => '10G'
-                    lv.memory = NODE_RAM
-                    lv.cpus = NODE_CPUS
-                end
-            end
+{% for node in config.nodes %}
+    {%- set data = config.nodes[node] %}
+    {%- set vm_idx = loop.index0 +%}
+    config.vm.define "{{ node }}" do |node|
+        node.vm.hostname = "{{ node }}"
+    {%- for net in data.networks +%}
+        node.vm.network :private_network, ip: "{{ data.networks[net] }}"
+    {%- endfor +%}
+        node.vm.provider :virtualbox do |vb|
+    {%- for size in data.disks +%}
+            vb.customize [ "createhd", "--filename", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi", "--size", {{ size * 1024 }} ]
+            vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", {{ loop.index0 + 3 }}, "--device", 0, "--type", "hdd", "--medium", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi" ]
+    {%- endfor +%}
+            vb.memory = {{ data.memory }}
+            vb.cpus = {{ data.cpus }}
         end
-    end
+        node.vm.provider :libvirt do  |lv|
+    {%- if config.os.vagrant.pool is defined +%}
+            lv.storage_pool_name = "{{ config.os.vagrant.pool }}"
+    {%- endif +%}
+    {%- for size in data.disks +%}
+            lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'
+    {%- endfor +%}
+            lv.memory = {{ data.memory }}
+            lv.cpus = {{ data.cpus }}
+        end
+    {%- if loop.last +%}
 
-
-    # Client vm:
-    # This VM will connect to the cluster over the public ip addresses
-    config.vm.define "client1" do |setup|
-      setup.vm.hostname = "client1"
-      setup.vm.network :private_network, ip: "#{CLIENT_IP}"
-    end
-
-    # setup vm:
-    # We will runn all our setup playbooks from there.
-    config.vm.define "setup" do |setup|
-      setup.vm.hostname = "setup"
-      setup.vm.network :private_network, ip: "#{SETUP_IP}"
       # Run a no-op playbook to create the inventory file.
       # Based on that, one can run ansible without vagrant.
-      setup.vm.provision "no-op", type:'ansible' do |ansible|
-        ansible.playbook = "no-op-playbook.yml"
-        ansible.groups = {
-          "admin" => [ "setup" ],
-          "clients" => [ "client1" ],
-          "cluster" => (0..NODES-1).map { |i| "storage#{i}" }
-        }
-      end
+        node.vm.provision "no-op", type:'ansible' do |ansible|
+            ansible.playbook = "no-op-playbook.yml"
+            ansible.groups = {
+        {%- for group in config.groups +%}
+                "{{ group }}" => {{ config.groups[group] | to_json }},
+        {%- endfor +%}
+            }
+        end
+    {%- endif +%}
     end
-
+{% endfor %}
 end

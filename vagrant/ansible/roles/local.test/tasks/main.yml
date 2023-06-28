@@ -1,6 +1,6 @@
 - name: read list of nodes from file cluster_nodes.yml
   include_vars:
-    file: cluster-vars.yml
+    file: cluster-{{ config.be.name }}.yml
 
 #- name: Test node reachability
 #  # note: `net_ping` module does not work unless we put
@@ -12,4 +12,4 @@
 - name: Test ssh to nodes via node address
   command: /bin/true
   delegate_to: "{{ item }}"
-  with_items: "{{ cluster_hosts }}"
+  with_items: "{{ config.groups['cluster'] }}"

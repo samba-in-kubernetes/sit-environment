@@ -1,7 +1,14 @@
+---
+
+# This maps the name used externally in the 'use_distro' variable into an
+# internal constant name.
 os_names:
   centos7: centos7
   centos8: centos8
 
+# This defines the potential files to locate for OS-dependent tasks. They are
+# sorted in order of priority, with the highest priority at the top. Only the
+# first file found is processed.
 os_includes:
   centos7:
     - centos7.yml
@@ -14,9 +21,88 @@ os_includes:
     - redhat.yml
     - generic.yml
 
+# This maps the name use externally in the 'backend' variable into an internal
+# constant name.
 be_names:
   glusterfs: glusterfs
 
-vagrant_images:
-  centos7: centos/7
-  centos8: generic/centos8s
+# Vagrant/VM global settings
+vagrant:
+  # Vagrant image to use per OS
+  images:
+    centos7: centos/7
+    centos8: generic/centos8s
+
+  # Available networks for the VMs
+  networks:
+    private: 192.168.122.0/24
+    public: 192.168.123.0/24
+
+  # Storage pool to use for the virtual disks (optional)
+#  pool: data
+
+# Definition of the backend-specific environment
+#
+# Each defined VM type has the following properties:
+#
+#   # Type of VM. All Vms of this type will be named as <type><index>, where
+#   # <type> is this name and <index> is an incremental value starting from 0.
+#   <vm>:
+#     # Number VMs of this type (optional, default = 1)
+#     instances: <num>
+#
+#     # Number of CPUs per VM (optional, default = <backend>.cpus)
+#     cpus: <num>
+#
+#     # Amount of memory per VM (optional, default = <backend>.wmemory)
+#     memory: <num>
+#
+#     # List of the sizes in GiB of the addtional disks to attach to these
+#     # VMs (optional)
+#     disks: <sizes>
+#
+#     # List of networks to which this type of VM is connected. For each
+#     # network it specifies the host portion of the IP. The names of the
+#     # networks must match with the networks defined in vagrant.networks.
+#     networks:
+#       <net>: <IP's host>
+#
+#     # List of virtual IP addresses used by CTDB. It's equivalent to the
+#     # networks entry, but used to create virtual IPs for CTDB in the
+#     # specified networks.
+#     ctdb:
+#       <net>: <IP's host>
+#
+#     # List of ansible group names where these VMs will be assigned to.
+#     groups: <names>
+#
+environments:
+  glusterfs:
+    # Default number of CPUs per VM
+    cpus: 2
+
+    # Default amount of memory per VM (in MiB)
+    memory: 1024
+
+    # List of nodes to create
+    nodes:
+      setup:
+        networks:
+          private: 200
+        groups: [admin]
+
+      client:
+        networks:
+          public: 5
+        groups: [clients]
+
+      storage:
+        instances: 2
+        disks: [10, 10, 10]
+        networks:
+          private: 100
+          public: 100
+        ctdb:
+          public: 10
+        groups: [cluster]
+

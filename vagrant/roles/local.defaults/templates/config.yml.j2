@@ -4,7 +4,41 @@ config:
     name: "{{ os_names[os] }}"
     includes: {{ os_includes[os] }}
     vagrant:
-      image: "{{ vagrant_images[os] }}"
+    {%- if vagrant.pool is defined +%}
+      pool: "{{ vagrant.pool }}"
+    {%- endif +%}
+      image: "{{ vagrant.images[os] }}"
+
   be:
     id: "{{ be }}"
     name: "{{ be_names[be] }}"
+
+  nodes:
+  {%- for name in environments[be].nodes +%}
+    {%- set data = environments[be].nodes[name] +%}
+    {%- for idx in range(data.instances | default(1)) +%}
+    {{ name }}{{ idx }}:
+      groups: {{ data.groups }}
+      cpus: {{ data.cpus | default(environments[be].cpus) }}
+      memory: {{ data.memory | default(environments[be].memory) }}
+      disks: {{ data.disks | default([]) }}
+      networks:
+      {%- for net in data.networks | default({}) +%}
+        {{ net }}: {{ vagrant.networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}
+      {%- endfor +%}
+      ctdb:
+      {%- for net in data.ctdb | default({}) +%}
+        {{ net }}: {{ vagrant.networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
+      {%- endfor +%}
+    {%- endfor +%}
+  {%- endfor +%}
+
+  groups:
+  {%- for group in environments[be].nodes.values() | map(attribute='groups') | flatten | unique | list +%}
+    {{ group }}:
+    {%- for host in environments[be].nodes | dict2items | selectattr('value.groups', 'contains', group) | map(attribute='key') | list +%}
+      {%- for idx in range(environments[be].nodes[host].instances | default(1)) +%}
+      - {{ host }}{{ idx }}
+      {%- endfor +%}
+    {%- endfor +%}
+  {%- endfor +%}

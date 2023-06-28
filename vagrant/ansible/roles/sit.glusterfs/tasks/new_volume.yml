@@ -2,8 +2,8 @@
   gluster_volume:
     state: present
     name: "{{ volume.name }}"
-    bricks: '{{ volume.backends }}'
-    cluster: '{{ cluster_hosts }}'
+    bricks: "{{ volume.backends }}"
+    cluster: "{{ config.groups['cluster'] }}"
     replicas: "{{ volume.replica_count }}"
   run_once: yes
   when: volume.type == 'replicate'
@@ -13,7 +13,7 @@
     state: present
     name: "{{ volume.name }}"
     bricks: "{{ volume.backends }}"
-    cluster: "{{ cluster_hosts }}"
+    cluster: "{{ config.groups['cluster'] }}"
     disperses: "{{ volume.disperse_count }}"
     force: yes
   run_once: yes
@@ -30,7 +30,7 @@
 - name: Mount volume
   mount:
     path: "{{ volume.mount }}"
-    src: 'localhost:/{{ volume.name }}'
+    src: "localhost:/{{ volume.name }}"
     fstype: glusterfs
     opts: "{{ volume.mount_opts | default('') }}"
     state: mounted

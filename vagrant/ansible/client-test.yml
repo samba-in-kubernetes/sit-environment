@@ -3,7 +3,6 @@
   become_method: sudo
   vars_files:
     - config.yml
-    - cluster-vars.yml
   roles:
     - client.test.prep
     - client.test

@@ -43,15 +43,8 @@ gluster_infra_fw_zone: public
 gluster_infra_fw_services:
   - glusterfs
 
-cluster_hosts:
-  #
-  # TODO: generate the list of nodes from vagrant/ansible
-  #
-  - storage0
-  - storage1
-
 replicate_cluster_volume: "vol-replicate"
-replicate_cluster_replica_count: "{{ cluster_hosts|length }}"
+replicate_cluster_replica_count: "{{ config.groups['cluster']|length }}"
 replicate_cluster_bricks: '/bricks/brick-repl-0/vol,/bricks/brick-repl-1/vol,/bricks/brick-repl-2/vol'
 replicate_cluster_options:
   features.cache-invalidation: 'on'
@@ -82,17 +75,12 @@ disperse_cluster_options:
   performance.readdir-ahead: 'on'
   performance.parallel-readdir: 'on'
 
-#Autogenerate these values containing ip addresses
-ctdb_network_private_interfaces:
-  - "192.168.122.100"
-  - "192.168.122.101"
-ctdb_network_public_interfaces:
-  - "192.168.123.10"
-  - "192.168.123.11"
+ctdb_network_private_interfaces: "{{ config.nodes | dict2items | selectattr('value.groups', 'contains', 'cluster') | map(attribute='value.networks.private') | list }}"
+ctdb_network_public_interfaces: "{{ config.nodes | dict2items | selectattr('value.groups', 'contains', 'cluster') | map(attribute='value.ctdb.public') | list }}"
 ctdb_network_public_interface_subnet_mask: "24"
 ctdb_network_public_interface_name: "eth2"
 ctdb_cluster_volume: "ctdb"
-ctdb_cluster_replica_count: "{{ cluster_hosts|length }}"
+ctdb_cluster_replica_count: "{{ config.groups['cluster']|length }}"
 
 samba_netbios_name: "GLUSTERTEST"
 samba_users:

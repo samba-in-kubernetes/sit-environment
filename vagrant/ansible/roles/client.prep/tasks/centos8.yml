@@ -3,6 +3,7 @@
     name:
       - cifs-utils
       - samba-test
+      - samba-client
       - python3-pip
       - git
       - make

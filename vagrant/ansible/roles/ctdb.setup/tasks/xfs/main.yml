@@ -1,0 +1,14 @@
+---
+- name: Create CTDB directory
+  file:
+    path: /ctdb/lock
+    state: directory
+
+- name: SELinux - Allow CTDB to access recovery lockfile
+  sefcontext:
+    target: '/ctdb/lock(/.*)?'
+    setype: ctdbd_var_lib_t
+    state: present
+
+- name: SELinux - Apply changes
+  command: restorecon -R /ctdb

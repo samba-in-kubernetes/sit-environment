@@ -1,0 +1,21 @@
+---
+- name: Mount XFS
+  mount:
+    path: "{{ path }}"
+    src: "{{ volume }}"
+    fstype: xfs
+    state: mounted
+
+- name: Set permission of volume root to 0777
+  file:
+    path: "{{ path }}"
+    mode: '0777'
+
+- name: SELinux - Allow access to mount point
+  sefcontext:
+    target: "{{ path }}"
+    setype: mnt_t
+    state: present
+
+- name: SELinux - Apply changes
+  command: restorecon -R "{{ path }}"

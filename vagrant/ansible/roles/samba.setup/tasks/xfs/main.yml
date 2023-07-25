@@ -1,0 +1,20 @@
+---
+- name: Install Samba
+  yum:
+    name: samba
+    state: present
+
+- name: Make shares world writable
+  include_tasks:
+    file: "xfs/fix_share_permissions.yml"
+  vars:
+    path: "{{ item.cluster_volume }}"
+    volume: "{{ item.device }}"
+  with_items: "{{ samba_shares }}"
+  run_once: true
+
+- name: Selinux - Allow exporting everything
+  seboolean:
+    name: samba_export_all_rw
+    state: yes
+    persistent: yes

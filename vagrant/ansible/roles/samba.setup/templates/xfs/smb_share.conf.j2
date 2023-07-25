@@ -1,0 +1,5 @@
+[{{ samba_share }}]
+comment = For samba share of volume {{ cluster_volume }}
+vfs objects = acl_xattr
+path = {{ cluster_volume }}
+read only = no

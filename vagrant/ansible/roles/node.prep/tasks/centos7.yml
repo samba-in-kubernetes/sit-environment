@@ -1,10 +1,10 @@
+---
 - name: Install basic tools
   yum:
-   name: "{{ tools }}"
-   state: latest
+    name: "{{ tools }}"
+    state: latest
   vars:
     tools:
       - lvm2
       - firewalld
       - libselinux-python
-

@@ -1,13 +1,7 @@
+---
 - name: read list of nodes from file cluster_nodes.yml
   include_vars:
     file: cluster-{{ config.be.name }}.yml
-
-#- name: Test node reachability
-#  # note: `net_ping` module does not work unless we put
-#  # `ansible_network_os` into the inventory...
-#  command: "ping -c 1 {{ item }}"
-#  loop:
-#    "{{ cluster_hosts }}"
 
 - name: Test ssh to nodes via node address
   command: /bin/true

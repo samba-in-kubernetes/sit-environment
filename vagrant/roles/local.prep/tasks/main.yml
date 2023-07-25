@@ -1,3 +1,4 @@
+---
 - name: copy vagrant generated inventory file - local machine
   copy:
     src: .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
@@ -40,8 +41,8 @@
 
 - name: copy ssh-config for setup
   copy:
-   src: ./ssh-config-host
-   dest: ./ansible/ssh-config-setup
+    src: ./ssh-config-host
+    dest: ./ansible/ssh-config-setup
 
 - name: modify ssh-config-setup
   replace:

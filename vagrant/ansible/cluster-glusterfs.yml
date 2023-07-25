@@ -1,3 +1,4 @@
+---
 ctdb_brick_location: '/bricks/ctdb-brick'
 
 gluster_infra_volume_groups:
@@ -75,8 +76,22 @@ disperse_cluster_options:
   performance.readdir-ahead: 'on'
   performance.parallel-readdir: 'on'
 
-ctdb_network_private_interfaces: "{{ config.nodes | dict2items | selectattr('value.groups', 'contains', 'cluster') | map(attribute='value.networks.private') | list }}"
-ctdb_network_public_interfaces: "{{ config.nodes | dict2items | selectattr('value.groups', 'contains', 'cluster') | map(attribute='value.ctdb.public') | list }}"
+ctdb_network_private_interfaces: >-
+  {{
+    config.nodes |
+    dict2items |
+    selectattr('value.groups', 'contains', 'cluster') |
+    map(attribute='value.networks.private') |
+    list
+  }}
+ctdb_network_public_interfaces: >-
+  {{
+    config.nodes |
+    dict2items |
+    selectattr('value.groups', 'contains', 'cluster') |
+    map(attribute='value.ctdb.public') |
+    list
+  }}
 ctdb_network_public_interface_subnet_mask: "24"
 ctdb_network_public_interface_name: "eth2"
 ctdb_cluster_volume: "ctdb"

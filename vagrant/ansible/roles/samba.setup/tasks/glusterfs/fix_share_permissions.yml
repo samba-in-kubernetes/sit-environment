@@ -1,3 +1,4 @@
+---
 - name: Mount gluster volume using glusterfs
   mount:
     path: /mnt-fuse

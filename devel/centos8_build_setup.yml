@@ -74,4 +74,3 @@
           - glusterfs-api-devel
           - glusterfs-devel
         state: present
-

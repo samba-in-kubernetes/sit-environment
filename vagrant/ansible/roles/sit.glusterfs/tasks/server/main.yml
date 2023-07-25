@@ -1,3 +1,4 @@
+---
 - name: Install GlusterFS rpms
   yum:
     name: "{{ gluster_rpms }}"

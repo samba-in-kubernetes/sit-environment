@@ -1,3 +1,4 @@
+---
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   with_first_found:
@@ -28,6 +29,13 @@
     name: gluster.features
   vars:
     gluster_features_ctdb_nodes: "{{ ctdb_network_private_interfaces | join(',') }}"
-    gluster_features_ctdb_publicaddr: "{{ ctdb_network_public_interfaces | map('regex_replace','(^.*$)','\\1/' + ctdb_network_public_interface_subnet_mask + ' ' + ctdb_network_public_interface_name) | list |join (',') }}"
+    gluster_features_ctdb_publicaddr: >-
+      {{
+        ctdb_network_public_interfaces |
+        map('regex_replace','(^.*$)','\1/' + ctdb_network_public_interface_subnet_mask + ' ' +
+                                     ctdb_network_public_interface_name) |
+        list |
+        join (',')
+      }}
     gluster_features_ctdb_volume: "{{ ctdb_cluster_volume }}"
     gluster_features_ctdb_enable_hook_scripts: false

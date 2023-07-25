@@ -1,3 +1,4 @@
+---
 - name: add copr to get gluster-ansible
   command: yum -y copr enable godas/gluster-ansible
 

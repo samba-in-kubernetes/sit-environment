@@ -1,3 +1,4 @@
+---
 - hosts: clients
   become: yes
   become_method: sudo

@@ -1,4 +1,5 @@
-# Create an authorized_keys file in the local directory containing the public keys for ssh access to the remote machine.
+# Create an authorized_keys file in the local directory containing the public
+# keys for ssh access to the remote machine.
 ---
 - hosts: all
   become: yes
@@ -12,7 +13,9 @@
     - assert:
         that:
           - authorized_keys.stat.exists
-        fail_msg: "authorized_keys does not exist. Please add an authorized_keys file which will be copied over to the test vms."
+        fail_msg: >-
+          authorized_keys does not exist. Please add an authorized_keys file
+          which will be copied over to the test vms.
       run_once: true
 
     - name: Allow all users to sudo
@@ -34,7 +37,7 @@
         name: sshd
         state: restarted
 
-    #Password: 'x'
+    # Password: 'x'
     - name: change root password
       user:
         name: root

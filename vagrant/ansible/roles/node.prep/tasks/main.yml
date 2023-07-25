@@ -1,3 +1,4 @@
+---
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   with_first_found:

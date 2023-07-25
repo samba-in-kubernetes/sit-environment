@@ -1,3 +1,4 @@
+---
 - hosts: admin
   become: yes
   become_method: sudo

@@ -38,7 +38,7 @@ vagrant:
     private: 192.168.122.0/24
     public: 192.168.123.0/24
 
-  # Storage pool to use for the virtual disks (optional)
+#  # Storage pool to use for the virtual disks (optional)
 #  pool: data
 
 # Definition of the backend-specific environment
@@ -105,4 +105,3 @@ environments:
         ctdb:
           public: 10
         groups: [cluster]
-

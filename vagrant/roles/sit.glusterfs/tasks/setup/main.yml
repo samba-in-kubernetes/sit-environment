@@ -1,3 +1,4 @@
+---
 - name: Install yum copr plugin
   yum:
     name: yum-plugin-copr

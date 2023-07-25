@@ -1,3 +1,4 @@
+---
 - name: Perform a complete update
   yum:
     name: '*'

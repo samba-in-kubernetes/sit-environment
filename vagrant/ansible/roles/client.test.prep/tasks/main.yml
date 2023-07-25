@@ -1,19 +1,19 @@
 ---
 - block:
-  - name: Fetch repo/switch to master branch
-    git:
-      repo: "{{ test_repo }}"
-      version: "{{ test_repo_branch }}"
-      dest: /root/samba-integration-tests
+    - name: Fetch repo/switch to master branch
+      git:
+        repo: "{{ test_repo }}"
+        version: "{{ test_repo_branch }}"
+        dest: /root/samba-integration-tests
 
-  - name: Fetching PR
-    git:
-      repo: "{{ test_repo }}"
-      refspec: +pull/{{ test_repo_pr }}/head:pr{{ test_repo_pr }}
-      dest: /root/samba-integration-tests
+    - name: Fetching PR
+      git:
+        repo: "{{ test_repo }}"
+        refspec: +pull/{{ test_repo_pr }}/head:pr{{ test_repo_pr }}
+        dest: /root/samba-integration-tests
 
-  - set_fact:
-      test_repo_branch: "pr{{ test_repo_pr }}"
+    - set_fact:
+        test_repo_branch: "pr{{ test_repo_pr }}"
   when: test_repo_pr is defined
 
 - debug:
@@ -32,4 +32,3 @@
     owner: root
     group: root
     state: link
-

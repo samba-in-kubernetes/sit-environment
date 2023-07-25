@@ -1,4 +1,13 @@
 ---
+- name: Check for required variables
+  block:
+    - fail:
+        msg: "Please provide these required variable: ctdb_cluster_volume"
+      when: ctdb_cluster_volume is undefined
+    - fail:
+        msg: "Please provide these required variable: ctdb_cluster_replica_count"
+      when: ctdb_cluster_replica_count is undefined
+
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   with_first_found:

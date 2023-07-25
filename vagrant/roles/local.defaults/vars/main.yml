@@ -25,6 +25,7 @@ os_includes:
 # constant name.
 be_names:
   glusterfs: glusterfs
+  xfs: xfs
 
 # Vagrant/VM global settings
 vagrant:
@@ -105,3 +106,31 @@ environments:
         ctdb:
           public: 10
         groups: [cluster]
+
+  xfs:
+    # Default number of CPUs per VM
+    cpus: 2
+
+    # Default amount of memory per VM (in MiB)
+    memory: 1024
+
+    # List of nodes to create
+    nodes:
+      setup:
+        networks:
+          private: 200
+        groups: [admin]
+
+      storage:
+        disks: [10]
+        networks:
+          private: 100
+          public: 100
+        ctdb:
+          public: 10
+        groups: [cluster]
+
+      client:
+        networks:
+          public: 5
+        groups: [clients]

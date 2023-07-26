@@ -16,6 +16,10 @@ config:
     name: "{{ be }}"
     variant: "{{ variant }}"
 
+{%- if settings.environments[be].domain is defined +%}
+  domain: "{{ settings.environments[be].domain }}"
+{%- endif +%}
+
   data: {{ settings.environments[be].data | default({}) }}
 
   paths: {{ settings.paths }}

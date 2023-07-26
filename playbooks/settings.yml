@@ -186,6 +186,10 @@ provisioners:
 #     Default minimum amount of memory (in MiB) assigned to each VM. This
 #     value can be overridden by specific VM type definitions.
 #
+#   domain: (optional, default: None)
+#     The DNS domain name to append to the VM's name to form a FQDN. If
+#     it's not present, the machine's hostname will be just its name.
+#
 #   data: (optional, default: {})
 #     This field contains any extra data specific to the environment that
 #     is needed to complete the installation (this data is used only by

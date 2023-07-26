@@ -1,3 +1,9 @@
 {% for node in config.groups['cluster'] -%}
-{{ config.nodes[node].networks.private }} {{ node }}
+{{ config.nodes[node].networks.private }} {% if config.domain is defined %}{{ node }}.{{ config.domain }} {% endif %}{{ node }}
+{% if 'public' in config.nodes[node].networks -%}
+{{ config.nodes[node].networks.public }} {% if config.domain is defined %}{{ node }}_pub.{{ config.domain }} {% endif %}{{ node }}_pub
+{% endif -%}
+{% if config.nodes[node].ctdb and ('public' in config.nodes[node].ctdb) -%}
+{{ config.nodes[node].ctdb.public }} {% if config.domain is defined %}{{ node }}_ctdb.{{ config.domain }} {% endif %}{{ node }}_ctdb
+{% endif -%}
 {% endfor -%}

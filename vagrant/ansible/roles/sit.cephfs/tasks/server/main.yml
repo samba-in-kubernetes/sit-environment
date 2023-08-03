@@ -1,0 +1,38 @@
+---
+- name: Process OS specific tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files: "{{ config.os.includes }}"
+  loop_control:
+    loop_var: include_file
+
+- name: Download cephadm
+  get_url:
+    url: "https://github.com/ceph/ceph/raw/{{ config.data.branch }}/src/cephadm/cephadm.py"
+    dest: /root/cephadm
+    mode: 0755
+
+- name: "Create SSH key-pairs"
+  command: >
+    ssh-keygen -q -f /root/.ssh/id_rsa -N '' -C "ceph-management@{{ inventory_hostname }}"
+  args:
+    creates: "/root/.ssh/id_rsa.pub"
+
+- name: "Fetching bootstrap node's public key"
+  when: "inventory_hostname == config.groups['cluster'][0]"
+  fetch:
+    flat: true
+    src: /root/.ssh/id_rsa.pub
+    dest: "/home/vagrant/ansible/ceph-node-0-ssh-key.pub"
+
+- name: Populating non-bootstrap nodes authorized keys
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ lookup('file', pubkey) }}"
+  vars:
+    pubkey: "/home/vagrant/ansible/ceph-node-0-ssh-key.pub"
+
+# Pull ceph container image for all nodes
+- name: Pull containers
+  command: /root/cephadm pull

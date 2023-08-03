@@ -1,0 +1,77 @@
+---
+- name: Ensure /etc/ceph exists
+  file:
+    path: /etc/ceph
+    state: directory
+
+- name: Install Ceph
+  delegate_to: "{{ config.groups['cluster'][0] }}"
+  run_once: true
+  block:
+    - name: Bootstrap the ceph node
+      command: >
+        /root/cephadm bootstrap
+        --mon-ip {{ config.nodes[inventory_hostname].networks.private }}
+        --ssh-private-key /root/.ssh/id_rsa
+        --ssh-public-key /root/.ssh/id_rsa.pub
+        --skip-monitoring-stack
+      args:
+        creates: /etc/ceph/ceph.conf
+
+    - name: Add other ceph nodes
+      command: /root/cephadm shell -- ceph orch host add "{{ item }}" --labels _admin
+      loop: "{{ config.groups['cluster'][1:] }}"
+
+    - name: Set mon count to 3
+      command: /root/cephadm shell -- ceph orch apply mon 3
+
+    - name: Add all available devices
+      command: /root/cephadm shell -- ceph orch apply osd --all-available-devices
+
+    - name: Add an MDS
+      command: /root/cephadm shell -- ceph orch apply mds cephfs --placement=1
+
+    - name: Create a CephFS instance
+      command: /root/cephadm shell -- ceph fs volume create sit_fs
+
+    - name: Create a user for CephFS
+      command: /root/cephadm shell -- ceph fs authorize sit_fs client.sit / rw
+      register: ceph_auth
+
+    - name: Fetch minimal conf
+      command: /root/cephadm shell -- ceph config generate-minimal-conf
+      register: ceph_conf
+
+- name: Generate a ceph conf with key
+  copy:
+    dest: "/etc/ceph/sit.ceph.conf"
+    content: |
+      {{ ceph_conf.stdout }}
+
+      {{ ceph_auth.stdout }}
+
+# This is not strictly necessary for the SIT Environment but it's useful to
+# detect when all Ceph services are up and running, which takes a significant
+# amount of time. Otherwise some later tasks may fail.
+- name: Mount CephFS
+  mount:
+    boot: false
+    fstype: ceph
+    opts: "conf=/etc/ceph/sit.ceph.conf,name=sit"
+    src: "{{ config.nodes[config.groups['cluster'][0]].networks.private }}:6789:/"
+    path: "/mnt/cephfs"
+    state: mounted
+  register: ceph_mount
+  until: ceph_mount is success
+  retries: 100
+  delay: 5
+
+- name: Create Ceph subvolumes for samba shares
+  include_tasks:
+    file: new_volume.yml
+  vars:
+    volume:
+      name: "{{ item.share_name }}"
+      mount: "{{ item.cluster_volume }}"
+      mode: "0777"
+  loop: "{{ samba_shares }}"

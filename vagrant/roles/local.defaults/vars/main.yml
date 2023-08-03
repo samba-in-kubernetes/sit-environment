@@ -26,6 +26,7 @@ os_includes:
 be_names:
   glusterfs: glusterfs
   xfs: xfs
+  cephfs: cephfs
 
 # Vagrant/VM global settings
 vagrant:
@@ -135,6 +136,34 @@ environments:
 
       storage:
         disks: [10]
+        networks:
+          private: 100
+          public: 100
+        ctdb:
+          public: 10
+        groups: [cluster]
+
+      client:
+        networks:
+          public: 5
+        groups: [clients]
+
+  cephfs:
+    cpus: 2
+    memory: 1024
+
+    data:
+      branch: main
+
+    nodes:
+      setup:
+        networks:
+          private: 200
+        groups: [admin]
+
+      storage:
+        instances: 3
+        disks: [10, 10, 10]
         networks:
           private: 100
           public: 100

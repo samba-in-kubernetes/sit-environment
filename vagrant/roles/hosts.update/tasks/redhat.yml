@@ -3,3 +3,10 @@
   yum:
     name: '*'
     state: latest
+  register: yum_update
+
+- name: Reboot node
+  when: yum_update is changed
+  reboot:
+    connect_timeout: 5
+    reboot_timeout: 60

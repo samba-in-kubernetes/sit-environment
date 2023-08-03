@@ -1,12 +1,12 @@
 ---
 - name: Run tests
   command:
-    chdir: /root/samba-integration-tests
+    chdir: /root/sit-test-cases
     cmd: make test
   when: test_sanity_only is undefined
 
 - name: Run sanity tests
   command:
-    chdir: /root/samba-integration-tests
+    chdir: /root/sit-test-cases
     cmd: make sanity_test
   when: test_sanity_only is defined

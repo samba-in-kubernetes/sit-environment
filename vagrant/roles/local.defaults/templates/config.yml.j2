@@ -14,6 +14,8 @@ config:
     id: "{{ be }}"
     name: "{{ be_names[be] }}"
 
+  data: {{ environments[be].data | default({}) }}
+
   nodes:
   {%- for name in environments[be].nodes +%}
     {%- set data = environments[be].nodes[name] +%}

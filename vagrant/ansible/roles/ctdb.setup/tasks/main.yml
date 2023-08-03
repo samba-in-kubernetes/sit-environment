@@ -31,12 +31,21 @@
 - name: Reload firewall
   command: firewall-cmd --reload
 
-- name: Add cluster lock to ctdb.conf
-  lineinfile:
-    dest: /etc/ctdb/ctdb.conf
-    line: "\tcluster lock = /ctdb/lock/cluster.lock"
-    regexp: "cluster lock"
-    insertafter: '\[cluster\]'
+- name: Configure CTDB
+  ini_file:
+    path: /etc/ctdb/ctdb.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - section: cluster
+      option: cluster lock
+      value: /ctdb/lock/cluster.lock
+    # See https://github.com/samba-in-kubernetes/sit-environment/issues/18
+    - section: legacy
+      option: realtime scheduling
+      value: "false"
 
 - name: Create /etc/ctdb/nodes
   copy:

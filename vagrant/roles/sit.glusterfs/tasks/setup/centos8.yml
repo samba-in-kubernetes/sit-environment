@@ -22,6 +22,7 @@
       shell: ansible-galaxy collection install {{ item }}
       loop:
         - ansible.posix
+        - community.general
         - gluster.gluster
         - ovirt.ovirt
 

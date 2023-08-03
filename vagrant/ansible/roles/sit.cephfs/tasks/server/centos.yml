@@ -1,0 +1,36 @@
+---
+# Note: the storage sig repo and the ceph-common package are only required to
+#       be able to mount the ceph volume from the host. All other ceph-related
+#       binaries are installed from cephadm, which is downloaded directly from
+#       the main development branch.
+
+- name: Identify latest ceph:{{ config.data.branch }} build
+  uri:
+    url: "https://shaman.ceph.com/api/search?\
+            project=ceph&\
+            ref={{ config.data.branch }}&\
+            flavor=default&\
+            status=ready&\
+            distros=centos/8/x86_64&\
+            sha1=latest"
+    return_content: true
+  register: ceph_shaman
+
+- name: Create ceph repo
+  yum_repository:
+    name: "ceph-{{ config.data.branch }}-{{ ceph_shaman.json[0].sha1 }}"
+    baseurl: "{{ ceph_shaman.json[0].url }}/x86_64"
+    description: "Ceph {{ config.data.branch }} ({{ ceph_shaman.json[0].sha1 }})"
+    enabled: true
+    gpgcheck: false
+    state: present
+
+# Note: this rule can not be merged with the above rule.  This depends on
+# packages enabled by repo files the previous rule installs.
+- name: Install required packages
+  yum:
+    name:
+      - podman
+      - lvm2
+      - ceph-common
+    state: present

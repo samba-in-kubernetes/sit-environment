@@ -1,0 +1,8 @@
+---
+- name: Install ansible
+  yum:
+    name:
+      - ansible-core
+      - ansible-collection-ansible-posix
+      - ansible-collection-community-general
+    state: latest

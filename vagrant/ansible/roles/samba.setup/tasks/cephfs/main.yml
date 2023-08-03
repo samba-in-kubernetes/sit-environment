@@ -1,0 +1,32 @@
+---
+- name: Install samba packages
+  yum:
+    name: samba
+    state: present
+
+- name: Create and configure Samba share directory
+  run_once: true
+  block:
+    - name: Create Samba share directory
+      file:
+        path: "{{ item.cluster_volume }}"
+        state: directory
+        mode: 0777
+      loop: "{{ samba_shares }}"
+
+    - name: SELinux - Allow access to mount point
+      sefcontext:
+        target: "{{ item.cluster_volume }}"
+        setype: mnt_t
+        state: present
+      loop: "{{ samba_shares }}"
+
+    - name: SELinux - Apply changes
+      command: restorecon -R "{{ item.cluster_volume }}"
+      loop: "{{ samba_shares }}"
+
+- name: Selinux - Allow exporting everything
+  seboolean:
+    name: samba_export_all_rw
+    state: yes
+    persistent: yes

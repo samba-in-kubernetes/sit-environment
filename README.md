@@ -10,12 +10,12 @@ up the cluster.
 In the future, we might support options for choosing to consume pre-built RPMS
 or building from a given software branch.
 
-Various branches and resources are playing together to enable this CI:
+This repo brings up the test environment and then runs the tests.
+Various other resources are playing together inorder to enable the Samba Integration:
 
-- [CentOS CI](https://jenkins-samba.apps.ocp.ci.centos.org/) - these are the resources where we run our tests and builds.
-- [_master_ branch](https://github.com/gluster/samba-integration/) - this brings up the test environment and then run tests from the tests branch
-- [_tests_ branch](https://github.com/gluster/samba-integration/tree/tests) - the actual test suites to run, invoked by `make test` in the master branch after environment setup (could be a different repo, but we started here for simplicity)
-- [_samba-build_ branch](https://github.com/gluster/samba-integration/tree/samba-build) - this contains the specfile and ansible automation to build our nightly samba RPMs
-- [CentOS CI jobs](https://github.com/anoopcs9/samba-centosci) - this contains the centos-ci job definition for gluster-integration, nightly samba builds
-- [nightly samba rpms repository](http://artifacts.ci.centos.org/samba/pkgs/) - created by the nightly samba rpm build jobs
-- [nightly gluster rpms repository](http://artifacts.ci.centos.org/gluster/nightly/) - created by nightly gluster rpm build jobs
+- [sit-test-cases](https://github.com/samba-in-kubernetes/sit-test-cases) - test suites that are run by ansible playbooks in [sit-environment](https://github.com/samba-in-kubernetes/sit-environment)
+- [samba-build](https://github.com/samba-in-kubernetes/samba-build) - specfile and ansible automations to build nightly samba RPMs
+- [CentOS CI](https://jenkins-samba.apps.ocp.cloud.ci.centos.org/) - jenkins server where we run our tests and builds
+- [CentOS CI jobs](https://github.com/samba-in-kubernetes/samba-centosci) - centos-ci job configurations
+- [nightly samba rpms repository](http://artifacts.ci.centos.org/samba/pkgs/) - packages and artifacts created by nightly samba rpm build jobs
+- [nightly gluster rpms repository](http://artifacts.ci.centos.org/gluster/nightly/) - packages and artifacts created by nightly gluster rpm build jobs

@@ -41,7 +41,7 @@ client.test:
 setup.site: setup.cluster setup.clients generate.report client.test
 
 client1.test:
-	@$(VSSH) clients "sudo make -C /root/samba-integration-tests test"
+	@$(VSSH) clients "sudo make -C /root/sit-test-cases test"
 
 clean_vagrant:
 	-$(VAGRANT) destroy -f

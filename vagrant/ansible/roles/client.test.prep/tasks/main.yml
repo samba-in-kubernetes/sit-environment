@@ -4,13 +4,13 @@
       git:
         repo: "{{ test_repo }}"
         version: "{{ test_repo_branch }}"
-        dest: /root/samba-integration-tests
+        dest: /root/sit-test-cases
 
     - name: Fetching PR
       git:
         repo: "{{ test_repo }}"
         refspec: +pull/{{ test_repo_pr }}/head:pr{{ test_repo_pr }}
-        dest: /root/samba-integration-tests
+        dest: /root/sit-test-cases
 
     - set_fact:
         test_repo_branch: "pr{{ test_repo_pr }}"
@@ -23,12 +23,12 @@
   git:
     repo: "{{ test_repo }}"
     version: "{{ test_repo_branch }}"
-    dest: /root/samba-integration-tests
+    dest: /root/sit-test-cases
 
 - name: Create a symlink for test-info.yml file
   file:
     src: /root/test-info.yml
-    dest: /root/samba-integration-tests/test-info.yml
+    dest: /root/sit-test-cases/test-info.yml
     owner: root
     group: root
     state: link

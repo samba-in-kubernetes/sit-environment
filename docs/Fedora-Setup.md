@@ -17,14 +17,14 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-Git clone the samba-integration git repository.
+Git clone the sit-environment git repository.
 ```
-$ git clone https://github.com/gluster/samba-integration.git
+$ git clone https://github.com/samba-in-kubernetes/sit-environment.git
 ```
 
 Build the test environment with the following command
 ```
-$ cd samba-integration/
+$ cd sit-environment/
 $ make
 ```
 
@@ -32,20 +32,20 @@ The first run will take longer than usual as Vagrant downloads the CentOS8 image
 
 To run the CentOS7 version of test vms
 ```
-$ cd samba-integration/
+$ cd sit-environment/
 $ EXTRA_VARS="use_distro=centos7" make
 ```
 
 To run the tests using GlusterFS as the backend
 ```
-$ cd samba-integration/
+$ cd sit-environment/
 $ EXTRA_VARS="backend=glusterfs" make
 ```
 
 You can also choose the backend filesystem to use
 If you encounter failures bringing up the vagrant vms, you can check for more details by switching into the vagrant directory and manually bring up the machine.
 ```
-$ cd samba-integration/vagrant
+$ cd sit-environment/vagrant
 $ vagrant up
 ```
 Clean up with a 'make clean' command when done.
@@ -54,7 +54,7 @@ The most common fault seen is because of the location of the default storage poo
 
 Before you can reinstall the cluster setup, you will want to clear up the existing machines.
 ```
-$ cd samba-integration/
+$ cd sit-environment/
 $ make clean
 ```
 This clears up all the vms and temporary files created by the tool and the system is ready for a rebuild

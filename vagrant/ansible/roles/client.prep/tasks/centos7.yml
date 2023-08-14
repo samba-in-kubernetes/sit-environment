@@ -9,6 +9,7 @@
       - git
       - make
       - python3-pytest
+      - podman
     state: latest
 
 - name: Install Python 3 modules

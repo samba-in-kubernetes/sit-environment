@@ -1,0 +1,12 @@
+---
+- name: Process OS specific tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
+  loop_control:
+    loop_var: include_file
+
+- name: Upload installation files
+  unarchive:
+    src: "{{ config.data.package }}"
+    dest: "/root"

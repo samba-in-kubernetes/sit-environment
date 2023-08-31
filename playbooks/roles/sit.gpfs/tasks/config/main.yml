@@ -1,0 +1,30 @@
+---
+- name: Copy necessary configuration directories
+  shell: cp -r {{ item }} {{ config.configdir }}
+  with_items:
+    - "{{ config.paths.samba.etc }}"
+    - "{{ config.paths.ctdb.etc }}"
+
+- name: Create GPFS directory
+  file:
+    path: "{{ config.configdir }}/gpfs"
+    state: directory
+
+- name: Collect GPFS information
+  shell: "/usr/lpp/mmfs/bin/{{ item.cmd }} {{ item.args | default('') }} > {{ config.configdir }}/gpfs/{{ item.cmd }}"
+  with_items:
+    - cmd: mmlscluster
+    - cmd: mmlsconfig
+    - cmd: mmlsdisk
+      args: sit_fs
+    - cmd: mmlsfileset
+      args: sit_fs
+    - cmd: mmlsfs
+      args: all
+    - cmd: mmlslicense
+    - cmd: mmlsmgr
+    - cmd: mmlsnode
+    - cmd: mmlsnodeclass
+    - cmd: mmlsnsd
+    - cmd: mmlspool
+      args: sit_fs

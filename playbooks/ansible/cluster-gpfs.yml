@@ -1,0 +1,29 @@
+---
+ctdb_network_private_interfaces: >-
+  {{
+    config.nodes |
+    dict2items |
+    selectattr('value.ctdb') |
+    map(attribute='value.networks.private') |
+    list
+  }}
+ctdb_network_public_interfaces: >-
+  {{
+    config.nodes |
+    dict2items |
+    selectattr('value.ctdb') |
+    map(attribute='value.ctdb.public') |
+    list
+  }}
+ctdb_network_public_interface_subnet_mask: "24"
+ctdb_network_public_interface_name: "eth2"
+
+samba_netbios_name: "SIT-GPFS-TEST"
+
+samba_shares:
+  - name: share
+    samba:
+      options:
+        "acl_xattr:ignore system acls": "yes"
+
+nsd_device: "/dev/vdb"

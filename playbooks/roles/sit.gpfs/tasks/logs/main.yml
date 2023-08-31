@@ -1,0 +1,5 @@
+---
+- name: Copy log directories
+  shell: cp -r {{ item }} /var/log/
+  with_items:
+    - /var/adm/ras

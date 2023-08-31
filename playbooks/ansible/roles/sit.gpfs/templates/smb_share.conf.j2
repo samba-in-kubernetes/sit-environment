@@ -1,0 +1,8 @@
+[{{ name }}-{{ config.be.name }}-{{ config.be.variant }}]
+comment = Volume '{{ name }}' from {{ config.be.name }}({{ config.be.variant }})
+vfs objects = acl_xattr
+path = {{ path }}
+read only = no
+{%- for option, value in volume.samba.options.items() | default([]) +%}
+{{ option }} = {{ value }}
+{%- endfor +%}

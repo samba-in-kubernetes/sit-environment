@@ -354,3 +354,56 @@ environments:
         networks:
           public: 5
         groups: [clients]
+
+  gpfs:
+    cpus: 2
+    memory: 1024
+    domain: sit.test
+
+    data:
+      # A zip file is necessary to install GPFS but it's not included with
+      # the ansible playbooks. You need to sign up with IBM to get access
+      # to the Storage Scale Developer edition. The environment variable
+      # STORAGE_SCALE_DEV_ZIP must be defined to point to the location of
+      # the downloaded file.
+      package: "{{ lookup('env', 'STORAGE_SCALE_DEV_ZIP') | default('') }}"
+
+      # This is the the regular expression used to identify the installation
+      # file inside the zip. It must have a capturing group to extract the
+      # version number.
+      pattern: "Storage_Scale_Developer-([0-9.]+)-x86_64-Linux-install"
+
+    nodes:
+      setup:
+        cpu_weight: 2
+        memory_weight: 2
+        os: centos8
+        networks:
+          private: 200
+          public: 200
+        ctdb:
+          public: 20
+        groups: [cluster, installer, gui, admin]
+        accounts: [default]
+
+      client:
+        cpu_weight: 1
+        memory_weight: 1
+        os: centos8
+        networks:
+          public: 5
+        groups: [clients]
+
+      storage:
+        cpu_weight: 2
+        memory_weight: 2
+        os: centos8
+        instances: 2
+        disks: [10]
+        networks:
+          private: 50
+          public: 50
+        ctdb:
+          public: 10
+        groups: [cluster, nsd, quorum, manager]
+        accounts: [default]

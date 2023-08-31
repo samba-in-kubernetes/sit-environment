@@ -1,0 +1,16 @@
+---
+- name: Create GPFS fileset
+  command: "/usr/lpp/mmfs/bin/mmcrfileset sit_fs {{ name }}"
+  run_once: true
+
+- name: Create fileset junction
+  command: "/usr/lpp/mmfs/bin/mmlinkfileset sit_fs {{ name }} -J /gpfs/sit_fs/{{ name }}"
+  run_once: true
+
+- name: Bind the fileset
+  mount:
+    path: "{{ path }}"
+    src: "/gpfs/sit_fs/{{ name }}"
+    opts: bind
+    fstype: none
+    state: mounted

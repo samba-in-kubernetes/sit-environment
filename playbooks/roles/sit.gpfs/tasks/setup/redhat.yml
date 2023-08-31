@@ -1,0 +1,9 @@
+---
+- name: Install required packages
+  yum:
+    name:
+      - ansible-core
+      - ansible-collection-ansible-posix
+      - ansible-collection-community-general
+      - unzip
+    state: latest

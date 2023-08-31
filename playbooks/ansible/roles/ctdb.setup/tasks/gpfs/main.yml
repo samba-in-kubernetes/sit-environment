@@ -1,0 +1,9 @@
+---
+- name: Create the ctdb shared subvolume
+  include_role:
+    name: 'sit.{{ config.be.name }}'
+    tasks_from: new_volume.yml
+  vars:
+    name: "ctdb"
+    path: "{{ ctdb_lock_path }}"
+    mode: 0777

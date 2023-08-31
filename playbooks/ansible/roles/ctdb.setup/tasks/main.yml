@@ -32,14 +32,22 @@
 - name: Update selinux contexts
   command: restorecon -R "{{ config.paths.ctdb.var_lib }}/lock"
 
-- name: Add ctdb rules to firewalld
-  firewalld:
-    service: ctdb
-    permanent: yes
-    state: enabled
+- name: Check firewall
+  command: firewall-cmd --state
+  failed_when: false
+  register: fwd_state
 
-- name: Reload firewall
-  command: firewall-cmd --reload
+- name: Configure firewall
+  when: fwd_state.stdout == "running"
+  block:
+    - name: Add ctdb rules to firewalld
+      firewalld:
+        service: ctdb
+        permanent: yes
+        state: enabled
+
+    - name: Reload firewall
+      command: firewall-cmd --reload
 
 - name: Configure CTDB
   ini_file:

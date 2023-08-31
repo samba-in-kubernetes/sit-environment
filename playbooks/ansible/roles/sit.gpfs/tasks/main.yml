@@ -1,0 +1,82 @@
+---
+- name: Install GPFS
+  delegate_to: localhost
+  become: true
+  run_once: true
+  block:
+    - name: Identify installation file
+      find:
+        path: /root
+        recurse: true
+        use_regex: true
+        pattern: "{{ config.data.pattern }}"
+        file_type: file
+        size: 100m
+      register: gpfs_installer
+      failed_when: gpfs_installer.matched != 1
+
+    - name: Extract version
+      set_fact:
+        gpfs_version: "{{ gpfs_installer.files[0].path | regex_search(config.data.pattern, '\\1') | first }}"
+
+    - name: Define toolkit executable
+      set_fact:
+        gpfs_toolkit: "/usr/lpp/mmfs/{{ gpfs_version }}/ansible-toolkit/spectrumscale"
+
+    - name: Verify MD5 checksum
+      command:
+        chdir: "{{ gpfs_installer.files[0].path | dirname }}"
+        cmd: md5sum -c "{{ gpfs_installer.files[0].path }}.md5"
+
+    - name: Make sure that the installer is executable
+      file:
+        path: "{{ gpfs_installer.files[0].path }}"
+        mode: a+x
+
+    - name: Prepare Storage Scale installation toolkit
+      command:
+        chdir: "{{ gpfs_installer.files[0].path | dirname }}"
+        cmd: "{{ gpfs_installer.files[0].path }} --silent"
+        creates: "{{ gpfs_toolkit }}"
+
+    - name: Setup installer node
+      command: "{{ gpfs_toolkit }} setup -s {{ config.nodes['setup0'].networks.private }} -i ~/.ssh/id_rsa"
+
+    - name: Define admin nodes
+      command: "{{ gpfs_toolkit }} node add {{ item }} -a"
+      loop: "{{ config.groups['admin'] }}"
+
+    - name: Define manager nodes
+      command: "{{ gpfs_toolkit }} node add {{ item }} -m -q"
+      loop: "{{ config.groups['manager'] }}"
+
+    - name: Define nsd nodes
+      command: "{{ gpfs_toolkit }} node add {{ item }} -n"
+      loop: "{{ config.groups['nsd'] }}"
+
+    - name: Define quorum nodes
+      command: "{{ gpfs_toolkit }} node add {{ item }} -q"
+      loop: "{{ config.groups['quorum'] }}"
+
+    - name: Define GUI nodes
+      command: "{{ gpfs_toolkit }} node add {{ item }} -g -a"
+      loop: "{{ config.groups['gui'] }}"
+
+    - name: Create NSD devices
+      command: "{{ gpfs_toolkit }} nsd add -p {{ item }} -fs sit_fs {{ nsd_device }}"
+      loop: "{{ config.groups['nsd'] }}"
+
+    - name: Disable callhome
+      command: "{{ gpfs_toolkit }} callhome disable"
+
+    - name: Configure cluster name
+      command: "{{ gpfs_toolkit }} config gpfs -c sit_cluster"
+
+    - name: Define block size and mountpoint
+      command: "{{ gpfs_toolkit }} filesystem modify -B 128K -m /gpfs/sit_fs sit_fs"
+
+    - name: Install on all nodes
+      command: "{{ gpfs_toolkit }} install"
+
+    - name: Create admin user for GUI
+      command: /usr/lpp/mmfs/gui/cli/mkuser admin -p admin123 -g SecurityAdmin

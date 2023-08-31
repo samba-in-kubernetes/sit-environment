@@ -20,14 +20,22 @@
     state: yes
     persistent: yes
 
-- name: Enable firewall for samba
-  firewalld:
-    service: samba
-    permanent: yes
-    state: enabled
+- name: Check firewall
+  command: firewall-cmd --state
+  failed_when: false
+  register: fwd_state
 
-- name: Reload firewall
-  command: firewall-cmd --reload
+- name: Configure firewall
+  when: fwd_state.stdout == "running"
+  block:
+    - name: Enable firewall for samba
+      firewalld:
+        service: samba
+        permanent: yes
+        state: enabled
+
+    - name: Reload firewall
+      command: firewall-cmd --reload
 
 - name: Create fresh directory /etc/samba/smb.shares to contain share definition
   block:

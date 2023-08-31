@@ -1,0 +1,14 @@
+---
+- name: Install required packages
+  dnf:
+    name:
+      - unzip
+      - python3
+      - kernel-devel
+      - kernel-headers
+      - gcc
+      - gcc-c++
+      - elfutils
+      - elfutils-devel
+      - make
+    state: latest

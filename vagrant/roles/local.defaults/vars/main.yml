@@ -42,50 +42,66 @@ vagrant:
 #  # Storage pool to use for the virtual disks (optional)
 #  pool: data
 
-# Definition of the backend-specific environment
+# The `environments` object contains one entry for each defined backend,
+# which specifies the types of VMs to create, the amount of each one, and
+# the resources they need.
 #
-# Each defined VM type has the following properties:
+# Each environment has the following properties:
 #
-#   # Type of VM. All Vms of this type will be named as <type><index>, where
-#   # <type> is this name and <index> is an incremental value starting from 0.
-#   <vm>:
-#     # Number VMs of this type (optional, default = 1)
-#     instances: <num>
+#   cpus: (required)
+#     Default number of CPUs to assign to each VM. This value can be
+#     overridden by specific VM type definitions.
 #
-#     # Number of CPUs per VM (optional, default = <backend>.cpus)
-#     cpus: <num>
+#   memory: (required)
+#     Default amount of memory (in MiB) assigned to each VM. This value
+#     can be overridden by specific VM type definitions.
 #
-#     # Amount of memory per VM (optional, default = <backend>.wmemory)
-#     memory: <num>
+#   data: (optional, default: {})
+#     This field contains any extra data specific to the environment that
+#     is needed to complete the installation (this data is used only by
+#     tasks specific for this environment). It can contain anything, the
+#     structure is free.
 #
-#     # List of the sizes in GiB of the addtional disks to attach to these
-#     # VMs (optional)
-#     disks: <sizes>
+#   nodes: (required)
+#     This field contains the types of VMs to create. The name of the type
+#     will be suffixed with an incremental number (starting at 0) to form
+#     the name of the VMs of each type.
 #
-#     # List of networks to which this type of VM is connected. For each
-#     # network it specifies the host portion of the IP. The names of the
-#     # networks must match with the networks defined in vagrant.networks.
-#     networks:
-#       <net>: <IP's host>
+# Each defined node type has the following properties:
 #
-#     # List of virtual IP addresses used by CTDB. It's equivalent to the
-#     # networks entry, but used to create virtual IPs for CTDB in the
-#     # specified networks.
-#     ctdb:
-#       <net>: <IP's host>
+#   instances: (optional, default: 1)
+#     Defines how many VMs of this type will be created.
 #
-#     # List of ansible group names where these VMs will be assigned to.
-#     groups: <names>
+#   cpus: (optional, default: the value of `cpus` in the environment)
+#     Number of CPUs for this specific VM type.
+#
+#   memory: (optional, default: the value of `memory` in the environment)
+#     Amount of memory for this specific VM type.
+#
+#   disks: (optional, default: [])
+#     List of additional disks for this type of VM (besides the system
+#     disk). For each disk, only the size (in GiB) is specified.
+#
+#   networks: (optional, default: {})
+#     This field enumerates the networks to connect to the VMs of this
+#     type. The networks are referenced using the name previously defined
+#     in `vagrant.networks`, and a host number for each one must be
+#     provided. The actual IP address will be computed combining the
+#     defined network with the host number.
+#
+#   ctdb: (optional, default: {})
+#     This field is similar to the `networks` field but defines virtual
+#     IPs used by CTDB.
+#
+#   groups: (required)
+#     List of ansible group names where the VMs of this type will be
+#     assigned to.
 #
 environments:
   glusterfs:
-    # Default number of CPUs per VM
     cpus: 2
-
-    # Default amount of memory per VM (in MiB)
     memory: 1024
 
-    # List of nodes to create
     nodes:
       setup:
         networks:
@@ -108,13 +124,9 @@ environments:
         groups: [cluster]
 
   xfs:
-    # Default number of CPUs per VM
     cpus: 2
-
-    # Default amount of memory per VM (in MiB)
     memory: 1024
 
-    # List of nodes to create
     nodes:
       setup:
         networks:

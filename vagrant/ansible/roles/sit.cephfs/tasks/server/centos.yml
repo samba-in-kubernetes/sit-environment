@@ -1,8 +1,7 @@
 ---
-# Note: the storage sig repo and the ceph-common package are only required to
-#       be able to mount the ceph volume from the host. All other ceph-related
-#       binaries are installed from cephadm, which is downloaded directly from
-#       the main development branch.
+# Note: the repo and the ceph-common package are only required to be able to
+#       mount the ceph volume from the host. Cephadm will download all other
+#       required container images independently of the repository.
 
 - name: Identify latest ceph:{{ config.data.branch }} build
   uri:
@@ -11,7 +10,7 @@
             ref={{ config.data.branch }}&\
             flavor=default&\
             status=ready&\
-            distros=centos/8/x86_64&\
+            distros=centos/{{ config.os.version }}/x86_64&\
             sha1=latest"
     return_content: true
   register: ceph_shaman
@@ -34,3 +33,9 @@
       - lvm2
       - ceph-common
     state: present
+
+- name: Download cephadm
+  get_url:
+    url: "{{ ceph_shaman.json[0].url }}/noarch/cephadm"
+    dest: /root/cephadm
+    mode: 0755

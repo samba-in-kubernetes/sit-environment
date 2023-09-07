@@ -1,19 +1,17 @@
 ---
 
-# This defines the potential files to locate for OS-dependent tasks. They are
-# sorted in order of priority, with the highest priority at the top. Only the
-# first file found is processed.
-os_includes:
+# This determines the properties of each OS so that it can be used for better
+# conditionals and reduce duplication in some places.
+os_info:
   centos7:
-    - centos7.yml
-    - centos.yml
-    - redhat.yml
-    - generic.yml
+    family: redhat
+    distro: centos
+    version: 7
+
   centos8:
-    - centos8.yml
-    - centos.yml
-    - redhat.yml
-    - generic.yml
+    family: redhat
+    distro: centos
+    version: 8
 
 # Vagrant/VM global settings
 vagrant:

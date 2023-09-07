@@ -2,7 +2,13 @@
 config:
   os:
     name: "{{ os }}"
-    includes: {{ os_includes[os] }}
+    family: "{{ os_info[os].family }}"
+    distro: "{{ os_info[os].distro }}"
+    version: "{{ os_info[os].version }}"
+    includes:
+      - "{{ os_info[os].distro }}{{ os_info[os].version}}.yml"
+      - "{{ os_info[os].distro }}.yml"
+      - "{{ os_info[os].family }}.yml"
     vagrant:
     {%- if vagrant.pool is defined +%}
       pool: "{{ vagrant.pool }}"

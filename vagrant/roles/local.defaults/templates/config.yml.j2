@@ -17,6 +17,7 @@ config:
 
   be:
     name: "{{ be }}"
+    variant: "{{ variant }}"
 
   data: {{ environments[be].data | default({}) }}
 

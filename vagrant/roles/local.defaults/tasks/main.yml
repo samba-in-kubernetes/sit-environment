@@ -5,7 +5,8 @@
     dest: ./ansible/config.yml
   vars:
     os: "{{ use_distro | default('centos8') }}"
-    be: "{{ backend | default('glusterfs') }}"
+    be: "{{ (backend | default('glusterfs') | split('.'))[0] }}"
+    variant: "{{ (backend | default('glusterfs') | split('.'))[1] | default('default') }}"
 
 - name: Load configuration
   include_vars:

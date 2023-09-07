@@ -1,8 +1,7 @@
 ---
 config:
   os:
-    id: "{{ os }}"
-    name: "{{ os_names[os] }}"
+    name: "{{ os }}"
     includes: {{ os_includes[os] }}
     vagrant:
     {%- if vagrant.pool is defined +%}
@@ -11,8 +10,7 @@ config:
       image: "{{ vagrant.images[os] }}"
 
   be:
-    id: "{{ be }}"
-    name: "{{ be_names[be] }}"
+    name: "{{ be }}"
 
   data: {{ environments[be].data | default({}) }}
 

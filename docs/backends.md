@@ -31,17 +31,6 @@ file:
 Update `vagrant/roles/local.defaults/vars/main.yml` to add the following
 information:
 
-  - Add the internal name in `be_names` object.
-
-    This entry maps the user-provided backend name into a name that will be
-    used internally to locate files related to that backend.
-
-    Example:
-      ```yaml
-      be_names:
-        glusterfs: glusterfs
-      ```
-
   - Create an environment for the new backend in `environments` object.
 
     You need to define how many machines are needed to run the tests, as well
@@ -56,9 +45,6 @@ Create a new role `sit.<backend>` in `vagrant/roles` that will be responsible
 to install any required packages needed to install the backend components in
 the required machines. This commonly includes any extra ansible collections
 that will help during the installation.
-
-> Note: the name of the `<backend>` must be the internal one defined in the
->       `be_names` object in the previous step.
 
 The tasks must be created in `tasks/setup/main.yml` under the role's main
 directory.

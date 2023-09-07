@@ -18,7 +18,7 @@ ctdb_network_public_interfaces: >-
 ctdb_network_public_interface_subnet_mask: "24"
 ctdb_network_public_interface_name: "eth2"
 
-samba_netbios_name: "GLUSTERTEST"
+samba_netbios_name: "SIT-XFS-TEST"
 samba_users:
   - { username: 'test1', password: 'x', uid: '2001' }
   - { username: 'test2', password: 'x', uid: '2002' }

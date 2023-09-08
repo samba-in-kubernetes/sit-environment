@@ -8,11 +8,17 @@ os_info:
     distro: centos
     version: 8
 
+  centos9:
+    family: redhat
+    distro: centos
+    version: 9
+
 # Vagrant/VM global settings
 vagrant:
   # Vagrant image to use per OS
   images:
     centos8: generic/centos8s
+    centos9: generic/centos9s
 
   # Available networks for the VMs
   networks:

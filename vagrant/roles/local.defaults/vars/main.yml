@@ -3,11 +3,6 @@
 # This determines the properties of each OS so that it can be used for better
 # conditionals and reduce duplication in some places.
 os_info:
-  centos7:
-    family: redhat
-    distro: centos
-    version: 7
-
   centos8:
     family: redhat
     distro: centos
@@ -17,7 +12,6 @@ os_info:
 vagrant:
   # Vagrant image to use per OS
   images:
-    centos7: centos/7
     centos8: generic/centos8s
 
   # Available networks for the VMs

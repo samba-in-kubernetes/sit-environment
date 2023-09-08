@@ -30,12 +30,6 @@ $ make
 
 The first run will take longer than usual as Vagrant downloads the CentOS8 image from its repository. Subsequent runs will use the image from cache and the setup will be quicker.
 
-To run the CentOS7 version of test vms
-```
-$ cd sit-environment/
-$ EXTRA_VARS="use_distro=centos7" make
-```
-
 To run the tests using GlusterFS as the backend
 ```
 $ cd sit-environment/

@@ -1,8 +1,0 @@
----
-- name: add copr to get gluster-ansible
-  command: yum -y copr enable sac/gluster-ansible
-
-- name: Install gluster-ansible
-  yum:
-    name: "gluster-ansible"
-    state: latest

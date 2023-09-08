@@ -1,3 +1,0 @@
----
-- name: Install libsemanage-python. This is needed for the seboolean ansible command
-  yum: name=libsemanage-python state=present

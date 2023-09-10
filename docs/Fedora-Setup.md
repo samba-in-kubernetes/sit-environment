@@ -6,9 +6,9 @@ and wheel -  to allow sudo access.
 Modify the steps accordingly for your setup.
 
 Ensure the following packages are installed
-> $ sudo dnf install qemu-kvm qemu-img git vagrant vagrant-libvirt ansible make libvirt-client
+> $ sudo dnf install qemu-kvm qemu-img git vagrant vagrant-libvirt ansible make libvirt-client python3-netaddr 
 
-For Fedora 33, we have to enable the use_session variable for vagrant libvirt vms to run properly. To do this, create a file ~/.vagrant.d/Vagrantfile with the following content
+For Fedora 38, we have to enable the use_session variable for vagrant libvirt vms to run properly. To do this, create a file ~/.vagrant.d/Vagrantfile with the following content
 ```
 Vagrant.configure("2") do |config|
    config.vm.provider :libvirt do |libvirt|

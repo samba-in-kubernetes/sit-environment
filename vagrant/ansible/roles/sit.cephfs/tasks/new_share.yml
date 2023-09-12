@@ -1,5 +1,14 @@
 ---
+- name: Get the subvolume's path
+  command: >
+    /root/cephadm shell --
+      ceph fs subvolume getpath sit_fs {{ name }}
+  run_once: true
+  register: ceph_subvol
+
 - name: Create share config file
   template:
     src: "smb_share.conf.j2"
     dest: "{{ file }}"
+  vars:
+    subvol: "{{ ceph_subvol.stdout }}"

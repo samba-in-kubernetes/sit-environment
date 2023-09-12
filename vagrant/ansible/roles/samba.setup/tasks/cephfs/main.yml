@@ -4,7 +4,29 @@
     name: samba
     state: present
 
+- name: Prepare CephFS VFS support
+  when: config.be.variant == 'vfs'
+  block:
+    - name: Install CephFS VFS module
+      yum:
+        name: samba-vfs-cephfs
+        state: present
+
+    - name: Set selinux in permissive mode
+      selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Skip check of share path
+      lineinfile:
+        path: /etc/ctdb/events/legacy/50.samba.options
+        create: true
+        search_string: "CTDB_SAMBA_SKIP_SHARE_CHECK"
+        line: "CTDB_SAMBA_SKIP_SHARE_CHECK=yes"
+        state: present
+
 - name: Create and configure Samba share directory
+  when: config.be.variant == "default"
   run_once: true
   block:
     - name: Create Samba share directory
@@ -26,6 +48,7 @@
       loop: "{{ samba_shares }}"
 
 - name: Selinux - Allow exporting everything
+  when: config.be.variant == "default"
   seboolean:
     name: samba_export_all_rw
     state: yes

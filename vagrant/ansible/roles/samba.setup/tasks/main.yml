@@ -31,14 +31,16 @@
 
 - name: Add share configuration
   block:
-    - name: Create share conf file
-      template:
-        src: "{{ config.be.name }}/smb_share.conf.j2"
-        dest: "/etc/samba/smb.shares/{{ samba_share }}.conf"
+    - name: Create the share configuration using backend
+      include_role:
+        name: 'sit.{{ config.be.name }}'
+        tasks_from: samba/new_share.yml
       vars:
-        cluster_volume: "{{ item.cluster_volume }}"
-        samba_share: "{{ item.share_name }}"
+        name: "{{ item.share_name }}"
+        path: "{{ item.cluster_volume }}"
+        file: "/etc/samba/smb.shares/{{ item.share_name }}.conf"
       with_items: "{{ samba_shares }}"
+
     - name: Include share configuration into smb.conf
       lineinfile:
         path: "/etc/samba/smb.conf"

@@ -1,0 +1,5 @@
+---
+- name: Create share config file
+  template:
+    src: "smb_share.conf.j2"
+    dest: "{{ file }}"

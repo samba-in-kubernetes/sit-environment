@@ -6,8 +6,9 @@
   vars:
     volume:
       name: "ctdb"
-      mount: "{{ ctdb_path }}"
+      path: "{{ ctdb_path }}"
       mode: "0777"
+      mount: true
 
 - name: Prepare shared storage for CTDB
   run_once: true

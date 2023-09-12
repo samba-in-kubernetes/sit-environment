@@ -1,5 +1,5 @@
 ---
-- name: Create Ceph subvolume
+- name: Create the CephFS subvolume
   command: >
     /root/cephadm shell --
       ceph fs subvolume create sit_fs {{ volume.name }}
@@ -13,19 +13,21 @@
   retries: 100
   delay: 1
 
-- name: Get subvolume path
-  command: >
-    /root/cephadm shell --
-      ceph fs subvolume getpath sit_fs {{ volume.name }}
-  run_once: true
-  register: ceph_subvol
+- name: Mount the CephFS subvolume
+  when: volume.mount
+  block:
+    - name: Get the subvolume's path
+      command: >
+        /root/cephadm shell --
+          ceph fs subvolume getpath sit_fs {{ volume.name }}
+      run_once: true
+      register: ceph_subvol
 
-- name: Mount Ceph subvolume
-  mount:
-    path: "{{ volume.mount }}"
-    fstype: ceph
-    opts: "conf=/etc/ceph/sit.ceph.conf,name=sit"
-    src: "{{ config.nodes[config.groups['cluster'][0]].networks.private }}:6789:{{ ceph_subvol.stdout }}"
-    boot: false
-    state: mounted
-  when: volume.mount is defined
+    - name: Create the mount
+      mount:
+        path: "{{ volume.path }}"
+        fstype: ceph
+        opts: "conf=/etc/ceph/sit.ceph.conf,name=sit"
+        src: "{{ config.nodes[config.groups['cluster'][0]].networks.private }}:6789:{{ ceph_subvol.stdout }}"
+        boot: false
+        state: mounted

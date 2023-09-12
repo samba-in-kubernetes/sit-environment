@@ -104,6 +104,7 @@
   vars:
     volume:
       name: "{{ item.share_name }}"
-      mount: "{{ item.cluster_volume }}"
+      path: "{{ item.cluster_volume }}"
       mode: "0777"
+      mount: "{{ config.be.variant == 'default' }}"
   loop: "{{ samba_shares }}"

@@ -34,7 +34,7 @@
     - name: Create the share configuration using backend
       include_role:
         name: 'sit.{{ config.be.name }}'
-        tasks_from: samba/new_share.yml
+        tasks_from: new_share.yml
       vars:
         name: "{{ item.share_name }}"
         path: "{{ item.cluster_volume }}"

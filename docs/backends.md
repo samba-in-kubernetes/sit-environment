@@ -78,6 +78,11 @@ Several files are required to complete the installation on all machines:
   - `tasks/main.yml` should define the tasks required to install the backend in
     a node and create the volume.
 
+  - `tasks/new_volume.yml` should create a new volume and optionally mount it.
+
+  - `tasks/new_share.yml` should create a new samba configuration file for a
+    samba share.
+
 ### Configure CTDB
 
 A new file `vagrant/ansible/roles/ctdb.setup/tasks/<backend>/main.xml` must be
@@ -86,11 +91,7 @@ created to help configure the CTDB shared storage to store the locking file.
 ### Configure Samba
 
 Finally, the required configuration for samba must be created. It requires
-creating two new files:
+creating a new file:
 
   - `vagrant/ansible/roles/samba.setup/tasks/<backend>/main.xml` must be created
     to help configure and mount the created volume for using it with samba.
-
-  - `vagrant/ansible/roles/samba.setup/templates/<backend>/smb_share.conf.j2`
-    should be a share configuration template that defines how to export the
-    volume through samba.

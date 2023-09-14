@@ -10,6 +10,7 @@
       - make
       - python3-pytest
       - podman
+      - tox
     state: latest
 
 - name: Install Python 3 modules

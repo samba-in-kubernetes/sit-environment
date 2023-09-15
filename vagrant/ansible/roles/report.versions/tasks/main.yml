@@ -12,3 +12,23 @@
     - kernel
     - samba
     - glusterfs
+
+- stat:
+    path: /root/cephadm
+  register: cephadm
+
+- name: Extract Ceph version
+  block:
+    - name: Run `cephadm version`
+      shell: /root/cephadm version | awk -F"[()]" '{print $2}'
+      register: cephadm_sha1
+
+    - name: Run `ceph version` using cephadm
+      shell: /root/cephadm shell -- ceph version | tail -1 | awk -F"[()]" '{print $2}'
+      register: ceph_sha1
+
+    - debug:
+        msg:
+          - ceph {{ config.data.branch }}-{{ ceph_sha1.stdout }}
+          - cephadm {{ config.data.branch }}-{{ cephadm_sha1.stdout }}
+  when: cephadm.stat.exists

@@ -17,10 +17,22 @@
 - name: Process backend specific tasks
   include_tasks: "{{ config.be.name }}/main.yml"
 
+- name: Disable firewall
+  service:
+    name: firewalld
+    enabled: false
+    state: stopped
+
 - name: Add ctdb package
   yum:
     name: ctdb
     state: present
+
+- name: Enable firewall
+  service:
+    name: firewalld
+    enabled: true
+    state: started
 
 - name: Add ctdb rules to firewalld
   firewalld:

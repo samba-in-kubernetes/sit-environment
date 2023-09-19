@@ -10,7 +10,5 @@
   when: ansible_facts.packages[item] is defined
   loop:
     - kernel
-    - samba-client
     - samba
-    - ctdb
     - glusterfs

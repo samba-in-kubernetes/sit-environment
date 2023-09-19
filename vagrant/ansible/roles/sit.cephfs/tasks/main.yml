@@ -25,14 +25,75 @@
     - name: Set mon count to 3
       command: /root/cephadm shell -- ceph orch apply mon 3
 
+    - name: Wait for Ceph infrastructure to come up
+      command: /root/cephadm shell -- ceph orch ls --format=json
+      register: ceph_status
+      vars:
+        mgr_filter: >-
+          [*] | [?
+            service_type == 'mgr' &&
+            status.size > `0` &&
+            status.running == status.size
+          ]
+        mon_filter: "[*] | [?service_type == 'mon' && status.running == `3`]"
+        crash_filter: >-
+          [*] | [?
+            service_type == 'crash' &&
+            status.running == `{{ config.groups['cluster'] | length }}`
+          ]
+      until:
+        - ceph_status.stdout | from_json | json_query(mgr_filter) | length > 0
+        - ceph_status.stdout | from_json | json_query(mon_filter) | length > 0
+        - ceph_status.stdout | from_json | json_query(crash_filter) | length > 0
+      retries: 100
+      delay: 1
+
     - name: Add all available devices
       command: /root/cephadm shell -- ceph orch apply osd --all-available-devices
+
+    - name: Wait for Ceph OSDs to come up
+      command: /root/cephadm shell -- ceph orch ls osd --format=json
+      register: ceph_status
+      vars:
+        osd_filter: >-
+          [*] | [?
+            status.running == `{{
+              config.nodes.values() |
+              selectattr('groups', 'contains', 'cluster') |
+              map(attribute='disks') |
+              map('length') |
+              sum
+            }}`
+          ]
+      until: ceph_status.stdout | from_json | json_query(osd_filter) | length > 0
+      retries: 100
+      delay: 3
 
     - name: Add an MDS
       command: /root/cephadm shell -- ceph orch apply mds cephfs --placement=1
 
+    - name: Wait for Ceph MDS to come up
+      command: /root/cephadm shell -- ceph orch ls mds mds.cephfs --format=json
+      register: ceph_status
+      until: >-
+        ceph_status.stdout | from_json | json_query(
+          "[*] | [?status.size > `0` && status.running == status.size]"
+        ) | length > 0
+      retries: 100
+      delay: 1
+
     - name: Create a CephFS instance
       command: /root/cephadm shell -- ceph fs volume create sit_fs
+
+    - name: Wait for Ceph MDS to come up
+      command: /root/cephadm shell -- ceph orch ls mds mds.sit_fs --format=json
+      register: ceph_status
+      until: >-
+        ceph_status.stdout | from_json | json_query(
+          "[*] | [?status.size > `0` && status.running == status.size]"
+        ) | length > 0
+      retries: 100
+      delay: 1
 
     - name: Create a user for CephFS
       command: /root/cephadm shell -- ceph fs authorize sit_fs client.sit / rw
@@ -49,22 +110,6 @@
       {{ ceph_conf.stdout }}
 
       {{ ceph_auth.stdout }}
-
-# This is not strictly necessary for the SIT Environment but it's useful to
-# detect when all Ceph services are up and running, which takes a significant
-# amount of time. Otherwise some later tasks may fail.
-- name: Mount CephFS
-  mount:
-    boot: false
-    fstype: ceph
-    opts: "conf=/etc/ceph/sit.ceph.conf,name=sit"
-    src: "{{ config.nodes[config.groups['cluster'][0]].networks.private }}:6789:/"
-    path: "/mnt/cephfs"
-    state: mounted
-  register: ceph_mount
-  until: ceph_mount is success
-  retries: 100
-  delay: 5
 
 - name: Create Ceph subvolumes for samba shares
   include_tasks:

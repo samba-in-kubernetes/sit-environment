@@ -5,4 +5,5 @@
       - ansible-core
       - ansible-collection-ansible-posix
       - ansible-collection-community-general
+      - python3.11-jmespath
     state: latest

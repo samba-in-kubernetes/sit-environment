@@ -6,6 +6,13 @@
         --mode {{ volume.mode | default('0755') }}
   run_once: true
 
+- name: Wait until subvolume is ready
+  command: /root/cephadm shell -- ceph fs subvolume info sit_fs {{ volume.name }}
+  register: ceph_status
+  until: ceph_status.stdout | from_json | json_query("state") == "complete"
+  retries: 100
+  delay: 1
+
 - name: Get subvolume path
   command: >
     /root/cephadm shell --
@@ -22,7 +29,3 @@
     boot: false
     state: mounted
   when: volume.mount is defined
-  register: ceph_mount
-  until: ceph_mount is success
-  retries: 100
-  delay: 5

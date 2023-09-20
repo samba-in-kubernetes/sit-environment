@@ -69,23 +69,10 @@
       retries: 100
       delay: 3
 
-    - name: Add an MDS
-      command: /root/cephadm shell -- ceph orch apply mds cephfs --placement=1
+    - name: Create a CephFS volume
+      command: /root/cephadm shell -- ceph fs volume create sit_fs --placement=1
 
-    - name: Wait for Ceph MDS to come up
-      command: /root/cephadm shell -- ceph orch ls mds mds.cephfs --format=json
-      register: ceph_status
-      until: >-
-        ceph_status.stdout | from_json | json_query(
-          "[*] | [?status.size > `0` && status.running == status.size]"
-        ) | length > 0
-      retries: 100
-      delay: 1
-
-    - name: Create a CephFS instance
-      command: /root/cephadm shell -- ceph fs volume create sit_fs
-
-    - name: Wait for Ceph MDS to come up
+    - name: Wait for volume's MDS to come up
       command: /root/cephadm shell -- ceph orch ls mds mds.sit_fs --format=json
       register: ceph_status
       until: >-

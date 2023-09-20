@@ -1,0 +1,17 @@
+---
+- name: Process backend specific tasks
+  include_role:
+    name: 'sit.{{ config.be.name }}'
+    tasks_from: logs/main.yml
+
+- name: Extract journal since last boot
+  shell: journalctl -xb -n all > /var/log/journal
+
+- name: Extract dmesg contents
+  shell: dmesg -T > /var/log/dmesg.kernel
+
+- name: Copy /var/log directory
+  synchronize:
+    src: /var/log
+    dest: "{{ config.statedir }}/{{ inventory_hostname }}"
+    mode: pull

@@ -3,6 +3,9 @@
 test:
 	@$(MAKE) -C vagrant setup.site
 
+statedump:
+	@$(MAKE) -C vagrant nodes.statedump
+
 clean:
 	@$(MAKE) -C vagrant clean
 

@@ -35,6 +35,9 @@ setup.clients:
 generate.report:
 	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible generate.report"
 
+nodes.statedump:
+	@ansible-playbook --inventory $(INVENTORY) ${ANSIBLE_EXTRA_VARS} nodes.statedump.yml
+
 client.test:
 	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible client.test"
 

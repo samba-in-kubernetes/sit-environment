@@ -1,0 +1,9 @@
+---
+- hosts: cluster:clients
+  become: yes
+  become_method: sudo
+  vars_files:
+    - ansible/config.yml
+  roles:
+    - logs.collect
+    - config.collect

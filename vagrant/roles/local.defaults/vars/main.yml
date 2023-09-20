@@ -25,6 +25,11 @@ vagrant:
     private: 192.168.122.0/24
     public: 192.168.123.0/24
 
+misc:
+  host:
+    statedir: "/tmp"
+    configdir: "/tmp/config"
+
 #  # Storage pool to use for the virtual disks (optional)
 #  pool: data
 

@@ -1,0 +1,8 @@
+---
+- name: Copy necessary configuration directories
+  shell: cp -r {{ item }} {{ config.configdir }}
+  with_items:
+    - /var/lib/glusterd
+    - /etc/samba
+    - /etc/ctdb
+  when: inventory_hostname in groups['cluster']

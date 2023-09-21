@@ -1,0 +1,20 @@
+---
+- name: Create config directory structure on nodes
+  file:
+    path: "{{ config.configdir }}"
+    state: directory
+
+- name: Process backend specific tasks
+  include_role:
+    name: 'sit.{{ config.be.name }}'
+    tasks_from: config/main.yml
+
+- name: Copy test configuration data
+  shell: cp /root/test-info.yml {{ config.configdir }}
+  when: inventory_hostname in groups['clients']
+
+- name: Copy configuration directory
+  synchronize:
+    src: "{{ config.configdir }}"
+    dest: "{{ config.statedir }}/{{ inventory_hostname }}"
+    mode: pull

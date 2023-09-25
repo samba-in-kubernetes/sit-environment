@@ -49,3 +49,9 @@
     path: ./ansible/ssh-config-setup
     regexp: "IdentityFile .*"
     replace: "IdentityFile /home/vagrant/ansible/vagrant_insecure_private_ssh_key"
+
+- name: Create state directory structure on host
+  file:
+    path: "{{ config.statedir }}/{{ item }}"
+    state: directory
+  loop: "{{ config.groups['cluster'] + config.groups['clients'] }}"

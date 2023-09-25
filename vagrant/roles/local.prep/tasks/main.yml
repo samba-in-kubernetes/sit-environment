@@ -55,3 +55,8 @@
     path: "{{ config.statedir }}/{{ item }}"
     state: directory
   loop: "{{ config.groups['cluster'] + config.groups['clients'] }}"
+
+- name: Copy common playbook configuration
+  copy:
+    src: ansible/config.yml
+    dest: "{{ config.statedir }}"

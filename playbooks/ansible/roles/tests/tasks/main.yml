@@ -1,0 +1,8 @@
+---
+- name: Run tests
+  include_tasks: run-test.yml
+  vars:
+    role: "test.{{ test_name }}"
+  loop: "{{ config.tests }}"
+  loop_control:
+    loop_var: test_name

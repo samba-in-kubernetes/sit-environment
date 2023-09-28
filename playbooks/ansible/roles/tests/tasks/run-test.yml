@@ -1,0 +1,48 @@
+---
+- name: Log test preparation time
+  include_tasks: log.yml
+  vars:
+    line: "PREPARING {{ role }}"
+
+- name: Prepare test {{ role }}
+  include_role:
+    name: "{{ role }}"
+    tasks_from: prepare/main.yml
+
+- name: Process test {{ role }}
+  block:
+    - name: Log test start time
+      include_tasks: log.yml
+      vars:
+        line: "RUNNING {{ role }}"
+
+    - name: Run test {{ role }}
+      include_role:
+        name: "{{ role }}"
+
+  rescue:
+    - name: Log test failure time
+      include_tasks: log.yml
+      vars:
+        line: "RECOVERING {{ role }}"
+
+    - name: Recover from failure of {{ role }}
+      include_role:
+        name: "{{ role }}"
+        tasks_from: recover/main.yml
+
+  always:
+    - name: Log test finalization time
+      include_tasks: log.yml
+      vars:
+        line: "FINISHED {{ role }}"
+
+    - name: Cleanup for {{ role }}
+      include_role:
+        name: "{{ role }}"
+        tasks_from: cleanup/main.yml
+
+- name: Log test completion time
+  include_tasks: log.yml
+  vars:
+    line: "COMPLETED {{ role }}"

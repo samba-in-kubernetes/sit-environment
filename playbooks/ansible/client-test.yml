@@ -5,5 +5,4 @@
   vars_files:
     - config.yml
   roles:
-    - client.test.prep
-    - client.test
+    - tests

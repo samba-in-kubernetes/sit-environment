@@ -23,6 +23,8 @@ config:
 
   data: {{ environments[be].data | default({}) }}
 
+  tests: {{ tests }}
+
   nodes:
   {%- for name in environments[be].nodes +%}
     {%- set data = environments[be].nodes[name] +%}

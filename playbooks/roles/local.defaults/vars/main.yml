@@ -25,13 +25,17 @@ vagrant:
     private: 192.168.122.0/24
     public: 192.168.123.0/24
 
+#  # Storage pool to use for the virtual disks (optional)
+#  pool: data
+
 misc:
   host:
     statedir: "/tmp"
     configdir: "/tmp/config"
 
-#  # Storage pool to use for the virtual disks (optional)
-#  pool: data
+# List of tests to run
+tests:
+  - sit-test-cases
 
 # The `environments` object contains one entry for each defined backend,
 # which specifies the types of VMs to create, the amount of each one, and

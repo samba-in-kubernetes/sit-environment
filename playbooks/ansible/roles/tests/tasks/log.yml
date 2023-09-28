@@ -1,0 +1,15 @@
+---
+- name: Add a log entry to site-tests.log
+  delegate_to: localhost
+  block:
+    - name: Get current time
+      command: date "+%Y-%m-%d %H-%M-%S.%3N"
+      register: now
+
+    - name: Write the log entry to site-tests.log
+      lineinfile:
+        dest: "{{ config.statedir }}/site-tests.log"
+        line: "{{ now.stdout }} {{ line }}"
+        insertafter: EOF
+        create: true
+        state: present

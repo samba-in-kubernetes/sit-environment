@@ -43,9 +43,9 @@ $ EXTRA_VARS="backend=glusterfs" make
 ```
 
 You can also choose the backend filesystem to use
-If you encounter failures bringing up the vagrant vms, you can check for more details by switching into the vagrant directory and manually bring up the machine.
+If you encounter failures bringing up the vagrant vms, you can check for more details by switching into the playbooks directory and manually bring up the machine.
 ```
-$ cd sit-environment/vagrant
+$ cd sit-environment/playbooks
 $ vagrant up
 ```
 Clean up with a 'make clean' command when done.

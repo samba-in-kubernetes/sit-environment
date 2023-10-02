@@ -13,18 +13,18 @@
 
 - name: create ansible directory (for ssh key)
   file:
-    path: /home/vagrant/ansible
+    path: ansible
     state: directory
 
 - name: copy ssh key
   copy:
-    src: /home/vagrant/ansible/vagrant_insecure_private_ssh_key
-    dest: /home/vagrant/ansible/vagrant_insecure_private_ssh_key
+    src: vagrant_insecure_private_ssh_key
+    dest: ansible/vagrant_insecure_private_ssh_key
 
 - name: copy ssh config
   copy:
     src: ssh-config-setup
-    dest: /home/vagrant/.ssh/config
+    dest: .ssh/config
 
 - name: Create /etc/hosts
   template:

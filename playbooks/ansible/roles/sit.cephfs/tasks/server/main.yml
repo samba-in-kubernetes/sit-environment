@@ -17,7 +17,7 @@
   fetch:
     flat: true
     src: /root/.ssh/id_rsa.pub
-    dest: "/home/vagrant/ansible/ceph-node-0-ssh-key.pub"
+    dest: ceph-node-0-ssh-key.pub
 
 - name: Populating non-bootstrap nodes authorized keys
   authorized_key:
@@ -25,7 +25,7 @@
     state: present
     key: "{{ lookup('file', pubkey) }}"
   vars:
-    pubkey: "/home/vagrant/ansible/ceph-node-0-ssh-key.pub"
+    pubkey: ceph-node-0-ssh-key.pub
 
 # Pull ceph container image for all nodes
 - name: Pull containers

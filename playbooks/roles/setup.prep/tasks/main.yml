@@ -14,18 +14,18 @@
 - name: copy ansible playbooks to setup machine
   synchronize:
     src: ansible/
-    dest: /home/vagrant/ansible
+    dest: ansible
 
 - name: ensure permissions on ssh key file
   file:
-    path: /home/vagrant/ansible/vagrant_insecure_private_ssh_key
+    path: ansible/vagrant_insecure_private_ssh_key
     mode: u=rw,g=,o=
     owner: vagrant
     group: vagrant
 
 - name: change ownership of ansible directory and files
   file:
-    path: /home/vagrant/ansible
+    path: ansible
     owner: vagrant
     group: vagrant
     recurse: yes
@@ -33,7 +33,7 @@
 - name: copy ssh config in place
   copy:
     src: ansible/ssh-config-setup
-    dest: /home/vagrant/.ssh/config
+    dest: .ssh/config
     mode: 0600
     owner: vagrant
     group: vagrant

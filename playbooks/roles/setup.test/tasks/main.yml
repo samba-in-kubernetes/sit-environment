@@ -1,5 +1,6 @@
 ---
 - name: test playbook node connectivity on the setup machine
-  command: >-
-    ansible-playbook -i /home/vagrant/ansible/vagrant_ansible_inventory
-    /home/vagrant/ansible/test.local.yml
+  command:
+    chdir: ansible
+    cmd: >-
+      ansible-playbook -i vagrant_ansible_inventory test.local.yml

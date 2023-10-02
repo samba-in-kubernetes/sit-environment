@@ -25,21 +25,21 @@ setup.test.only:
 	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} setup.test.yml
 
 setup.cluster.only:
-	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible setup.cluster"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible setup.cluster"
 
 setup.cluster: setup.prep setup.test.only setup.cluster.only
 
 setup.clients:
-	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible setup.clients"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible setup.clients"
 
 generate.report:
-	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible generate.report"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible generate.report"
 
 nodes.statedump:
 	@ansible-playbook --inventory $(INVENTORY) ${ANSIBLE_EXTRA_VARS} nodes.statedump.yml
 
 client.test:
-	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C /home/vagrant/ansible client.test"
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible client.test"
 
 setup.site: setup.cluster setup.clients generate.report client.test
 

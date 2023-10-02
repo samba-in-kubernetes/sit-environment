@@ -1,9 +1,9 @@
 *~
-.vagrant
-vagrant/ansible/vagrant_ansible_inventory
-vagrant/ansible/ssh-config-setup
-vagrant/vagrant_ansible_inventory
-vagrant/ssh-config-host
-vagrant/Vagrantfile
-vagrant/ansible/config.yml
+playbooks/.vagrant
+playbooks/ansible/vagrant_ansible_inventory
+playbooks/ansible/ssh-config-setup
+playbooks/vagrant_ansible_inventory
+playbooks/ssh-config-host
+playbooks/Vagrantfile
+playbooks/ansible/config.yml
 devel/authorized_keys

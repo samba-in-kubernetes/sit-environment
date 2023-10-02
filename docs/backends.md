@@ -49,7 +49,7 @@ separate files in the same directory as the main file.
 
 The name of the file should be `<os>.yml`, where `<os>` should match one of the
 names defined in the `os_includes` object in
-`vagrant/roles/local.defaults/vars/main.yml`.
+`playbooks/roles/local.defaults/vars/main.yml`.
 
 To include that file, you need to add the following snippet in the main yaml
 file:
@@ -67,7 +67,7 @@ file:
 
 #### Define the backend
 
-Update `vagrant/roles/local.defaults/vars/main.yml` to add the following
+Update `playbooks/roles/local.defaults/vars/main.yml` to add the following
 information:
 
   - Create an environment for the new backend in `environments` object.
@@ -80,7 +80,7 @@ information:
 
 #### Install dependencies for installation
 
-Create a new role `sit.<backend>` in `vagrant/roles` that will be responsible
+Create a new role `sit.<backend>` in `playbooks/roles` that will be responsible
 to install any required packages needed to install the backend components in
 the required machines. This commonly includes any extra ansible collections
 that will help during the installation.
@@ -92,7 +92,7 @@ directory.
 
 The main set of parameters that define the behaviour of the backend as well as
 the configuration of CTDB and Samba for this environment need to be created in
-`vagrant/ansible/cluster-<backend>.yml`.
+`playbooks/ansible/cluster-<backend>.yml`.
 
 You can use the files from other backends as a reference when creating this
 file.
@@ -101,7 +101,7 @@ file.
 
 This role contains all the steps required to install, configure, deploy and
 make the backend accessible on a machine. Its name must be `sit.<backend>` and
-it should be created inside `vagrant/ansible/roles`.
+it should be created inside `playbooks/ansible/roles`.
 
 Several files are required to complete the installation on all machines:
 
@@ -124,7 +124,7 @@ Several files are required to complete the installation on all machines:
 
 #### Configure CTDB
 
-A new file `vagrant/ansible/roles/ctdb.setup/tasks/<backend>/main.xml` must be
+A new file `playbooks/ansible/roles/ctdb.setup/tasks/<backend>/main.xml` must be
 created to help configure the CTDB shared storage to store the locking file.
 
 #### Configure Samba
@@ -132,5 +132,6 @@ created to help configure the CTDB shared storage to store the locking file.
 Finally, the required configuration for samba must be created. It requires
 creating a new file:
 
-  - `vagrant/ansible/roles/samba.setup/tasks/<backend>/main.xml` must be created
-    to help configure and mount the created volume for using it with samba.
+  - `playbooks/ansible/roles/samba.setup/tasks/<backend>/main.xml` must be
+    created to help configure and mount the created volume for using it with
+    samba.

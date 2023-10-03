@@ -103,7 +103,7 @@
     file: new_volume.yml
   vars:
     volume:
-      name: "{{ item.share_name }}"
+      name: "{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}"
       path: "{{ item.cluster_volume }}"
       mode: "0777"
       mount: "{{ config.be.variant == 'default' }}"

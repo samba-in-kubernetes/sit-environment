@@ -24,4 +24,4 @@ samba_users:
   - { username: 'test2', password: 'x', uid: '2002' }
 
 samba_shares:
-  - { cluster_volume: "/samba", share_name: "xfs-share", device: "/dev/vdb" }
+  - { cluster_volume: "/samba", share_name: "share", device: "/dev/vdb" }

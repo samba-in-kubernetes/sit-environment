@@ -26,4 +26,4 @@ samba_users:
   - { username: 'test2', password: 'x', uid: '2002' }
 
 samba_shares:
-  - { cluster_volume: "/mnt/samba", share_name: "ceph-share" }
+  - { cluster_volume: "/mnt/samba", share_name: "share" }

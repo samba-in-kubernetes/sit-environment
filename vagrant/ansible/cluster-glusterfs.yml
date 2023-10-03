@@ -103,5 +103,5 @@ samba_users:
   - { username: 'test2', password: 'x', uid: '2002' }
 
 samba_shares:
-  - { cluster_volume: "vol-replicate", share_name: "gluster-vol-replicate" }
-  - { cluster_volume: "vol-disperse", share_name: "gluster-vol-disperse" }
+  - { cluster_volume: "vol-replicate", share_name: "replicate" }
+  - { cluster_volume: "vol-disperse", share_name: "disperse" }

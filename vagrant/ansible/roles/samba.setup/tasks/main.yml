@@ -36,17 +36,18 @@
         name: 'sit.{{ config.be.name }}'
         tasks_from: new_share.yml
       vars:
-        name: "{{ item.share_name }}"
         path: "{{ item.cluster_volume }}"
-        file: "/etc/samba/smb.shares/{{ item.share_name }}.conf"
+        file: "/etc/samba/smb.shares/{{ name }}.conf"
       with_items: "{{ samba_shares }}"
 
     - name: Include share configuration into smb.conf
       lineinfile:
         path: "/etc/samba/smb.conf"
-        line: "include = /etc/samba/smb.shares/{{ item.share_name }}.conf"
+        line: "include = /etc/samba/smb.shares/{{ name }}.conf"
         insertafter: EOF
       with_items: "{{ samba_shares }}"
+  vars:
+    name: '{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}'
 
 - name: Restart samba
   service:

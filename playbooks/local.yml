@@ -2,7 +2,8 @@
 - hosts: localhost
   connection: local
   become: no
+  vars:
+    provision_action: create
   roles:
     - local.defaults
-    - local.vagrant
-    - local.prep
+    - local.provision

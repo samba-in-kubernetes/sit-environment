@@ -41,6 +41,10 @@ provisioners:
 #
 # Each environment has the following properties:
 #
+#   provisioner: (optional, default: 'vagrant')
+#     Default provisioner used to provision the hosts of the environment.
+#     This value can be overriden by specific VM type definitions.
+#
 #   os: (optional, default: `use_distro` if defined, 'centos9' otherwise)
 #     Default OS installed on all hosts of the environment. This value can
 #     be overriden by specific VM type definitions.
@@ -65,6 +69,10 @@ provisioners:
 #     the name of the VMs of each type.
 #
 # Each defined node type has the following properties:
+#
+#   provisioner: (optional, default: the value of `provisioner` in the
+#                 environment)
+#     Provisioner used to provision this VM type.
 #
 #   os: (optional, default: the value of `os` in the environment)
 #     OS installed on this VM type.

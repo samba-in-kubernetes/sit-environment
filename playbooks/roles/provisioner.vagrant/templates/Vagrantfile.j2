@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
     {%- set node = config.nodes[host] %}
     {%- set vm_idx = loop.index0 +%}
     config.vm.define "{{ host }}" do |node|
-        node.vm.box = "{{ config.os[data.os].vagrant.image }}"
+        node.vm.box = "{{ provisioners[node.provisioner].images[node.os] }}"
         node.vm.hostname = "{{ host }}"
     {%- for net in node.networks +%}
         node.vm.network :private_network, ip: "{{ node.networks[net] }}"
@@ -38,8 +38,8 @@ Vagrant.configure("2") do |config|
             vb.cpus = {{ node.cpus }}
         end
         node.vm.provider :libvirt do  |lv|
-    {%- if config.os[data.os].vagrant.pool is defined +%}
-            lv.storage_pool_name = "{{ config.os[data.os].vagrant.pool }}"
+    {%- if data.pool is defined +%}
+            lv.storage_pool_name = "{{ data.pool }}"
     {%- endif +%}
     {%- for size in node.disks +%}
             lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'

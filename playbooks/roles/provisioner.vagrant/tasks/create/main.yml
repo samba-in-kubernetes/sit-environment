@@ -1,4 +1,15 @@
 ---
+- name: Setup Vagrant file
+  template:
+    src: Vagrantfile.j2
+    dest: Vagrantfile
+
+- name: start vagrant vms
+  command: vagrant up --no-provision
+
+- name: provision vagrant vms
+  command: vagrant provision
+
 - name: copy vagrant generated inventory file - local machine
   copy:
     src: .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory

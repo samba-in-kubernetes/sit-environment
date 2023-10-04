@@ -11,10 +11,10 @@ config:
         - "{{ os_info[os_name].distro }}.yml"
         - "{{ os_info[os_name].family }}.yml"
       vagrant:
-      {%- if vagrant.pool is defined +%}
-        pool: "{{ vagrant.pool }}"
+      {%- if provisioners['vagrant'].pool is defined +%}
+        pool: "{{ provisioners['vagrant'].pool }}"
       {%- endif +%}
-        image: "{{ vagrant.images[os_name] }}"
+        image: "{{ provisioners['vagrant'].images[os_name] }}"
   {%- endfor +%}
 
   be:
@@ -26,7 +26,7 @@ config:
   tests: {{ tests }}
 
   provisioners:
-  {%- for prov in environments[be].nodes | dict2items | map(attribute='value') | map(attribute='provisioner', default='vagrant') | unique +%}
+  {%- for prov in environments[be].nodes | dict2items | map(attribute='value.provisioner', default='vagrant') | unique +%}
     {{ prov }}:
     {%- for item in provisioners[prov] | default({}) +%}
       {{ item }}: {{ provisioners[prov][item] }}
@@ -45,20 +45,22 @@ config:
   nodes:
   {%- for name in environments[be].nodes +%}
     {%- set data = environments[be].nodes[name] +%}
+    {%- set prov = data.provisioner | default(environments[be].provisioner | default('vagrant')) +%}
     {%- for idx in range(data.instances | default(1)) +%}
     {{ name }}{{ idx }}:
       groups: {{ data.groups }}
+      provisioner: {{ prov }}
       os: {{ data.os | default(environments[be].os | default(os)) }}
       cpus: {{ data.cpus | default(environments[be].cpus) }}
       memory: {{ data.memory | default(environments[be].memory) }}
       disks: {{ data.disks | default([]) }}
       networks:
       {%- for net in data.networks | default({}) +%}
-        {{ net }}: {{ vagrant.networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}
+        {{ net }}: {{ provisioners[prov].networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}
       {%- endfor +%}
       ctdb:
       {%- for net in data.ctdb | default({}) +%}
-        {{ net }}: {{ vagrant.networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
+        {{ net }}: {{ provisioners[prov].networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
       {%- endfor +%}
     {%- endfor +%}
   {%- endfor +%}

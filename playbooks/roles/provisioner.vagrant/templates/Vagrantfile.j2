@@ -4,9 +4,8 @@
 
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
-    config.vm.provider :libvirt do |v,override|
-        override.vm.synced_folder '.', '/vagrant', disabled: true
-
+    config.vm.synced_folder '.', '/vagrant', disabled: true
+    config.vm.provider :libvirt do |v|
         # We can not use qemu_use_session universally. See section "Upgrade/compatibility impact"
         # from the following Fedora doc:
         # https://fedoraproject.org/wiki/Changes/Vagrant_2.2_with_QEMU_Session
@@ -21,32 +20,32 @@ Vagrant.configure("2") do |config|
         # https://github.com/heketi/heketi/pull/1008
         v.cpu_mode = 'host-passthrough'
     end
-{% for node in config.nodes %}
-    {%- set data = config.nodes[node] %}
+{% for host in data.hosts %}
+    {%- set node = config.nodes[host] %}
     {%- set vm_idx = loop.index0 +%}
-    config.vm.define "{{ node }}" do |node|
+    config.vm.define "{{ host }}" do |node|
         node.vm.box = "{{ config.os[data.os].vagrant.image }}"
-        node.vm.hostname = "{{ node }}"
-    {%- for net in data.networks +%}
-        node.vm.network :private_network, ip: "{{ data.networks[net] }}"
+        node.vm.hostname = "{{ host }}"
+    {%- for net in node.networks +%}
+        node.vm.network :private_network, ip: "{{ node.networks[net] }}"
     {%- endfor +%}
         node.vm.provider :virtualbox do |vb|
-    {%- for size in data.disks +%}
+    {%- for size in node.disks +%}
             vb.customize [ "createhd", "--filename", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi", "--size", {{ size * 1024 }} ]
             vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", {{ loop.index0 + 3 }}, "--device", 0, "--type", "hdd", "--medium", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi" ]
     {%- endfor +%}
-            vb.memory = {{ data.memory }}
-            vb.cpus = {{ data.cpus }}
+            vb.memory = {{ node.memory }}
+            vb.cpus = {{ node.cpus }}
         end
         node.vm.provider :libvirt do  |lv|
     {%- if config.os[data.os].vagrant.pool is defined +%}
             lv.storage_pool_name = "{{ config.os[data.os].vagrant.pool }}"
     {%- endif +%}
-    {%- for size in data.disks +%}
+    {%- for size in node.disks +%}
             lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'
     {%- endfor +%}
-            lv.memory = {{ data.memory }}
-            lv.cpus = {{ data.cpus }}
+            lv.memory = {{ node.memory }}
+            lv.cpus = {{ node.cpus }}
         end
     {%- if loop.last +%}
 

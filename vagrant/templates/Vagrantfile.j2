@@ -5,7 +5,6 @@
 Vagrant.configure("2") do |config|
     config.ssh.insert_key = false
     config.vm.provider :libvirt do |v,override|
-      override.vm.box = "{{ config.os.vagrant.image }}"
         override.vm.synced_folder '.', '/vagrant', disabled: true
 
         # We can not use qemu_use_session universally. See section "Upgrade/compatibility impact"
@@ -26,6 +25,7 @@ Vagrant.configure("2") do |config|
     {%- set data = config.nodes[node] %}
     {%- set vm_idx = loop.index0 +%}
     config.vm.define "{{ node }}" do |node|
+        node.vm.box = "{{ config.os[data.os].vagrant.image }}"
         node.vm.hostname = "{{ node }}"
     {%- for net in data.networks +%}
         node.vm.network :private_network, ip: "{{ data.networks[net] }}"
@@ -39,8 +39,8 @@ Vagrant.configure("2") do |config|
             vb.cpus = {{ data.cpus }}
         end
         node.vm.provider :libvirt do  |lv|
-    {%- if config.os.vagrant.pool is defined +%}
-            lv.storage_pool_name = "{{ config.os.vagrant.pool }}"
+    {%- if config.os[data.os].vagrant.pool is defined +%}
+            lv.storage_pool_name = "{{ config.os[data.os].vagrant.pool }}"
     {%- endif +%}
     {%- for size in data.disks +%}
             lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'

@@ -1,6 +1,5 @@
 INVENTORY := ./vagrant_ansible_inventory
 VSSH := ssh -F ssh-config-host
-VAGRANT := vagrant
 
 ifdef EXTRA_VARS
 	ANSIBLE_EXTRA_VARS := -e '${EXTRA_VARS}'
@@ -46,13 +45,7 @@ setup.site: setup.cluster setup.clients generate.report client.test
 client1.test:
 	@$(VSSH) clients "sudo make -C /root/sit-test-cases test"
 
-clean_vagrant:
-	-$(VAGRANT) destroy -f
-	-rm -rf .vagrant
+clean:
+	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} cleanup.yml
 
-clean_generated_files:
-	-rm -f Vagrantfile ansible/config.yml ansible/vagrant_ansible_inventory ansible/ssh-config-setup vagrant_ansible_inventory ssh-config-host
-
-clean: clean_vagrant clean_generated_files
-
-.PHONY: local hosts.update.only setup.prep.only setup.prep setup.test.only setup.cluster.only setup.cluster setup.clients client.test setup.site client1.test clean_vagrant clean_generated_files clean
+.PHONY: local hosts.update.only setup.prep.only setup.prep setup.test.only setup.cluster.only setup.cluster setup.clients client.test setup.site client1.test clean

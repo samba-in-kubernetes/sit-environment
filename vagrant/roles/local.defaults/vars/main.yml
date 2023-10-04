@@ -34,6 +34,10 @@ vagrant:
 #
 # Each environment has the following properties:
 #
+#   os: (optional, default: `use_distro` if defined, 'centos8' otherwise)
+#     Default OS installed on all hosts of the environment. This value can
+#     be overriden by specific VM type definitions.
+#
 #   cpus: (required)
 #     Default number of CPUs to assign to each VM. This value can be
 #     overridden by specific VM type definitions.
@@ -54,6 +58,9 @@ vagrant:
 #     the name of the VMs of each type.
 #
 # Each defined node type has the following properties:
+#
+#   os: (optional, default: the value of `os` in the environment)
+#     OS installed on this VM type.
 #
 #   instances: (optional, default: 1)
 #     Defines how many VMs of this type will be created.

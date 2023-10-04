@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  vars_files:
+    - ansible/config.yml
+  vars:
+    provision_action: destroy
+  roles:
+    - local.provision
+
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  roles:
+    - local.clean

@@ -1,0 +1,15 @@
+---
+- name: Destroy vagrant machines
+  command: vagrant destroy -f
+
+- name: Remove vagrant settings
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - .vagrant
+    - Vagrantfile
+    - ansible/vagrant_ansible_inventory
+    - ansible/ssh-config-setup
+    - vagrant_ansible_inventory
+    - ssh-config-host

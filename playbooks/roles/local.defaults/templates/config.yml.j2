@@ -25,6 +25,23 @@ config:
 
   tests: {{ tests }}
 
+  provisioners:
+  {%- for prov in environments[be].nodes | dict2items | map(attribute='value') | map(attribute='provisioner', default='vagrant') | unique +%}
+    {{ prov }}:
+    {%- for item in provisioners[prov] | default({}) +%}
+      {{ item }}: {{ provisioners[prov][item] }}
+    {%- endfor +%}
+      hosts:
+      {%- for name in environments[be].nodes +%}
+        {%- set data = environments[be].nodes[name] +%}
+        {%- if data.provisioner | default(environments[be].provisioner | default('vagrant')) == prov +%}
+        {%- for idx in range(data.instances | default(1)) +%}
+        - {{ name }}{{ idx }}
+        {%- endfor +%}
+        {%- endif +%}
+      {%- endfor +%}
+  {%- endfor +%}
+
   nodes:
   {%- for name in environments[be].nodes +%}
     {%- set data = environments[be].nodes[name] +%}

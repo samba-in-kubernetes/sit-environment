@@ -37,6 +37,19 @@ misc:
 tests:
   - sit-test-cases
 
+provisioners:
+  vagrant:
+    images:
+      centos8: generic/centos8s
+      centos9: generic/centos9s
+
+    networks:
+      private: 192.168.122.0/24
+      public: 192.168.123.0/24
+
+#    # Storage pool to use for the virtual disks (optional)
+#    pool: data
+
 # The `environments` object contains one entry for each defined backend,
 # which specifies the types of VMs to create, the amount of each one, and
 # the resources they need.

@@ -1,19 +1,21 @@
 ---
 config:
   os:
-    name: "{{ os }}"
-    family: "{{ os_info[os].family }}"
-    distro: "{{ os_info[os].distro }}"
-    version: "{{ os_info[os].version }}"
-    includes:
-      - "{{ os_info[os].distro }}{{ os_info[os].version}}.yml"
-      - "{{ os_info[os].distro }}.yml"
-      - "{{ os_info[os].family }}.yml"
-    vagrant:
-    {%- if vagrant.pool is defined +%}
-      pool: "{{ vagrant.pool }}"
-    {%- endif +%}
-      image: "{{ vagrant.images[os] }}"
+  {%- for os_name in os_info +%}
+    {{ os_name }}:
+      family: "{{ os_info[os_name].family }}"
+      distro: "{{ os_info[os_name].distro }}"
+      version: "{{ os_info[os_name].version }}"
+      includes:
+        - "{{ os_info[os_name].distro }}{{ os_info[os_name].version}}.yml"
+        - "{{ os_info[os_name].distro }}.yml"
+        - "{{ os_info[os_name].family }}.yml"
+      vagrant:
+      {%- if vagrant.pool is defined +%}
+        pool: "{{ vagrant.pool }}"
+      {%- endif +%}
+        image: "{{ vagrant.images[os_name] }}"
+  {%- endfor +%}
 
   be:
     name: "{{ be }}"
@@ -27,6 +29,7 @@ config:
     {%- for idx in range(data.instances | default(1)) +%}
     {{ name }}{{ idx }}:
       groups: {{ data.groups }}
+      os: {{ data.os | default(environments[be].os | default(os)) }}
       cpus: {{ data.cpus | default(environments[be].cpus) }}
       memory: {{ data.memory | default(environments[be].memory) }}
       disks: {{ data.disks | default([]) }}

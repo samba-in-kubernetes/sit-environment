@@ -10,7 +10,7 @@
             ref={{ config.data.branch }}&\
             flavor=default&\
             status=ready&\
-            distros=centos/{{ config.os.version }}/x86_64&\
+            distros=centos/{{ config.os[config.nodes[inventory_hostname].os].version }}/x86_64&\
             sha1=latest"
     return_content: true
   register: ceph_shaman

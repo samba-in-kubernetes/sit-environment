@@ -10,11 +10,6 @@ config:
         - "{{ os_info[os_name].distro }}{{ os_info[os_name].version}}.yml"
         - "{{ os_info[os_name].distro }}.yml"
         - "{{ os_info[os_name].family }}.yml"
-      vagrant:
-      {%- if provisioners['vagrant'].pool is defined +%}
-        pool: "{{ provisioners['vagrant'].pool }}"
-      {%- endif +%}
-        image: "{{ provisioners['vagrant'].images[os_name] }}"
   {%- endfor +%}
 
   be:

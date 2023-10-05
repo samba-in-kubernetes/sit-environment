@@ -34,7 +34,7 @@ vagrant:
 #
 # Each environment has the following properties:
 #
-#   os: (optional, default: `use_distro` if defined, 'centos8' otherwise)
+#   os: (optional, default: `use_distro` if defined, 'centos9' otherwise)
 #     Default OS installed on all hosts of the environment. This value can
 #     be overriden by specific VM type definitions.
 #

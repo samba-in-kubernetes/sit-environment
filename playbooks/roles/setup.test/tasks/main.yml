@@ -3,4 +3,4 @@
   command:
     chdir: ansible
     cmd: >-
-      ansible-playbook -i vagrant_ansible_inventory test.local.yml
+      ansible-playbook -i site_inventory test.local.yml

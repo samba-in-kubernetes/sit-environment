@@ -9,7 +9,7 @@
   with_items:
     - .vagrant
     - Vagrantfile
-    - ansible/vagrant_ansible_inventory
+    - ansible/site_inventory
     - ansible/ssh-config-setup
-    - vagrant_ansible_inventory
+    - site_inventory
     - ssh-config-host

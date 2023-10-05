@@ -1,4 +1,4 @@
-INVENTORY := ./vagrant_ansible_inventory
+INVENTORY := ./site_inventory
 VSSH := ssh -F ssh-config-host
 
 ifdef EXTRA_VARS

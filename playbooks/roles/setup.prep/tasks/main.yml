@@ -11,29 +11,21 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: setup/main.yml
 
-- name: copy ansible playbooks to setup machine
-  synchronize:
-    src: ansible/
-    dest: ansible
+- name: Prepare configuration files
+  become: false
+  block:
+    - name: copy ansible playbooks to setup machine
+      synchronize:
+        src: ansible/
+        dest: ansible
 
-- name: ensure permissions on ssh key file
-  file:
-    path: ansible/insecure_private_ssh_key
-    mode: u=rw,g=,o=
-    owner: vagrant
-    group: vagrant
+    - name: ensure permissions on ssh key file
+      file:
+        path: ansible/insecure_private_ssh_key
+        mode: u=rw,g=,o=
 
-- name: change ownership of ansible directory and files
-  file:
-    path: ansible
-    owner: vagrant
-    group: vagrant
-    recurse: yes
-
-- name: copy ssh config in place
-  copy:
-    src: ansible/ssh-config-setup
-    dest: .ssh/config
-    mode: 0600
-    owner: vagrant
-    group: vagrant
+    - name: copy ssh config in place
+      copy:
+        src: ansible/ssh-config-setup
+        dest: .ssh/config
+        mode: 0600

@@ -31,7 +31,7 @@
   replace:
     path: ./ansible/site_inventory
     regexp: "ansible_ssh_private_key_file='.*/\\.vagrant\\.d/insecure_private_key'"
-    replace: "ansible_ssh_private_key_file='vagrant_insecure_private_ssh_key'"
+    replace: "ansible_ssh_private_key_file='insecure_private_ssh_key'"
 
 - name: dump ssh config
   command: vagrant ssh-config
@@ -59,7 +59,7 @@
   replace:
     path: ./ansible/ssh-config-setup
     regexp: "IdentityFile .*"
-    replace: "IdentityFile ansible/vagrant_insecure_private_ssh_key"
+    replace: "IdentityFile ansible/insecure_private_ssh_key"
 
 - name: Create state directory structure on host
   file:

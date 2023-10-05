@@ -18,7 +18,7 @@
 
 - name: ensure permissions on ssh key file
   file:
-    path: ansible/vagrant_insecure_private_ssh_key
+    path: ansible/insecure_private_ssh_key
     mode: u=rw,g=,o=
     owner: vagrant
     group: vagrant

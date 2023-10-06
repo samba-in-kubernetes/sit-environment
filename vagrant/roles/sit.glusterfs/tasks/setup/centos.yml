@@ -19,7 +19,7 @@
   block:
     - name: Install ansible collections
       become: no
-      shell: ansible-galaxy collection install {{ item }}
+      shell: ansible-galaxy collection install --no-cache {{ item }}
       loop:
         - ansible.posix
         - community.general

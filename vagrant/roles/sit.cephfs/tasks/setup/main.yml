@@ -5,5 +5,11 @@
       - ansible-core
       - ansible-collection-ansible-posix
       - ansible-collection-community-general
-      - python3.11-jmespath
     state: latest
+
+- name: Process OS specific tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
+  loop_control:
+    loop_var: include_file

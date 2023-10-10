@@ -100,6 +100,7 @@ environments:
         networks:
           private: 200
         groups: [admin]
+        os: centos8
 
       client:
         networks:
@@ -115,6 +116,7 @@ environments:
         ctdb:
           public: 10
         groups: [cluster]
+        os: centos8
 
   xfs:
     cpus: 2

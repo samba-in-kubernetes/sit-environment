@@ -1,0 +1,9 @@
+---
+- name: Process common OS tasks
+  include_tasks: centos.yml
+
+- name: Install Python jmespath module
+  yum:
+    name:
+      - python3.11-jmespath
+    state: latest

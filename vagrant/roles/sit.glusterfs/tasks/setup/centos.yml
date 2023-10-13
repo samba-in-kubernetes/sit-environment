@@ -5,9 +5,7 @@
 - name: Install gluster-ansible
   yum:
     name:
-      # Restricting to Ansible v2.12.x
-      # See https://github.com/gluster/gluster-ansible-infra/issues/135
-      - ansible-core-2.12*
+      - ansible-core
       - gluster-ansible-cluster
       - gluster-ansible-features
       - gluster-ansible-infra
@@ -15,19 +13,11 @@
       - gluster-ansible-repositories
     state: latest
 
-- name: Install required ansible collections and dependencies
-  block:
-    - name: Install ansible collections
-      become: no
-      shell: ansible-galaxy collection install --no-cache {{ item }}
-      loop:
-        - ansible.posix
-        - community.general
-        - gluster.gluster
-        - ovirt.ovirt
-
-    - name: Install ansible collection dependencies
-      pip:
-        name: jmespath
-        executable: pip3.8
-        state: latest
+- name: Install required ansible collections
+  become: no
+  shell: ansible-galaxy collection install {{ item }}
+  loop:
+    - ansible.posix
+    - community.general
+    - gluster.gluster
+    - ovirt.ovirt

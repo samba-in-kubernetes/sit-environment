@@ -31,6 +31,10 @@
         name: "{{ role }}"
         tasks_from: recover/main.yml
 
+    - name: Mark the test as failed
+      set_fact:
+        tests_failed: true
+
   always:
     - name: Log test finalization time
       include_tasks: log.yml

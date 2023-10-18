@@ -1,4 +1,8 @@
 ---
+- name: Initialize test result
+  set_fact:
+    tests_failed: false
+
 - name: Run tests
   include_tasks: run-test.yml
   vars:
@@ -6,3 +10,8 @@
   loop: "{{ config.tests }}"
   loop_control:
     loop_var: test_name
+
+- name: Check that tests succeeded
+  when: tests_failed
+  fail:
+    msg: "Some tests have failed"

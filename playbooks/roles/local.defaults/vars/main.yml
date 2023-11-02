@@ -107,17 +107,21 @@ provisioners:
 #
 environments:
   glusterfs:
-    cpus: 2
-    memory: 1024
+    cpus: 8
+    memory: 8192
 
     nodes:
       setup:
+        cpus: 2
+        memory: 1024
         networks:
           private: 200
         groups: [admin]
         os: centos8
 
       client:
+        cpus: 4
+        memory: 4096
         networks:
           public: 5
         groups: [clients]
@@ -134,11 +138,13 @@ environments:
         os: centos8
 
   xfs:
-    cpus: 2
-    memory: 1024
+    cpus: 4
+    memory: 4096
 
     nodes:
       setup:
+        cpus: 2
+        memory: 1024
         networks:
           private: 200
         groups: [admin]
@@ -158,14 +164,16 @@ environments:
         groups: [clients]
 
   cephfs:
-    cpus: 2
-    memory: 1024
+    cpus: 8
+    memory: 8192
 
     data:
       branch: main
 
     nodes:
       setup:
+        cpus: 2
+        memory: 1024
         networks:
           private: 200
         groups: [admin]
@@ -181,6 +189,8 @@ environments:
         groups: [cluster]
 
       client:
+        cpus: 4
+        memory: 4096
         networks:
           public: 5
         groups: [clients]

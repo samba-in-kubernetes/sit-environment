@@ -12,6 +12,7 @@
 - name: Copy test configuration data
   shell: cp /root/test-info.yml {{ config.configdir }}
   when: inventory_hostname in groups['clients']
+  ignore_errors: true
 
 - name: Copy configuration directory
   synchronize:

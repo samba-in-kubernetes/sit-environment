@@ -70,5 +70,5 @@ config:
     {%- endfor +%}
   {%- endfor +%}
 
-  statedir: "{{ misc.host.statedir }}/sit.{{ be }}_statedump"
+  statedir: "{{ misc.host.statedir }}/sit.{{ backend }}_statedump"
   configdir: "{{ misc.host.configdir }}"

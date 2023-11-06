@@ -1,1 +1,1 @@
-../vagrant/vagrant_ansible_inventory
+../playbooks/site_inventory

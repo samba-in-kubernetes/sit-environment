@@ -49,6 +49,14 @@
   vars:
     name: '{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}'
 
+- name: Ensure cluster is in HEALTHY state
+  run_once: yes
+  command: ctdb nodestatus all
+  register: nodestatus
+  until: nodestatus.rc == 0
+  retries: 10
+  delay: 2
+
 - name: Restart samba
   service:
     name: smb

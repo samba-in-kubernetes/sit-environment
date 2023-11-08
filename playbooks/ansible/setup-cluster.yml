@@ -9,5 +9,5 @@
     - common.prep
     - node.prep
     - "sit.{{ config.be.name }}"
-    - ctdb.setup
     - samba.setup
+    - ctdb.setup

@@ -82,3 +82,16 @@
 
 - name: Restart ctdb
   service: name=ctdb state=restarted enabled=yes
+
+- name: Ensure cluster is in HEALTHY state
+  run_once: yes
+  command: ctdb nodestatus all
+  register: nodestatus
+  until: nodestatus.rc == 0
+  retries: 20
+  delay: 3
+
+- name: Create test users with smbpasswd
+  shell: (echo {{ item.password }}; echo {{ item.password }})|smbpasswd -a {{ item.username }}
+  with_items: "{{ samba_users }}"
+  run_once: yes

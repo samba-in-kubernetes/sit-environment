@@ -1,0 +1,27 @@
+---
+- hosts: cluster
+  become: yes
+  tasks:
+
+    - name: Stop ctdb service
+      ansible.builtin.service:
+        name: ctdb
+        state: stopped
+        enabled: no
+
+    - name: Disable clustering in smb.conf
+      ansible.builtin.lineinfile:
+        path: /etc/samba/smb.conf
+        search_string: "clustering"
+        line: clustering = no
+
+    - name: Start smb service on storage0
+      ansible.builtin.service:
+        name: smb
+        state: started
+        enabled: yes
+      when: ansible_hostname == "storage0"
+
+    - name: Add test1 user to samba standalone tdb
+      shell: (echo x; echo x)|smbpasswd -a test1
+      when: ansible_hostname == "storage0"

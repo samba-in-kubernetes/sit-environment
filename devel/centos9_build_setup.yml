@@ -1,0 +1,98 @@
+---
+- hosts: storage0
+  become: yes
+  tasks:
+
+    - name: Install storage SIG packages
+      dnf:
+        name:
+          - centos-release-gluster10
+
+    # Grabbed list of packages from
+    # https://github.com/samba-in-kubernetes/samba-build/blob/main/packaging/samba-4.19.spec.j2
+    - name: Install required rpms
+      dnf:
+        name:
+          - git
+          - gdb
+          - make
+          - gcc
+          - glibc-gconv-extra
+          - avahi-devel
+          - bison
+          - cups-devel
+          - dbus-devel
+          - docbook-style-xsl
+          - e2fsprogs-devel
+          - flex
+          - gawk
+          - gnupg2
+          - gnutls-devel
+          - gpgme-devel
+          - jansson-devel
+          - krb5-devel
+          - libacl-devel
+          - libaio-devel
+          - libarchive-devel
+          - libattr-devel
+          - libcap-devel
+          - libicu-devel
+          - libcmocka-devel
+          - libtirpc-devel
+          - libuuid-devel
+          - libxslt
+          - lmdb
+          - mingw32-gcc
+          - mingw64-gcc
+          - ncurses-devel
+          - openldap-devel
+          - pam-devel
+          - perl-interpreter
+          - perl-generators
+          - perl(Archive::Tar)
+          - perl(Test::More)
+          - popt-devel
+          - python3-cryptography
+          - python3-devel
+          - python3-dns
+          - python3-requests
+          - python3-setuptools
+          - quota-devel
+          - readline-devel
+          - rpcgen
+          - rpcsvc-proto-devel
+          - sed
+          - systemd-rpm-macros
+          - libtasn1-devel
+          - libtasn1-tools
+          - xfsprogs-devel
+          - xz
+          - zlib-devel
+          - pkgconfig(libsystemd)
+          - mold
+          - libgfapi-devel
+          - libglusterfs-devel
+          - libcephfs-devel
+          - liburing-devel
+          - pcp-libs-devel
+          - librados-devel
+          - python3-iso8601
+          - python3-pyasn1
+          - bind
+          - krb5-server
+          - perl(ExtUtils::MakeMaker)
+          - perl(FindBin)
+          - perl(Parse::Yapp)
+          - lmdb-devel
+          - bind
+          - krb5-server
+          - python3-dateutil
+          - python3-iso8601
+          - python3-pyasn1
+          - ldb-tools
+          - python3-gpg
+          - python3-markdown
+          - python3-cryptography
+          - python3-setproctitle
+          - tdb-tools
+        state: latest

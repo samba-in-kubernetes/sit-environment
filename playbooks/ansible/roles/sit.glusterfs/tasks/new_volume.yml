@@ -7,18 +7,6 @@
     cluster: "{{ config.groups['cluster'] }}"
     replicas: "{{ volume.replica_count }}"
   run_once: yes
-  when: volume.type == 'replicate'
-
-- name: Create Dispersed Volumes
-  gluster_volume:
-    state: present
-    name: "{{ volume.name }}"
-    bricks: "{{ volume.backends }}"
-    cluster: "{{ config.groups['cluster'] }}"
-    disperses: "{{ volume.disperse_count }}"
-    force: yes
-  run_once: yes
-  when: volume.type == 'disperse'
 
 - name: Set volume options
   gluster_volume:

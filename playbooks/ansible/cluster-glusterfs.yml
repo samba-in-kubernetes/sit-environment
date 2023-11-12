@@ -60,22 +60,6 @@ replicate_cluster_options:
   performance.readdir-ahead: 'on'
   performance.parallel-readdir: 'on'
 
-disperse_cluster_volume: "vol-disperse"
-disperse_cluster_disperse_count: 3
-disperse_cluster_bricks: '/bricks/brick-disp-0/vol,/bricks/brick-disp-1/vol,/bricks/brick-disp-2/vol'
-disperse_cluster_options:
-  features.cache-invalidation: 'on'
-  features.cache-invalidation-timeout: '600'
-  performance.cache-samba-metadata: 'on'
-  performance.stat-prefetch: 'on'
-  performance.cache-invalidation: 'on'
-  performance.md-cache-timeout: '600'
-  network.inode-lru-limit: '200000'
-  performance.nl-cache: 'on'
-  performance.nl-cache-timeout: '600'
-  performance.readdir-ahead: 'on'
-  performance.parallel-readdir: 'on'
-
 ctdb_network_private_interfaces: >-
   {{
     config.nodes |
@@ -104,4 +88,3 @@ samba_users:
 
 samba_shares:
   - { cluster_volume: "vol-replicate", share_name: "replicate" }
-  - { cluster_volume: "vol-disperse", share_name: "disperse" }

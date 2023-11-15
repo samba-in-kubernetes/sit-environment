@@ -1,4 +1,8 @@
 ---
+- name: Load settings
+  include_vars:
+    file: "settings.yml"
+
 - name: Generate config.yml in ansible directory
   template:
     src: config.yml.j2

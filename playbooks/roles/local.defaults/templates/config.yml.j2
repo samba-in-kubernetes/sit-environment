@@ -38,19 +38,30 @@ config:
   {%- endfor +%}
 
 {%- set total_mem = max_memory * ((memory | default(resources.memory | default(50))) | int) / 100 +%}
+{%- set total_cpu = max_cpu * ((cpu | default(resources.cpu | default(100))) | int) / 100 +%}
 {%- set extra_mem = 0 +%}
+{%- set extra_cpu = 0 +%}
 {%- set base_mem = [] +%}
+{%- set base_cpu = [] +%}
 {%- set weight_mem = [] +%}
+{%- set weight_cpu = [] +%}
 {%- for name in environments[be].nodes +%}
 {%-   set data = environments[be].nodes[name] +%}
 {%-   set count = data.instances | default(1) +%}
 {%-   set _ = base_mem.append(count * (data.memory | default(environments[be].memory))) +%}
+{%-   set _ = base_cpu.append(count * (data.cpus | default(environments[be].cpus))) +%}
 {%-   set _ = weight_mem.append(count * (data.memory_weight | default(1))) +%}
+{%-   set _ = weight_cpu.append(count * (data.cpu_weight | default(1))) +%}
 {%- endfor +%}
 {%- set base_mem = base_mem | sum +%}
+{%- set base_cpu = base_cpu | sum +%}
 {%- set weight_mem = weight_mem | sum +%}
+{%- set weight_cpu = weight_cpu | sum +%}
 {%- if weight_mem > 0 +%}
 {%-   set extra_mem = ([ total_mem - base_mem, 0] | max) / weight_mem / 1024 +%}
+{%- endif +%}
+{%- if weight_cpu > 0 +%}
+{%-   set extra_cpu = ([ total_cpu - base_cpu, 0] | max) / weight_cpu +%}
 {%- endif +%}
 
   nodes:
@@ -62,7 +73,7 @@ config:
       groups: {{ data.groups }}
       provisioner: {{ prov }}
       os: {{ data.os | default(environments[be].os | default(os)) }}
-      cpus: {{ data.cpus | default(environments[be].cpus) }}
+      cpus: {{ (data.cpus | default(environments[be].cpus)) + ((extra_cpu * (data.cpu_weight | default(1))) | int) }}
       memory: {{ (data.memory | default(environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
       disks: {{ data.disks | default([]) }}
       networks:

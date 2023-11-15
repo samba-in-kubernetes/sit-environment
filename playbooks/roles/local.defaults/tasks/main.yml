@@ -12,6 +12,7 @@
     be: "{{ (backend | default('glusterfs') | split('.'))[0] }}"
     variant: "{{ (backend | default('glusterfs') | split('.'))[1] | default('default') }}"
     max_memory: "{{ ansible_memfree_mb }}"
+    max_cpu: "{{ ansible_processor_nproc }}"
 
 - name: Load configuration
   include_vars:

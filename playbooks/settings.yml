@@ -48,6 +48,15 @@ resources:
   # storage1:    2      11 GiB          7 GiB          3 GiB         1 GiB
   memory: 50
 
+  # Percentage of the cores that will be used for sit-environment by default.
+  # It can be overriden by setting the `cpu` extra variable.
+  #
+  # This is equivalent to the `memory` option but applied to CPU cores.
+  #
+  # It's allowed to use a value higher than 100% assuming that some VMs will
+  # actually not use all the cores at 100%.
+  cpu: 100
+
 # List of tests to run
 tests:
   - sit-test-cases
@@ -80,7 +89,7 @@ provisioners:
 #     be overriden by specific VM type definitions.
 #
 #   cpus: (required)
-#     Default number of CPUs to assign to each VM. This value can be
+#     Default minimum number of CPUs to assign to each VM. This value can be
 #     overridden by specific VM type definitions.
 #
 #   memory: (required)
@@ -111,7 +120,13 @@ provisioners:
 #     Defines how many VMs of this type will be created.
 #
 #   cpus: (optional, default: the value of `cpus` in the environment)
-#     Number of CPUs for this specific VM type.
+#     Minimum number of CPUs for this specific VM type.
+#
+#   cpu_weight: (optional, default: 1)
+#     Relative weight of the number of CPUs assigned to this VM type. A higher
+#     weight will assign more CPUs to this VM type. A value of 0 will use just
+#     the minimum number of CPUs defined by the `cpus` option. See the comment
+#     in the `resources` section to see how this value works.
 #
 #   memory: (optional, default: the value of `memory` in the environment)
 #     Minimum amount of memory for this specific VM type.
@@ -143,12 +158,12 @@ provisioners:
 #
 environments:
   glusterfs:
-    cpus: 8
+    cpus: 2
     memory: 1024
 
     nodes:
       setup:
-        cpus: 2
+        cpu_weight: 0
         memory_weight: 0
         networks:
           private: 200
@@ -156,7 +171,7 @@ environments:
         os: centos8
 
       client:
-        cpus: 4
+        cpu_weight: 1
         memory_weight: 1
         networks:
           public: 5
@@ -164,6 +179,7 @@ environments:
 
       storage:
         instances: 2
+        cpu_weight: 2
         memory_weight: 2
         disks: [10, 10, 10]
         networks:
@@ -175,18 +191,19 @@ environments:
         os: centos8
 
   xfs:
-    cpus: 4
+    cpus: 2
     memory: 1024
 
     nodes:
       setup:
-        cpus: 2
+        cpu_weight: 0
         memory_weight: 0
         networks:
           private: 200
         groups: [admin]
 
       storage:
+        cpu_weight: 1
         memory_weight: 1
         disks: [10]
         networks:
@@ -197,13 +214,14 @@ environments:
         groups: [cluster]
 
       client:
+        cpu_weight: 1
         memory_weight: 1
         networks:
           public: 5
         groups: [clients]
 
   cephfs:
-    cpus: 8
+    cpus: 2
     memory: 1024
 
     data:
@@ -211,7 +229,7 @@ environments:
 
     nodes:
       setup:
-        cpus: 2
+        cpu_weight: 0
         memory_weight: 0
         networks:
           private: 200
@@ -219,6 +237,7 @@ environments:
 
       storage:
         instances: 3
+        cpu_weight: 2
         memory_weight: 2
         disks: [10, 10, 10]
         networks:
@@ -229,7 +248,7 @@ environments:
         groups: [cluster]
 
       client:
-        cpus: 4
+        cpu_weight: 1
         memory_weight: 1
         networks:
           public: 5

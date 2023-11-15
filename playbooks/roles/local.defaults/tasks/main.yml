@@ -11,6 +11,7 @@
     os: "{{ use_distro | default('centos9') }}"
     be: "{{ (backend | default('glusterfs') | split('.'))[0] }}"
     variant: "{{ (backend | default('glusterfs') | split('.'))[1] | default('default') }}"
+    max_memory: "{{ ansible_memfree_mb }}"
 
 - name: Load configuration
   include_vars:

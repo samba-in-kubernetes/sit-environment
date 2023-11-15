@@ -18,6 +18,36 @@ misc:
     statedir: "/tmp"
     configdir: "/tmp/config"
 
+resources:
+  # Percentage of free memory that will be used for sit-environment by default.
+  # It can be overriden by setting the `memory` extra variable.
+  #
+  # All VMs are guaranteed to use the minimum memory defined, even if this
+  # makes them use more than the amount of memory defined here.
+  #
+  # The actual amount of memory assigned to each VM is computed by dynamically
+  # distributing the portion of the free memory assigned to sit-environment
+  # proportionally based on the memory weight of each VM.
+  #
+  # B: Sum of the minimum memory assigned to each VM.
+  # T: Sum of the weights assigned to each VM.
+  # G: Total available memory to sit-environment, which is equal to the total
+  #    free memory multiplied by the defined percentage.
+  # Mi: Total memory assigned to i-th VM.
+  # mi: Minimum memory assigned to i-th VM.
+  # wi: Weight assigned to i-th VM.
+  #
+  # Mi = mi + int(max(G - B, 0) * wi / T)
+  #
+  # Examples with 50% memory utilization and 1 GiB minimum:
+  #
+  #           Weight  58 GiB Free    38 GiB Free    18 GiB Free    8 GiB Free
+  # setup0:      0       1 GiB          1 GiB          1 GiB         1 GiB
+  # client0:     1       6 GiB          4 GiB          2 GiB         1 GiB
+  # storage0:    2      11 GiB          7 GiB          3 GiB         1 GiB
+  # storage1:    2      11 GiB          7 GiB          3 GiB         1 GiB
+  memory: 50
+
 # List of tests to run
 tests:
   - sit-test-cases
@@ -54,8 +84,8 @@ provisioners:
 #     overridden by specific VM type definitions.
 #
 #   memory: (required)
-#     Default amount of memory (in MiB) assigned to each VM. This value
-#     can be overridden by specific VM type definitions.
+#     Default minimum amount of memory (in MiB) assigned to each VM. This
+#     value can be overridden by specific VM type definitions.
 #
 #   data: (optional, default: {})
 #     This field contains any extra data specific to the environment that
@@ -84,7 +114,13 @@ provisioners:
 #     Number of CPUs for this specific VM type.
 #
 #   memory: (optional, default: the value of `memory` in the environment)
-#     Amount of memory for this specific VM type.
+#     Minimum amount of memory for this specific VM type.
+#
+#   memory_weight: (optional, default: 1)
+#     Relative weight of the memory assigned to this VM type. A higher weight
+#     will assign more memory to this VM type. A value of 0 will use just the
+#     minimum memory defined by the `memory` option. See the comment in the
+#     `resources` section to see how this value works.
 #
 #   disks: (optional, default: [])
 #     List of additional disks for this type of VM (besides the system
@@ -108,12 +144,12 @@ provisioners:
 environments:
   glusterfs:
     cpus: 8
-    memory: 8192
+    memory: 1024
 
     nodes:
       setup:
         cpus: 2
-        memory: 1024
+        memory_weight: 0
         networks:
           private: 200
         groups: [admin]
@@ -121,13 +157,14 @@ environments:
 
       client:
         cpus: 4
-        memory: 4096
+        memory_weight: 1
         networks:
           public: 5
         groups: [clients]
 
       storage:
         instances: 2
+        memory_weight: 2
         disks: [10, 10, 10]
         networks:
           private: 100
@@ -139,17 +176,18 @@ environments:
 
   xfs:
     cpus: 4
-    memory: 4096
+    memory: 1024
 
     nodes:
       setup:
         cpus: 2
-        memory: 1024
+        memory_weight: 0
         networks:
           private: 200
         groups: [admin]
 
       storage:
+        memory_weight: 1
         disks: [10]
         networks:
           private: 100
@@ -159,13 +197,14 @@ environments:
         groups: [cluster]
 
       client:
+        memory_weight: 1
         networks:
           public: 5
         groups: [clients]
 
   cephfs:
     cpus: 8
-    memory: 8192
+    memory: 1024
 
     data:
       branch: main
@@ -173,13 +212,14 @@ environments:
     nodes:
       setup:
         cpus: 2
-        memory: 1024
+        memory_weight: 0
         networks:
           private: 200
         groups: [admin]
 
       storage:
         instances: 3
+        memory_weight: 2
         disks: [10, 10, 10]
         networks:
           private: 100
@@ -190,7 +230,7 @@ environments:
 
       client:
         cpus: 4
-        memory: 4096
+        memory_weight: 1
         networks:
           public: 5
         groups: [clients]

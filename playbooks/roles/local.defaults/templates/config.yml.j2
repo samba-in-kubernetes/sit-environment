@@ -37,6 +37,22 @@ config:
       {%- endfor +%}
   {%- endfor +%}
 
+{%- set total_mem = max_memory * ((memory | default(resources.memory | default(50))) | int) / 100 +%}
+{%- set extra_mem = 0 +%}
+{%- set base_mem = [] +%}
+{%- set weight_mem = [] +%}
+{%- for name in environments[be].nodes +%}
+{%-   set data = environments[be].nodes[name] +%}
+{%-   set count = data.instances | default(1) +%}
+{%-   set _ = base_mem.append(count * (data.memory | default(environments[be].memory))) +%}
+{%-   set _ = weight_mem.append(count * (data.memory_weight | default(1))) +%}
+{%- endfor +%}
+{%- set base_mem = base_mem | sum +%}
+{%- set weight_mem = weight_mem | sum +%}
+{%- if weight_mem > 0 +%}
+{%-   set extra_mem = ([ total_mem - base_mem, 0] | max) / weight_mem / 1024 +%}
+{%- endif +%}
+
   nodes:
   {%- for name in environments[be].nodes +%}
     {%- set data = environments[be].nodes[name] +%}
@@ -47,7 +63,7 @@ config:
       provisioner: {{ prov }}
       os: {{ data.os | default(environments[be].os | default(os)) }}
       cpus: {{ data.cpus | default(environments[be].cpus) }}
-      memory: {{ data.memory | default(environments[be].memory) }}
+      memory: {{ (data.memory | default(environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
       disks: {{ data.disks | default([]) }}
       networks:
       {%- for net in data.networks | default({}) +%}

@@ -1,18 +1,12 @@
 ---
 - name: Run tests
-  block:
-    - shell:
-        chdir: /root/sit-test-cases
-        cmd: make test &> /var/log/test.out
-      register: test_output
-    - debug: var=test_output.stdout_lines
+  shell:
+    chdir: /root/sit-test-cases
+    cmd: make test &> /var/log/test.out
   when: test_sanity_only is undefined
 
 - name: Run sanity tests
-  block:
-    - shell:
-        chdir: /root/sit-test-cases
-        cmd: make sanity_test &> /var/log/test.out
-      register: test_output
-    - debug: var=test_output.stdout_lines
+  shell:
+    chdir: /root/sit-test-cases
+    cmd: make sanity_test &> /var/log/test.out
   when: test_sanity_only is defined

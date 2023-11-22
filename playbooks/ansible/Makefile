@@ -17,7 +17,7 @@ generate.report:
 	@ansible-playbook -i $(INVENTORY) ${ANSIBLE_EXTRA_VARS} ./generate-report.yml
 
 client.test:
-	@ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook -i $(INVENTORY) ${ANSIBLE_EXTRA_VARS} ./client-test.yml
+	@ansible-playbook -i $(INVENTORY) ${ANSIBLE_EXTRA_VARS} ./client-test.yml
 
 setup.site: setup.cluster setup.clients client.test
 

@@ -8,14 +8,11 @@
 
 - name: Selinux - Allow Samba to access glusterfs services
   seboolean:
-    name: "{{ item }}"
+    name: samba_load_libgfapi
     state: yes
     persistent: yes
-  with_items:
-    - samba_load_libgfapi
-    - samba_export_all_rw
 
-- name: Install samba and samba-vfs-glusterfs packages
+- name: Install samba-vfs-glusterfs package
   yum:
     name: samba-vfs-glusterfs
     state: present

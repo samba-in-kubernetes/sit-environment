@@ -1,7 +1,7 @@
 [{{ name }}]
-comment = For samba share of volume {{ path }}
+comment = For samba share of volume {{ volume }}
 vfs objects = acl_xattr glusterfs
-glusterfs:volume = {{ path }}
+glusterfs:volume = {{ volume }}
 glusterfs:logfile = /var/log/samba/{{ name }}.%M.log
 glusterfs:loglevel = 7
 path = /

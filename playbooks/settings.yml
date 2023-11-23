@@ -19,10 +19,15 @@ misc:
     configdir: "/tmp/config"
 
 paths:
+  samba:
+    etc: /etc/samba
+
   ctdb:
     var_lib: /var/lib/ctdb
     etc: /etc/ctdb
     bin: /bin
+
+  mount: /mnt
 
 resources:
   # Percentage of free memory that will be used for sit-environment by default.

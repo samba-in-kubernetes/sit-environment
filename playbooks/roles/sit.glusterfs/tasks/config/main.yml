@@ -3,6 +3,6 @@
   shell: cp -r {{ item }} {{ config.configdir }}
   with_items:
     - /var/lib/glusterd
-    - /etc/samba
+    - "{{ config.paths.samba.etc }}"
     - "{{ config.paths.ctdb.etc }}"
   when: inventory_hostname in groups['cluster']

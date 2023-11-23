@@ -1,6 +1,24 @@
 ---
+- name: Install samba packages
+  yum:
+    name: samba
+    state: present
+
+- name: Create Samba share directories
+  file:
+    path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
+    state: directory
+    mode: 0777
+  loop: "{{ samba_shares }}"
+
 - name: Process backend specific tasks
   include_tasks: "{{ config.be.name }}/main.yml"
+
+- name: Selinux - Allow exporting everything
+  seboolean:
+    name: samba_export_all_rw
+    state: yes
+    persistent: yes
 
 - name: Enable firewall for samba
   firewalld:
@@ -14,17 +32,17 @@
 - name: Create fresh directory /etc/samba/smb.shares to contain share definition
   block:
     - file:
-        path: /etc/samba/smb.shares/
+        path: "{{ config.paths.samba.etc }}/smb.shares"
         state: absent
     - file:
-        path: /etc/samba/smb.shares/
+        path: "{{ config.paths.samba.etc }}/smb.shares"
         state: directory
         mode: '0755'
 
 - name: Create smb.conf
   template:
     src: smb.conf.j2
-    dest: /etc/samba/smb.conf
+    dest: "{{ config.paths.samba.etc }}/smb.conf"
     owner: root
     group: root
     mode: '0644'
@@ -36,18 +54,23 @@
         name: 'sit.{{ config.be.name }}'
         tasks_from: new_share.yml
       vars:
-        path: "{{ item.cluster_volume }}"
-        file: "/etc/samba/smb.shares/{{ name }}.conf"
+        volume: "{{ item.cluster_volume }}"
+        path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
+        file: "{{ config.paths.samba.etc }}/smb.shares/{{ name }}.conf"
       with_items: "{{ samba_shares }}"
 
     - name: Include share configuration into smb.conf
       lineinfile:
-        path: "/etc/samba/smb.conf"
-        line: "include = /etc/samba/smb.shares/{{ name }}.conf"
+        path: "{{ config.paths.samba.etc }}/smb.conf"
+        line: "include = {{ config.paths.samba.etc }}/smb.shares/{{ name }}.conf"
         insertafter: EOF
       with_items: "{{ samba_shares }}"
   vars:
     name: '{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}'
+
+- name: Update selinux contexts
+  command: restorecon -R "{{ config.paths.mount }}/{{ item.cluster_volume }}"
+  loop: "{{ samba_shares }}"
 
 - name: Create test users
   user:

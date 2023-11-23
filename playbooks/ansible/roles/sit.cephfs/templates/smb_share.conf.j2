@@ -1,5 +1,5 @@
 [{{ name }}]
-comment = For samba share of subvolume {{ name }}
+comment = For samba share of subvolume {{ volume }}
 vfs objects = acl_xattr
 {%- if config.be.variant == 'vfs' %} ceph
 ceph:config_file = /etc/ceph/sit.ceph.conf

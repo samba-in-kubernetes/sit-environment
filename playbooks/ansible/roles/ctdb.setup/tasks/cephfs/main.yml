@@ -6,29 +6,6 @@
   vars:
     volume:
       name: "ctdb"
-      path: "{{ ctdb_path }}"
+      path: "{{ ctdb_lock_path }}"
       mode: "0777"
       mount: true
-
-- name: Prepare shared storage for CTDB
-  run_once: true
-  block:
-    - name: Create CTDB directory
-      file:
-        path: "{{ ctdb_path }}/lock"
-        state: directory
-
-    - name: SELinux - Allow CTDB to access recovery lockfile
-      sefcontext:
-        target: '{{ ctdb_path }}(/.*)?'
-        setype: ctdbd_var_lib_t
-        state: present
-
-    - name: SELinux - Apply changes
-      command: restorecon -R "{{ ctdb_path }}"
-
-- name: Create symlink to CTDB shared directory
-  file:
-    path: /ctdb
-    state: link
-    src: "{{ ctdb_path }}"

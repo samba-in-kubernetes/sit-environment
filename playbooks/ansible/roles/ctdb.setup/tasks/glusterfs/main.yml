@@ -15,12 +15,6 @@
   loop_control:
     loop_var: include_file
 
-- name: SELinux - Allow CTDB to access recovery lockfile from FUSE mount
-  seboolean:
-    name: use_fusefs_home_dirs
-    state: yes
-    persistent: yes
-
 - name: Create and mount the ctdb shared volume
   include_role:
     name: 'sit.{{ config.be.name }}'
@@ -31,8 +25,14 @@
       type: "replicate"
       backends: "{{ ctdb_brick_location }}/ctdb"
       replica_count: "{{ ctdb_cluster_replica_count }}"
-      mount: "/ctdb/lock"
+      mount: "{{ ctdb_lock_path }}"
       mount_opts: "_netdev,transport=tcp,xlator-option=*client*.ping-timeout=10"
+
+- name: SELinux - Allow CTDB to access recovery lockfile from FUSE mount
+  seboolean:
+    name: use_fusefs_home_dirs
+    state: yes
+    persistent: yes
 
 - include_role:
     name: gluster.features

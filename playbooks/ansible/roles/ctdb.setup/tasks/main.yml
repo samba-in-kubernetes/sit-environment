@@ -14,13 +14,23 @@
         msg: "Please provide these required variable: ctdb_network_public_interface_name"
       when: ctdb_network_public_interface_name is undefined
 
-- name: Process backend specific tasks
-  include_tasks: "{{ config.be.name }}/main.yml"
-
 - name: Add ctdb package
   yum:
     name: ctdb
     state: present
+
+- name: Create lock directory
+  file:
+    path: "{{ config.paths.ctdb.var_lib }}/lock"
+    state: directory
+
+- name: Process backend specific tasks
+  include_tasks: "{{ config.be.name }}/main.yml"
+  vars:
+    ctdb_lock_path: "{{ config.paths.ctdb.var_lib }}/lock"
+
+- name: Update selinux contexts
+  command: restorecon -R "{{ config.paths.ctdb.var_lib }}/lock"
 
 - name: Add ctdb rules to firewalld
   firewalld:
@@ -33,7 +43,7 @@
 
 - name: Configure CTDB
   ini_file:
-    path: /etc/ctdb/ctdb.conf
+    path: "{{ config.paths.ctdb.etc }}/ctdb.conf"
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
@@ -41,44 +51,44 @@
   with_items:
     - section: cluster
       option: cluster lock
-      value: /ctdb/lock/cluster.lock
+      value: "{{ config.paths.ctdb.var_lib }}/lock/cluster.lock"
     # See https://github.com/samba-in-kubernetes/sit-environment/issues/18
     - section: legacy
       option: realtime scheduling
       value: "false"
 
-- name: Create /etc/ctdb/nodes
+- name: Create {{ config.paths.ctdb.etc }}/nodes
   copy:
     content: |
       {% for item in ctdb_network_private_interfaces -%}
       {{ item }}
       {% endfor -%}
-    dest: '/etc/ctdb/nodes'
+    dest: '{{ config.paths.ctdb.etc }}/nodes'
     mode: '0644'
 
-- name: Create /etc/ctdb/public_addresses
+- name: Create {{ config.paths.ctdb.etc }}/public_addresses
   copy:
     content: |
       {% for item in ctdb_network_public_interfaces -%}
       {{ item }}/{{ ctdb_network_public_interface_subnet_mask }} {{ ctdb_network_public_interface_name }}
       {% endfor -%}
-    dest: '/etc/ctdb/public_addresses'
+    dest: '{{ config.paths.ctdb.etc }}/public_addresses'
     mode: '0644'
 
 - name: Enable check consistency of databases during startup
-  command: '/bin/ctdb event script enable legacy 00.ctdb'
+  command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 00.ctdb'
 
 - name: Enable check consistency of databases during startup
-  command: '/bin/ctdb event script enable legacy 01.reclock'
+  command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 01.reclock'
 
 - name: Enable monitor system resources
-  command: '/bin/ctdb event script enable legacy 05.system'
+  command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 05.system'
 
 - name: Enable network interface management by ctdb
-  command: '/bin/ctdb event script enable legacy 10.interface'
+  command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 10.interface'
 
 - name: Enable samba management by ctdb
-  command: '/bin/ctdb event script enable legacy 50.samba'
+  command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 50.samba'
 
 - name: Restart ctdb
   service: name=ctdb state=restarted enabled=yes

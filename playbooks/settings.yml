@@ -18,6 +18,12 @@ misc:
     statedir: "/tmp"
     configdir: "/tmp/config"
 
+paths:
+  ctdb:
+    var_lib: /var/lib/ctdb
+    etc: /etc/ctdb
+    bin: /bin
+
 resources:
   # Percentage of free memory that will be used for sit-environment by default.
   # It can be overriden by setting the `memory` extra variable.

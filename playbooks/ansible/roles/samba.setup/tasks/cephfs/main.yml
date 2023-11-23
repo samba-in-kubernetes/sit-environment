@@ -19,7 +19,7 @@
 
     - name: Skip check of share path
       lineinfile:
-        path: /etc/ctdb/events/legacy/50.samba.options
+        path: "{{ config.paths.ctdb.etc }}/events/legacy/50.samba.options"
         create: true
         search_string: "CTDB_SAMBA_SKIP_SHARE_CHECK"
         line: "CTDB_SAMBA_SKIP_SHARE_CHECK=yes"

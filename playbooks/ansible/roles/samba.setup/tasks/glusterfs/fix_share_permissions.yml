@@ -1,17 +1,17 @@
 ---
 - name: Mount gluster volume using glusterfs
   mount:
-    path: /mnt-fuse
+    path: "{{ config.paths.mount }}/tmp-fuse"
     src: "{{ volume }}"
     fstype: glusterfs
     state: mounted
 
 - name: Set permission of volume root to 0777
   file:
-    path: /mnt-fuse
+    path: "{{ config.paths.mount }}/tmp-fuse"
     mode: '0777'
 
 - name: Unmount mounted fuse glusterfs mount
   mount:
-    path: /mnt-fuse
+    path: "{{ config.paths.mount }}/tmp-fuse"
     state: absent

@@ -4,5 +4,5 @@
   with_items:
     - /etc/ceph
     - /etc/samba
-    - /etc/ctdb
+    - "{{ config.paths.ctdb.etc }}"
   when: inventory_hostname in groups['cluster']

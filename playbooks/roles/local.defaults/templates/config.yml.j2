@@ -18,6 +18,8 @@ config:
 
   data: {{ environments[be].data | default({}) }}
 
+  paths: {{ paths }}
+
   tests: {{ tests }}
 
   provisioners:

@@ -1,6 +1,4 @@
 ---
-ctdb_path: '/mnt/ctdb'
-
 ctdb_network_private_interfaces: >-
   {{
     config.nodes |

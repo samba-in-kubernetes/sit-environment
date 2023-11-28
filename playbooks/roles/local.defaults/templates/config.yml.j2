@@ -16,6 +16,8 @@ config:
     name: "{{ be }}"
     variant: "{{ variant }}"
 
+  vm_prefix: "{{ vm_prefix }}_"
+
   data: {{ environments[be].data | default({}) }}
 
   paths: {{ paths }}

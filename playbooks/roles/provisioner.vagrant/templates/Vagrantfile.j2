@@ -19,6 +19,8 @@ Vagrant.configure("2") do |config|
         # taken from:
         # https://github.com/heketi/heketi/pull/1008
         v.cpu_mode = 'host-passthrough'
+
+        v.default_prefix = '{{ config.vm_prefix }}'
     end
 {% for host in data.hosts %}
     {%- set node = config.nodes[host] %}

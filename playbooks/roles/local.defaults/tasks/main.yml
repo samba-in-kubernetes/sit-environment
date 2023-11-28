@@ -13,6 +13,7 @@
     variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
     max_memory: "{{ ansible_memfree_mb }}"
     max_cpu: "{{ ansible_processor_nproc }}"
+    vm_prefix: "{{ lookup('env', 'SITE_NAME') | default('site', true) }}"
 
 - name: Load configuration
   include_vars:

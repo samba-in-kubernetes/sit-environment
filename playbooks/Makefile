@@ -6,6 +6,8 @@ ifdef EXTRA_VARS
 	SSH_EXTRA_VARS := EXTRA_VARS='${EXTRA_VARS}'
 endif
 
+test: setup.site
+
 local:
 	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} local.yml
 

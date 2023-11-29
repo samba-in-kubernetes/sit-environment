@@ -1,5 +1,7 @@
 ---
 config:
+  home: "{{ home }}"
+
   os:
   {%- for os_name in os_info +%}
     {{ os_name }}:

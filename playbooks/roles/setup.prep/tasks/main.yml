@@ -29,3 +29,8 @@
         src: ansible/ssh-config-setup
         dest: .ssh/config
         mode: 0600
+
+    - name: Copy config.yml
+      copy:
+        src: "{{ config.home }}/config.yml"
+        dest: ansible/config.yml

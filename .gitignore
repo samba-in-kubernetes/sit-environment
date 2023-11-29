@@ -5,5 +5,4 @@ playbooks/ansible/ssh-config-setup
 playbooks/site_inventory
 playbooks/ssh-config-host
 playbooks/Vagrantfile
-playbooks/ansible/config.yml
 devel/authorized_keys

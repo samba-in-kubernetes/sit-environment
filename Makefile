@@ -1,13 +1,14 @@
 .PHONY: test statedump clean yamllint
 
 test:
-	@$(MAKE) -C playbooks setup.site
+	@./site create test
+	@./site build test
 
 statedump:
-	@$(MAKE) -C playbooks nodes.statedump
+	@./site statedump test
 
 clean:
-	@$(MAKE) -C playbooks clean
+	@./site destroy test
 
 yamllint:
-	@yamllint -c .yamllint .
+	@./site yamllint

@@ -23,7 +23,7 @@
 
 - name: copy ssh config
   copy:
-    src: ssh-config-setup
+    src: ~/.ssh/config
     dest: .ssh/config
 
 - name: Create /etc/hosts

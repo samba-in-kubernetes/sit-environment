@@ -26,9 +26,14 @@
 
     - name: copy ssh config in place
       copy:
-        src: ansible/ssh-config-setup
+        src: "{{ config.home }}/ssh-config-setup"
         dest: .ssh/config
         mode: 0600
+
+    - name: Copy inventory
+      copy:
+        src: "{{ config.home }}/site_inventory_setup"
+        dest: ansible/site_inventory
 
     - name: Copy config.yml
       copy:

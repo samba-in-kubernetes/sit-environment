@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
       # Run a no-op playbook to create the inventory file.
       # Based on that, one can run ansible without vagrant.
         node.vm.provision "no-op", type:'ansible' do |ansible|
-            ansible.playbook = "no-op-playbook.yml"
+            ansible.playbook = "{{ playbook_dir }}/no-op-playbook.yml"
             ansible.groups = {
         {%- for group in config.groups +%}
                 "{{ group }}" => {{ config.groups[group] | to_json }},

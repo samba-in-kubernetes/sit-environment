@@ -1,5 +1,5 @@
-INVENTORY := ./site_inventory
-VSSH := ssh -F ssh-config-host
+INVENTORY := "${SITE_HOME}/site_inventory"
+VSSH := ssh -F "${SITE_HOME}/ssh-config-host"
 
 ifdef EXTRA_VARS
 	ANSIBLE_EXTRA_VARS := -e '${EXTRA_VARS}'

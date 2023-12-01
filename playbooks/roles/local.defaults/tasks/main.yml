@@ -9,8 +9,8 @@
     dest: ./ansible/config.yml
   vars:
     os: "{{ use_distro | default('centos9') }}"
-    be: "{{ (backend | default('glusterfs') | split('.'))[0] }}"
-    variant: "{{ (backend | default('glusterfs') | split('.'))[1] | default('default') }}"
+    be: "{{ (backend | default('xfs') | split('.'))[0] }}"
+    variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
     max_memory: "{{ ansible_memfree_mb }}"
     max_cpu: "{{ ansible_processor_nproc }}"
 

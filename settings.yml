@@ -13,11 +13,6 @@ os_info:
     distro: centos
     version: 9
 
-misc:
-  host:
-    statedir: "/tmp"
-    configdir: "/tmp/config"
-
 paths:
   samba:
     etc: /etc/samba

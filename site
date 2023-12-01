@@ -89,6 +89,9 @@ function cmd_create() {
     cp "${SITE_ROOT}/requirements.txt" "${SITE_HOME}"
     cp "${SITE_ROOT}/settings.yml" "${SITE_HOME}"
 
+    mkdir "${SITE_HOME}/statedump"
+    mkdir "${SITE_HOME}/config"
+
     run pip install --upgrade -r requirements.txt
 }
 

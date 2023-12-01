@@ -33,8 +33,8 @@ Vagrant.configure("2") do |config|
     {%- endfor +%}
         node.vm.provider :virtualbox do |vb|
     {%- for size in node.disks +%}
-            vb.customize [ "createhd", "--filename", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi", "--size", {{ size * 1024 }} ]
-            vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", {{ loop.index0 + 3 }}, "--device", 0, "--type", "hdd", "--medium", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi" ]
+            vb.customize [ "createhd", "--filename", "{{ config.vm_prefix }}disk-{{ vm_idx }}{{ loop.index0 }}.vdi", "--size", {{ size * 1024 }} ]
+            vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", {{ loop.index0 + 3 }}, "--device", 0, "--type", "hdd", "--medium", "{{ config.vm_prefix}}disk-{{ vm_idx }}{{ loop.index0 }}.vdi" ]
     {%- endfor +%}
             vb.memory = {{ node.memory }}
             vb.cpus = {{ node.cpus }}
@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
             lv.storage_pool_name = "{{ data.pool }}"
     {%- endif +%}
     {%- for size in node.disks +%}
-            lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'
+            lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "{{ config.vm_prefix }}disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'
     {%- endfor +%}
             lv.memory = {{ node.memory }}
             lv.cpus = {{ node.cpus }}

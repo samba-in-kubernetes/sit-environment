@@ -2,49 +2,55 @@
 - name: Setup Vagrant file
   template:
     src: Vagrantfile.j2
-    dest: Vagrantfile
+    dest: "{{ config.home }}/Vagrantfile"
 
 - name: start vagrant vms
-  command: vagrant up --no-provision
+  command:
+    chdir: "{{ config.home }}"
+    cmd: vagrant up --no-provision
 
 - name: provision vagrant vms
-  command: vagrant provision
+  command:
+    chdir: "{{ config.home }}"
+    cmd: vagrant provision
 
 - name: copy vagrant generated inventory file - local machine
   copy:
-    src: .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
-    dest: ./site_inventory
+    src: "{{ config.home }}/.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory"
+    dest: "{{ config.home }}/site_inventory"
 
 - name: adapt inventory - ssh options
   blockinfile:
-    path: ./site_inventory
+    path: "{{ config.home }}/site_inventory"
     block: |
       [all:vars]
       ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 - name: copy vagrant generated inventory file - setup machine
   copy:
-    src: ./site_inventory
-    dest: ./ansible/site_inventory
+    src: "{{ config.home }}/site_inventory"
+    dest: "{{ config.home }}/site_inventory_setup"
 
 - name: adapt inventory - correct ssh key
   replace:
-    path: ./ansible/site_inventory
+    path: "{{ config.home }}/site_inventory_setup"
     regexp: "ansible_ssh_private_key_file='.*/\\.vagrant\\.d/insecure_private_key'"
     replace: "ansible_ssh_private_key_file='insecure_private_ssh_key'"
 
 - name: dump ssh config
-  command: vagrant ssh-config
+  command:
+    chdir: "{{ config.home }}"
+    cmd: vagrant ssh-config
   register: output
 
 - name: store ssh-config in file
   copy:
     content: "{{ output.stdout }}\n"
-    dest: ./ssh-config-host
+    dest: "{{ config.home }}/ssh-config-host"
 
 - name: Create host alias
   lineinfile:
-    path: ./ssh-config-host
+    path: "{{ config.home }}/ssh-config-host"
     state: present
     regexp: '^\s*Host\s+{{ config.groups[item][0] }}.*$'
     line: "Host {{ config.groups[item][0] }} {{ item }}"
@@ -52,12 +58,12 @@
 
 - name: copy ssh-config for setup
   copy:
-    src: ./ssh-config-host
-    dest: ./ansible/ssh-config-setup
+    src: "{{ config.home }}/ssh-config-host"
+    dest: "{{ config.home }}/ssh-config-setup"
 
 - name: modify ssh-config-setup
   replace:
-    path: ./ansible/ssh-config-setup
+    path: "{{ config.home }}/ssh-config-setup"
     regexp: "IdentityFile .*"
     replace: "IdentityFile ansible/insecure_private_ssh_key"
 
@@ -66,8 +72,3 @@
     path: "{{ config.statedir }}/{{ item }}"
     state: directory
   loop: "{{ config.groups['cluster'] + config.groups['clients'] }}"
-
-- name: Copy common playbook configuration
-  copy:
-    src: ansible/config.yml
-    dest: "{{ config.statedir }}"

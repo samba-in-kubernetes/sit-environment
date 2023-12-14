@@ -4,7 +4,7 @@
   become: no
   gather_facts: false
   vars_files:
-    - ansible/config.yml
+    - "{{ lookup('env', 'SITE_HOME') | default('.') }}/config.yml"
   vars:
     provision_action: destroy
   roles:

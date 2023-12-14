@@ -1,5 +1,7 @@
 ---
 config:
+  home: "{{ home }}"
+
   os:
   {%- for os_name in os_info +%}
     {{ os_name }}:
@@ -15,6 +17,8 @@ config:
   be:
     name: "{{ be }}"
     variant: "{{ variant }}"
+
+  vm_prefix: "{{ vm_prefix }}_"
 
   data: {{ environments[be].data | default({}) }}
 
@@ -99,5 +103,5 @@ config:
     {%- endfor +%}
   {%- endfor +%}
 
-  statedir: "{{ misc.host.statedir }}/sit_statedump"
-  configdir: "{{ misc.host.configdir }}"
+  statedir: "{{ home }}/statedump"
+  configdir: "{{ home }}/config"

@@ -19,6 +19,8 @@ Vagrant.configure("2") do |config|
         # taken from:
         # https://github.com/heketi/heketi/pull/1008
         v.cpu_mode = 'host-passthrough'
+
+        v.default_prefix = '{{ config.vm_prefix }}'
     end
 {% for host in data.hosts %}
     {%- set node = config.nodes[host] %}
@@ -31,8 +33,8 @@ Vagrant.configure("2") do |config|
     {%- endfor +%}
         node.vm.provider :virtualbox do |vb|
     {%- for size in node.disks +%}
-            vb.customize [ "createhd", "--filename", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi", "--size", {{ size * 1024 }} ]
-            vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", {{ loop.index0 + 3 }}, "--device", 0, "--type", "hdd", "--medium", "disk-{{ vm_idx }}{{ loop.index0 }}.vdi" ]
+            vb.customize [ "createhd", "--filename", "{{ config.vm_prefix }}disk-{{ vm_idx }}{{ loop.index0 }}.vdi", "--size", {{ size * 1024 }} ]
+            vb.customize [ "storageattach", :id, "--storagectl", "SATA Controller", "--port", {{ loop.index0 + 3 }}, "--device", 0, "--type", "hdd", "--medium", "{{ config.vm_prefix}}disk-{{ vm_idx }}{{ loop.index0 }}.vdi" ]
     {%- endfor +%}
             vb.memory = {{ node.memory }}
             vb.cpus = {{ node.cpus }}
@@ -42,7 +44,7 @@ Vagrant.configure("2") do |config|
             lv.storage_pool_name = "{{ data.pool }}"
     {%- endif +%}
     {%- for size in node.disks +%}
-            lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'
+            lv.storage :file, :device => "vd{{ "bcdefghijklmnopqrstuvwxyz"[loop.index0] }}", :path => "{{ config.vm_prefix }}disk-{{ vm_idx }}{{ loop.index0 }}.disk", :size => '{{ size }}G'
     {%- endfor +%}
             lv.memory = {{ node.memory }}
             lv.cpus = {{ node.cpus }}
@@ -52,7 +54,7 @@ Vagrant.configure("2") do |config|
       # Run a no-op playbook to create the inventory file.
       # Based on that, one can run ansible without vagrant.
         node.vm.provision "no-op", type:'ansible' do |ansible|
-            ansible.playbook = "no-op-playbook.yml"
+            ansible.playbook = "{{ playbook_dir }}/no-op-playbook.yml"
             ansible.groups = {
         {%- for group in config.groups +%}
                 "{{ group }}" => {{ config.groups[group] | to_json }},

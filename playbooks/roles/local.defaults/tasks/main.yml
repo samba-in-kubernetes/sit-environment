@@ -1,22 +1,33 @@
 ---
+- name: Locate SITE home
+  set_fact:
+    site_home: "{{ lookup('env', 'SITE_HOME') | default('.', true) }}"
+
 - name: Load settings
   include_vars:
-    file: "settings.yml"
+    file: "{{ site_home }}/settings.yml"
 
 - name: Generate config.yml in ansible directory
   template:
     src: config.yml.j2
-    dest: ./ansible/config.yml
+    dest: "{{ site_home }}/config.yml"
   vars:
     os: "{{ use_distro | default('centos9') }}"
     be: "{{ (backend | default('xfs') | split('.'))[0] }}"
     variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
     max_memory: "{{ ansible_memfree_mb }}"
     max_cpu: "{{ ansible_processor_nproc }}"
+    vm_prefix: "{{ lookup('env', 'SITE_NAME') | default('site', true) }}"
+    home: "{{ site_home }}"
 
 - name: Load configuration
   include_vars:
-    file: "ansible/config.yml"
+    file: "{{ site_home }}/config.yml"
 
 - debug:
     var: config
+
+- name: Copy common playbook configuration
+  copy:
+    src: "{{ site_home }}/config.yml"
+    dest: "{{ config.statedir }}"

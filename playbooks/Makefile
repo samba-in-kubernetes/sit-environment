@@ -1,10 +1,12 @@
-INVENTORY := ./site_inventory
-VSSH := ssh -F ssh-config-host
+INVENTORY := "${SITE_HOME}/site_inventory"
+VSSH := ssh -F "${SITE_HOME}/ssh-config-host"
 
 ifdef EXTRA_VARS
 	ANSIBLE_EXTRA_VARS := -e '${EXTRA_VARS}'
 	SSH_EXTRA_VARS := EXTRA_VARS='${EXTRA_VARS}'
 endif
+
+test: setup.site
 
 local:
 	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} local.yml

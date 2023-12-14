@@ -4,4 +4,4 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - ansible/config.yml
+    - "{{ lookup('env', 'SITE_HOME') | default('.') }}/config.yml"

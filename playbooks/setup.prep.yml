@@ -6,6 +6,6 @@
   become: yes
   become_method: sudo
   vars_files:
-    - ansible/config.yml
+    - "{{ lookup('env', 'SITE_HOME') | default('.') }}/config.yml"
   roles:
     - setup.prep

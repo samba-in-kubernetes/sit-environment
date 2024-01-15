@@ -14,14 +14,6 @@
 - debug:
     msg: "{{ ctdb_network_public_interfaces }}"
 
-- name: Create a README file
-  template:
-    src: README.j2
-    dest: /root/README
-    owner: root
-    group: root
-    mode: '0644'
-
 - name: Create the test-info.yml file with test cluster information
   template:
     src: test-info.yml.j2

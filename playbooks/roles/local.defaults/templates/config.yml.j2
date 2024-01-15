@@ -20,6 +20,54 @@ config:
 
   paths: {{ paths }}
 
+  accounts:
+  {%- for name in accounts | default({}) +%}
+    {{ name }}:
+      groups:
+    {%- for group in accounts[name].groups | default({}) +%}
+      {%- set acct = accounts[name].groups[group] +%}
+      {%- for idx in range(acct.instances | default(1)) +%}
+        {%- set group_name = group +%}
+        {%- if acct.instances is defined +%}
+          {%- set group_name = group ~ (idx + 1) +%}
+        {%- endif +%}
+        {{ group_name }}: {{ acct.gid + idx }}
+      {%- endfor +%}
+    {%- endfor +%}
+      users:
+    {%- for user in accounts[name].users | default({}) +%}
+      {%- set acct = accounts[name].users[user] +%}
+      {%- for idx in range(acct.instances | default(1)) +%}
+        {%- set user_name = user +%}
+        {%- if acct.instances is defined +%}
+          {%- set user_name = user ~ (idx + 1) +%}
+        {%- endif +%}
+        {{ user_name }}:
+          uid: {{ acct.uid + idx }}
+          {%- if acct.primary_group is defined +%}
+          primary_group: {{ acct.primary_group }}
+          {%- endif +%}
+          password: {{ acct.password | default(user_name) }}
+          {%- if acct.comment is defined +%}
+          comment: {{ acct.comment }}
+          {%- endif +%}
+          {%- if acct.groups | default(false) +%}
+          groups:
+            {%- for group in acct.groups | default([]) +%}
+              {%- if accounts[name].groups[group].instances is defined +%}
+                {%- for idx in range(accounts[name].groups[group].instances) +%}
+            - {{ group }}{{ idx + 1}}
+                {%- endfor +%}
+              {%- else +%}
+            - {{ group }}
+              {%- endif +%}
+            {%- endfor +%}
+          {%- endif +%}
+          samba: {{ acct.samba | default('false') }}
+      {%- endfor +%}
+    {%- endfor +%}
+  {%- endfor +%}
+
   tests: {{ tests }}
 
   provisioners:
@@ -86,6 +134,7 @@ config:
       {%- for net in data.ctdb | default({}) +%}
         {{ net }}: {{ provisioners[prov].networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
       {%- endfor +%}
+      accounts: {{ data.accounts | default([]) }}
     {%- endfor +%}
   {%- endfor +%}
 

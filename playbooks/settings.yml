@@ -29,6 +29,85 @@ paths:
 
   mount: /mnt
 
+# Creation of accounts:
+#
+# Here are defined lists of groups and users, that are to be created in the test
+# nodes. Since it must be possible to define different accounts in different
+# types of machines, all definitions are created inside named objects, which
+# will later be referenced from the 'environment' object.
+#
+# Groups are created inside the 'groups' sub-object. Each group has the
+# following properties:
+#
+#   gid: (required)
+#     The GID number to assign to this group account.
+#
+#   instances: (optional)
+#     Number of group accounts to create using these properties. If not present,
+#     a regular group will be created. If present, a number of groups will be
+#     created using the same data but modifying the following properties:
+#
+#       gid: The first group will be assigned the gid specified, but it will be
+#            incremented by one for each new group.
+#
+#       name: The name of the group will be suffixed by an incrementing index,
+#             starting from 1.
+#
+# Note: default group names (those with the same name as the user), don't need
+#       to be defined. They are created automatically. This object is intended
+#       to create supplementary groups.
+#
+# Users are created inside the 'users' sub-object. Each user has the following
+# properties:
+#
+#   uid: (required)
+#     The UID number to assign to this user account.
+#
+#   primary_group: (optional, default: a group with the same name as the user)
+#     The primary group to assign to the user account. If present, it must be
+#     defined in the 'groups' object.
+#
+#     The name cannot reference a template group (one defined with the
+#     'instances' value). If the primary group belongs to a template group,
+#     then the index must also be included as part of the name.
+#
+#   password: (optional, default: the name of the user)
+#     The password to assign to the user account.
+#
+#   comment: (optional)
+#     A comment to assign to the user account.
+#
+#   groups: (optional)
+#     A list of supplementary groups that will be assigned to the user account.
+#     All of them must be defined in the 'groups' object.
+#
+#     If a name references a template group (one defined with the 'instances'
+#     value), then the user is made member of all groups from the template.
+#
+#   instances: (optional)
+#     Number of user accounts to create using these properties. If not present,
+#     a regular user will be created. If present, a number of users will be
+#     created using the same data but modifying the following properties:
+#
+#       uid: The first user will be assigned the uid specified, but it will be
+#            incremented by one for each new user.
+#
+#       name: The name of the user will be suffixed by an incrementing index,
+#             starting from 1.
+#
+#   samba: (optional, default: false)
+#     Boolean that indicates if this user will be created in samba. This only
+#     has effect if the target node has samba installed. Otherwise it's ignored.
+#
+accounts:
+  default:
+    users:
+      test:
+        uid: 2001
+        password: x
+        instances: 2
+        samba: true
+
 resources:
   # Percentage of free memory that will be used for sit-environment by default.
   # It can be overridden by setting the `memory` extra variable.
@@ -167,6 +246,10 @@ provisioners:
 #     List of ansible group names where the VMs of this type will be
 #     assigned to.
 #
+#   accounts: (optional)
+#     List of predefined account objects that will be used to create groups
+#     and users for this specific VM type.
+#
 environments:
   glusterfs:
     cpus: 2
@@ -200,6 +283,7 @@ environments:
           public: 10
         groups: [cluster]
         os: centos8
+        accounts: [default]
 
   xfs:
     cpus: 2
@@ -223,6 +307,7 @@ environments:
         ctdb:
           public: 10
         groups: [cluster]
+        accounts: [default]
 
       client:
         cpu_weight: 1
@@ -257,6 +342,7 @@ environments:
         ctdb:
           public: 10
         groups: [cluster]
+        accounts: [default]
 
       client:
         cpu_weight: 1

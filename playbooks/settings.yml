@@ -31,7 +31,7 @@ paths:
 
 resources:
   # Percentage of free memory that will be used for sit-environment by default.
-  # It can be overriden by setting the `memory` extra variable.
+  # It can be overridden by setting the `memory` extra variable.
   #
   # All VMs are guaranteed to use the minimum memory defined, even if this
   # makes them use more than the amount of memory defined here.
@@ -60,7 +60,7 @@ resources:
   memory: 50
 
   # Percentage of the cores that will be used for sit-environment by default.
-  # It can be overriden by setting the `cpu` extra variable.
+  # It can be overridden by setting the `cpu` extra variable.
   #
   # This is equivalent to the `memory` option but applied to CPU cores.
   #
@@ -93,11 +93,11 @@ provisioners:
 #
 #   provisioner: (optional, default: 'vagrant')
 #     Default provisioner used to provision the hosts of the environment.
-#     This value can be overriden by specific VM type definitions.
+#     This value can be overridden by specific VM type definitions.
 #
 #   os: (optional, default: `use_distro` if defined, 'centos9' otherwise)
 #     Default OS installed on all hosts of the environment. This value can
-#     be overriden by specific VM type definitions.
+#     be overridden by specific VM type definitions.
 #
 #   cpus: (required)
 #     Default minimum number of CPUs to assign to each VM. This value can be

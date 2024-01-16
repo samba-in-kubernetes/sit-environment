@@ -15,18 +15,9 @@
     file: new_volume.yml
   vars:
     volume:
-      name: "{{ replicate_cluster_volume }}"
-      type: "replicate"
-      backends: "{{ replicate_cluster_bricks }}"
-      replica_count: "{{ replicate_cluster_replica_count }}"
-      options: "{{ replicate_cluster_options }}"
-
-- include_tasks:
-    file: new_volume.yml
-  vars:
-    volume:
-      name: "{{ disperse_cluster_volume }}"
-      type: "disperse"
-      backends: "{{ disperse_cluster_bricks }}"
-      disperse_count: "{{ disperse_cluster_disperse_count }}"
-      options: "{{ disperse_cluster_options }}"
+      name: "{{ item.cluster_volume }}"
+      type: "{{ item.glusterfs.type }}"
+      backends: "{{ item.glusterfs.bricks }}"
+      subvolume_size: "{{ item.glusterfs.subvolume_size }}"
+      options: "{{ item.glusterfs.options }}"
+  with_items: "{{ samba_shares }}"

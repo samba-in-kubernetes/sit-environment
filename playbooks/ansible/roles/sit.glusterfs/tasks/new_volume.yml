@@ -5,7 +5,7 @@
     name: "{{ volume.name }}"
     bricks: "{{ volume.backends }}"
     cluster: "{{ config.groups['cluster'] }}"
-    replicas: "{{ volume.replica_count }}"
+    replicas: "{{ volume.subvolume_size }}"
   run_once: yes
   when: volume.type == 'replicate'
 
@@ -15,7 +15,7 @@
     name: "{{ volume.name }}"
     bricks: "{{ volume.backends }}"
     cluster: "{{ config.groups['cluster'] }}"
-    disperses: "{{ volume.disperse_count }}"
+    disperses: "{{ volume.subvolume_size }}"
     force: yes
   run_once: yes
   when: volume.type == 'disperse'

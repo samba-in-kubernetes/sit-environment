@@ -71,10 +71,3 @@
 - name: Update selinux contexts
   command: restorecon -R "{{ config.paths.mount }}/{{ item.cluster_volume }}"
   loop: "{{ samba_shares }}"
-
-- name: Create test users
-  user:
-    name: "{{ item.username }}"
-    uid: "{{ item.uid }}"
-    state: present
-  with_items: "{{ samba_users }}"

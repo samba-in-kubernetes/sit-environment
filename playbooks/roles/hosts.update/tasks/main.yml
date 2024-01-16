@@ -5,3 +5,25 @@
     - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
   loop_control:
     loop_var: include_file
+
+- name: Process group accounts
+  include_tasks: create_groups.yml
+  vars:
+    accounts: "{{ config.accounts[account_group].groups }}"
+  when:
+    - config.accounts[account_group].groups
+    - account_group in config.nodes[inventory_hostname].accounts
+  with_items: "{{ config.accounts }}"
+  loop_control:
+    loop_var: account_group
+
+- name: Process user accounts
+  include_tasks: create_users.yml
+  vars:
+    accounts: "{{ config.accounts[account_group].users }}"
+  when:
+    - config.accounts[account_group].users
+    - account_group in config.nodes[inventory_hostname].accounts
+  with_items: "{{ config.accounts }}"
+  loop_control:
+    loop_var: account_group

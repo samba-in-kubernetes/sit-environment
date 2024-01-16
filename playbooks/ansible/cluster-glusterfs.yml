@@ -44,38 +44,6 @@ gluster_infra_fw_zone: public
 gluster_infra_fw_services:
   - glusterfs
 
-replicate_cluster_volume: "vol-replicate"
-replicate_cluster_replica_count: "{{ config.groups['cluster']|length }}"
-replicate_cluster_bricks: '/bricks/brick-repl-0/vol,/bricks/brick-repl-1/vol,/bricks/brick-repl-2/vol'
-replicate_cluster_options:
-  features.cache-invalidation: 'on'
-  features.cache-invalidation-timeout: '600'
-  performance.cache-samba-metadata: 'on'
-  performance.stat-prefetch: 'on'
-  performance.cache-invalidation: 'on'
-  performance.md-cache-timeout: '600'
-  network.inode-lru-limit: '200000'
-  performance.nl-cache: 'on'
-  performance.nl-cache-timeout: '600'
-  performance.readdir-ahead: 'on'
-  performance.parallel-readdir: 'on'
-
-disperse_cluster_volume: "vol-disperse"
-disperse_cluster_disperse_count: 3
-disperse_cluster_bricks: '/bricks/brick-disp-0/vol,/bricks/brick-disp-1/vol,/bricks/brick-disp-2/vol'
-disperse_cluster_options:
-  features.cache-invalidation: 'on'
-  features.cache-invalidation-timeout: '600'
-  performance.cache-samba-metadata: 'on'
-  performance.stat-prefetch: 'on'
-  performance.cache-invalidation: 'on'
-  performance.md-cache-timeout: '600'
-  network.inode-lru-limit: '200000'
-  performance.nl-cache: 'on'
-  performance.nl-cache-timeout: '600'
-  performance.readdir-ahead: 'on'
-  performance.parallel-readdir: 'on'
-
 ctdb_network_private_interfaces: >-
   {{
     config.nodes |
@@ -105,8 +73,41 @@ samba_shares:
     samba:
       options:
         "acl_xattr:ignore system acls": "yes"
+    glusterfs:
+      type: "replicate"
+      subvolume_size: "{{ config.groups['cluster']|length }}"
+      bricks: '/bricks/brick-repl-0/vol,/bricks/brick-repl-1/vol,/bricks/brick-repl-2/vol'
+      options:
+        features.cache-invalidation: 'on'
+        features.cache-invalidation-timeout: '600'
+        performance.cache-samba-metadata: 'on'
+        performance.stat-prefetch: 'on'
+        performance.cache-invalidation: 'on'
+        performance.md-cache-timeout: '600'
+        network.inode-lru-limit: '200000'
+        performance.nl-cache: 'on'
+        performance.nl-cache-timeout: '600'
+        performance.readdir-ahead: 'on'
+        performance.parallel-readdir: 'on'
+
   - cluster_volume: "vol-disperse"
     share_name: "disperse"
     samba:
       options:
         "acl_xattr:ignore system acls": "yes"
+    glusterfs:
+      type: "disperse"
+      subvolume_size: 3
+      bricks: '/bricks/brick-disp-0/vol,/bricks/brick-disp-1/vol,/bricks/brick-disp-2/vol'
+      options:
+        features.cache-invalidation: 'on'
+        features.cache-invalidation-timeout: '600'
+        performance.cache-samba-metadata: 'on'
+        performance.stat-prefetch: 'on'
+        performance.cache-invalidation: 'on'
+        performance.md-cache-timeout: '600'
+        network.inode-lru-limit: '200000'
+        performance.nl-cache: 'on'
+        performance.nl-cache-timeout: '600'
+        performance.readdir-ahead: 'on'
+        performance.parallel-readdir: 'on'

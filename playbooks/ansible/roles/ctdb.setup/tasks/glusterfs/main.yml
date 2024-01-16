@@ -24,7 +24,7 @@
       name: "{{ ctdb_cluster_volume }}"
       type: "replicate"
       backends: "{{ ctdb_brick_location }}/ctdb"
-      replica_count: "{{ ctdb_cluster_replica_count }}"
+      subvolume_size: "{{ ctdb_cluster_replica_count }}"
       mount: "{{ ctdb_lock_path }}"
       mount_opts: "_netdev,transport=tcp,xlator-option=*client*.ping-timeout=10"
 

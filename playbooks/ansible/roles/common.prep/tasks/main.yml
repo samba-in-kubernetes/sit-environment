@@ -13,18 +13,31 @@
 
 - name: create ansible directory (for ssh key)
   file:
-    path: ansible
+    path: /root/ansible
     state: directory
 
 - name: copy ssh key
   copy:
     src: insecure_private_ssh_key
-    dest: ansible/insecure_private_ssh_key
+    dest: /root/ansible/insecure_private_ssh_key
+    mode: 0600
+
+- name: Create .ssh directory
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: 0700
 
 - name: copy ssh config
   copy:
     src: ssh-config-setup
-    dest: .ssh/config
+    dest: /root/.ssh/config
+
+- name: Copy authorized_keys
+  copy:
+    src: ~/.ssh/authorized_keys
+    dest: /root/.ssh/authorized_keys
+    mode: 0600
 
 - name: Create /etc/hosts
   template:

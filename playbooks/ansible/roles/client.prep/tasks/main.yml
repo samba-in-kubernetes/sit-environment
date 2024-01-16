@@ -14,6 +14,19 @@
 - debug:
     msg: "{{ ctdb_network_public_interfaces }}"
 
+- name: Create backend mount points
+  file:
+    path: "{{ config.paths.mount }}/backends/{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}"
+    state: directory
+  with_items: "{{ samba_shares }}"
+
+- name: Make the backend filesystems accessible from the client
+  command: >-
+    sshfs -o reconnect
+      root@{{ config.groups['cluster'][0] }}:{{ config.paths.mount }}/{{ item.cluster_volume }}
+      {{ config.paths.mount }}/backends/{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}
+  with_items: "{{ samba_shares }}"
+
 - name: Create the test-info.yml file with test cluster information
   template:
     src: test-info.yml.j2

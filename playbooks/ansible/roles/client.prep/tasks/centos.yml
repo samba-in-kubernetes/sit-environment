@@ -11,6 +11,7 @@
       - python3-pytest
       - podman
       - tox
+      - sshfs
     state: latest
 
 - name: Link to pytest

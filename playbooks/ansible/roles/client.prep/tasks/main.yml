@@ -24,5 +24,4 @@
     exported_sharenames: >-
       {{ samba_shares | map(attribute='share_name') |
       map('regex_replace', '$', '-' + config.be.name + '-' + config.be.variant) | list }}
-    test_users: "{{ samba_users }}"
     test_backend: "{{ config.be.name }}"

@@ -1,0 +1,11 @@
+---
+- name: Create user
+  user:
+    name: "{{ item }}"
+    uid: "{{ accounts[item].uid }}"
+    password: "{{ accounts[item].password | password_hash }}"
+    group: "{{ accounts[item].primary_group | default(omit) }}"
+    comment: "{{ accounts[item].comment | default(omit) }}"
+    groups: "{{ accounts[item].groups | default(omit) }}"
+    state: present
+  with_items: "{{ accounts }}"

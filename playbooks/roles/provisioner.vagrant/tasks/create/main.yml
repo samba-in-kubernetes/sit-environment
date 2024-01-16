@@ -59,7 +59,7 @@
   replace:
     path: ./ansible/ssh-config-setup
     regexp: "IdentityFile .*"
-    replace: "IdentityFile ansible/insecure_private_ssh_key"
+    replace: "IdentityFile ~/ansible/insecure_private_ssh_key"
 
 - name: Create state directory structure on host
   file:

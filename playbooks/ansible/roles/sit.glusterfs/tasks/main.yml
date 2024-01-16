@@ -20,4 +20,5 @@
       backends: "{{ item.glusterfs.bricks }}"
       subvolume_size: "{{ item.glusterfs.subvolume_size }}"
       options: "{{ item.glusterfs.options }}"
+      mount: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
   with_items: "{{ samba_shares }}"

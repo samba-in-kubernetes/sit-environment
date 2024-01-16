@@ -33,6 +33,5 @@
     path: "{{ volume.mount }}"
     src: "localhost:/{{ volume.name }}"
     fstype: glusterfs
-    opts: "{{ volume.mount_opts | default('') }}"
+    opts: "{{ volume.mount_opts | default(omit) }}"
     state: mounted
-  when: volume.mount is defined

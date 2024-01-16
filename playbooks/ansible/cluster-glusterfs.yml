@@ -98,9 +98,6 @@ ctdb_cluster_volume: "ctdb"
 ctdb_cluster_replica_count: "{{ config.groups['cluster']|length }}"
 
 samba_netbios_name: "SIT-GLUSTERFS-TEST"
-samba_users:
-  - { username: 'test1', password: 'x', uid: '2001' }
-  - { username: 'test2', password: 'x', uid: '2002' }
 
 samba_shares:
   - { cluster_volume: "vol-replicate", share_name: "replicate" }

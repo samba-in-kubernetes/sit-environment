@@ -19,9 +19,6 @@ ctdb_network_public_interface_subnet_mask: "24"
 ctdb_network_public_interface_name: "eth2"
 
 samba_netbios_name: "SIT-CEPHFS-TEST"
-samba_users:
-  - { username: 'test1', password: 'x', uid: '2001' }
-  - { username: 'test2', password: 'x', uid: '2002' }
 
 samba_shares:
   - { cluster_volume: "samba", share_name: "share" }

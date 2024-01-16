@@ -11,3 +11,4 @@
     - "sit.{{ config.be.name }}"
     - samba.setup
     - ctdb.setup
+    - users.setup

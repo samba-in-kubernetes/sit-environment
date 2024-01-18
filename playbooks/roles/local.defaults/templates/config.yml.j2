@@ -1,31 +1,31 @@
 ---
 config:
   os:
-  {%- for os_name in os_info +%}
+  {%- for os_name in settings.os_info +%}
     {{ os_name }}:
-      family: "{{ os_info[os_name].family }}"
-      distro: "{{ os_info[os_name].distro }}"
-      version: "{{ os_info[os_name].version }}"
+      family: "{{ settings.os_info[os_name].family }}"
+      distro: "{{ settings.os_info[os_name].distro }}"
+      version: "{{ settings.os_info[os_name].version }}"
       includes:
-        - "{{ os_info[os_name].distro }}{{ os_info[os_name].version}}.yml"
-        - "{{ os_info[os_name].distro }}.yml"
-        - "{{ os_info[os_name].family }}.yml"
+        - "{{ settings.os_info[os_name].distro }}{{ settings.os_info[os_name].version}}.yml"
+        - "{{ settings.os_info[os_name].distro }}.yml"
+        - "{{ settings.os_info[os_name].family }}.yml"
   {%- endfor +%}
 
   be:
     name: "{{ be }}"
     variant: "{{ variant }}"
 
-  data: {{ environments[be].data | default({}) }}
+  data: {{ settings.environments[be].data | default({}) }}
 
-  paths: {{ paths }}
+  paths: {{ settings.paths }}
 
   accounts:
-  {%- for name in accounts | default({}) +%}
+  {%- for name in settings.accounts | default({}) +%}
     {{ name }}:
       groups:
-    {%- for group in accounts[name].groups | default({}) +%}
-      {%- set acct = accounts[name].groups[group] +%}
+    {%- for group in settings.accounts[name].groups | default({}) +%}
+      {%- set acct = settings.accounts[name].groups[group] +%}
       {%- for idx in range(acct.instances | default(1)) +%}
         {%- set group_name = group +%}
         {%- if acct.instances is defined +%}
@@ -35,8 +35,8 @@ config:
       {%- endfor +%}
     {%- endfor +%}
       users:
-    {%- for user in accounts[name].users | default({}) +%}
-      {%- set acct = accounts[name].users[user] +%}
+    {%- for user in settings.accounts[name].users | default({}) +%}
+      {%- set acct = settings.accounts[name].users[user] +%}
       {%- for idx in range(acct.instances | default(1)) +%}
         {%- set user_name = user +%}
         {%- if acct.instances is defined +%}
@@ -54,8 +54,8 @@ config:
           {%- if acct.groups | default(false) +%}
           groups:
             {%- for group in acct.groups | default([]) +%}
-              {%- if accounts[name].groups[group].instances is defined +%}
-                {%- for idx in range(accounts[name].groups[group].instances) +%}
+              {%- if settings.accounts[name].groups[group].instances is defined +%}
+                {%- for idx in range(settings.accounts[name].groups[group].instances) +%}
             - {{ group }}{{ idx + 1}}
                 {%- endfor +%}
               {%- else +%}
@@ -68,18 +68,18 @@ config:
     {%- endfor +%}
   {%- endfor +%}
 
-  tests: {{ tests }}
+  tests: {{ settings.tests }}
 
   provisioners:
-  {%- for prov in environments[be].nodes | dict2items | map(attribute='value.provisioner', default='vagrant') | unique +%}
+  {%- for prov in settings.environments[be].nodes | dict2items | map(attribute='value.provisioner', default='vagrant') | unique +%}
     {{ prov }}:
-    {%- for item in provisioners[prov] | default({}) +%}
-      {{ item }}: {{ provisioners[prov][item] }}
+    {%- for item in settings.provisioners[prov] | default({}) +%}
+      {{ item }}: {{ settings.provisioners[prov][item] }}
     {%- endfor +%}
       hosts:
-      {%- for name in environments[be].nodes +%}
-        {%- set data = environments[be].nodes[name] +%}
-        {%- if data.provisioner | default(environments[be].provisioner | default('vagrant')) == prov +%}
+      {%- for name in settings.environments[be].nodes +%}
+        {%- set data = settings.environments[be].nodes[name] +%}
+        {%- if data.provisioner | default(settings.environments[be].provisioner | default('vagrant')) == prov +%}
         {%- for idx in range(data.instances | default(1)) +%}
         - {{ name }}{{ idx }}
         {%- endfor +%}
@@ -87,19 +87,19 @@ config:
       {%- endfor +%}
   {%- endfor +%}
 
-{%- set total_mem = max_memory * ((memory | default(resources.memory | default(50))) | int) / 100 +%}
-{%- set total_cpu = max_cpu * ((cpu | default(resources.cpu | default(100))) | int) / 100 +%}
+{%- set total_mem = max_memory * ((memory | default(settings.resources.memory | default(50))) | int) / 100 +%}
+{%- set total_cpu = max_cpu * ((cpu | default(settings.resources.cpu | default(100))) | int) / 100 +%}
 {%- set extra_mem = 0 +%}
 {%- set extra_cpu = 0 +%}
 {%- set base_mem = [] +%}
 {%- set base_cpu = [] +%}
 {%- set weight_mem = [] +%}
 {%- set weight_cpu = [] +%}
-{%- for name in environments[be].nodes +%}
-{%-   set data = environments[be].nodes[name] +%}
+{%- for name in settings.environments[be].nodes +%}
+{%-   set data = settings.environments[be].nodes[name] +%}
 {%-   set count = data.instances | default(1) +%}
-{%-   set _ = base_mem.append(count * (data.memory | default(environments[be].memory))) +%}
-{%-   set _ = base_cpu.append(count * (data.cpus | default(environments[be].cpus))) +%}
+{%-   set _ = base_mem.append(count * (data.memory | default(settings.environments[be].memory))) +%}
+{%-   set _ = base_cpu.append(count * (data.cpus | default(settings.environments[be].cpus))) +%}
 {%-   set _ = weight_mem.append(count * (data.memory_weight | default(1))) +%}
 {%-   set _ = weight_cpu.append(count * (data.cpu_weight | default(1))) +%}
 {%- endfor +%}
@@ -115,38 +115,38 @@ config:
 {%- endif +%}
 
   nodes:
-  {%- for name in environments[be].nodes +%}
-    {%- set data = environments[be].nodes[name] +%}
-    {%- set prov = data.provisioner | default(environments[be].provisioner | default('vagrant')) +%}
+  {%- for name in settings.environments[be].nodes +%}
+    {%- set data = settings.environments[be].nodes[name] +%}
+    {%- set prov = data.provisioner | default(settings.environments[be].provisioner | default('vagrant')) +%}
     {%- for idx in range(data.instances | default(1)) +%}
     {{ name }}{{ idx }}:
       groups: {{ data.groups }}
       provisioner: {{ prov }}
-      os: {{ data.os | default(environments[be].os | default(os)) }}
-      cpus: {{ (data.cpus | default(environments[be].cpus)) + ((extra_cpu * (data.cpu_weight | default(1))) | int) }}
-      memory: {{ (data.memory | default(environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
+      os: {{ data.os | default(settings.environments[be].os | default(os)) }}
+      cpus: {{ (data.cpus | default(settings.environments[be].cpus)) + ((extra_cpu * (data.cpu_weight | default(1))) | int) }}
+      memory: {{ (data.memory | default(settings.environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
       disks: {{ data.disks | default([]) }}
       networks:
       {%- for net in data.networks | default({}) +%}
-        {{ net }}: {{ provisioners[prov].networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}
+        {{ net }}: {{ settings.provisioners[prov].networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}
       {%- endfor +%}
       ctdb:
       {%- for net in data.ctdb | default({}) +%}
-        {{ net }}: {{ provisioners[prov].networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
+        {{ net }}: {{ settings.provisioners[prov].networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
       {%- endfor +%}
       accounts: {{ data.accounts | default([]) }}
     {%- endfor +%}
   {%- endfor +%}
 
   groups:
-  {%- for group in environments[be].nodes.values() | map(attribute='groups') | flatten | unique | list +%}
+  {%- for group in settings.environments[be].nodes.values() | map(attribute='groups') | flatten | unique | list +%}
     {{ group }}:
-    {%- for host in environments[be].nodes | dict2items | selectattr('value.groups', 'contains', group) | map(attribute='key') | list +%}
-      {%- for idx in range(environments[be].nodes[host].instances | default(1)) +%}
+    {%- for host in settings.environments[be].nodes | dict2items | selectattr('value.groups', 'contains', group) | map(attribute='key') | list +%}
+      {%- for idx in range(settings.environments[be].nodes[host].instances | default(1)) +%}
       - {{ host }}{{ idx }}
       {%- endfor +%}
     {%- endfor +%}
   {%- endfor +%}
 
-  statedir: "{{ misc.host.statedir }}/sit_statedump"
-  configdir: "{{ misc.host.configdir }}"
+  statedir: "{{ settings.misc.host.statedir }}/sit_statedump"
+  configdir: "{{ settings.misc.host.configdir }}"

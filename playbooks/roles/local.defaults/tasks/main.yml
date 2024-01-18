@@ -1,7 +1,32 @@
 ---
-- name: Load settings
+- name: Load global settings
   include_vars:
-    file: "settings.yml"
+    name: global_settings
+    file: settings.yml
+
+- name: Load personal settings
+  include_vars:
+    name: personal_settings
+    file: ~/.site/settings.yml
+  failed_when: false
+
+- name: Load local settings
+  include_vars:
+    name: local_settings
+    file: "{{ lookup('env', 'PWD') | default('.') }}/local.yml"
+  failed_when: false
+
+- name: Combine settings
+  set_fact:
+    settings: >-
+      {{
+         global_settings |
+         combine(personal_settings, local_settings,
+                 recursive = true, list_merge = 'append_rp')
+      }}
+
+- debug:
+    var: settings
 
 - name: Generate config.yml in ansible directory
   template:

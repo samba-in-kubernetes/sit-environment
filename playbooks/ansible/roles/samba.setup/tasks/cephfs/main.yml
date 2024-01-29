@@ -2,15 +2,25 @@
 - name: Prepare CephFS VFS support
   when: config.be.variant == 'vfs'
   block:
+    - name: Process OS specific tasks
+      include_tasks: "{{ include_file }}"
+      with_first_found:
+        - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
+      loop_control:
+        loop_var: include_file
+
+    - name: SELinux - Allow Samba to do tcp socket operations
+      seboolean:
+        # Name of the boolean is misleading in this context.
+        # https://github.com/samba-in-kubernetes/sit-environment/issues/79
+        name: samba_load_libgfapi
+        state: yes
+        persistent: yes
+
     - name: Install CephFS VFS module
       yum:
         name: samba-vfs-cephfs
         state: present
-
-    - name: Set selinux in permissive mode
-      selinux:
-        policy: targeted
-        state: permissive
 
     - name: Skip check of share path
       lineinfile:

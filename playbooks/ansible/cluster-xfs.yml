@@ -21,4 +21,9 @@ ctdb_network_public_interface_name: "eth2"
 samba_netbios_name: "SIT-XFS-TEST"
 
 samba_shares:
-  - { cluster_volume: "samba", share_name: "share", device: "/dev/vdb" }
+  - cluster_volume: "samba"
+    share_name: "share"
+    device: "/dev/vdb"
+    samba:
+      options:
+        "acl_xattr:ignore system acls": "yes"

@@ -57,6 +57,7 @@
         volume: "{{ item.cluster_volume }}"
         path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
         file: "{{ config.paths.samba.etc }}/smb.shares/{{ name }}.conf"
+        options: "{{ item.samba.options }}"
       with_items: "{{ samba_shares }}"
 
     - name: Include share configuration into smb.conf

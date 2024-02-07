@@ -11,4 +11,9 @@ read only = no
 path = {{ subvol }}
 {%- else +%}
 path = {{ path }}
-{%- endif %}
+{%- endif +%}
+{%- if options is defined +%}
+{%- for option, value in options.items() +%}
+{{ option }} = {{ value }}
+{%- endfor +%}
+{%- endif +%}

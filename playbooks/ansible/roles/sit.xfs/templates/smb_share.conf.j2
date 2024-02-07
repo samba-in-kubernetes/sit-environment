@@ -3,3 +3,8 @@ comment = For samba share of volume {{ volume }}
 vfs objects = acl_xattr
 path = {{ path }}
 read only = no
+{%- if options is defined +%}
+{%- for option, value in options.items() +%}
+{{ option }} = {{ value }}
+{%- endfor +%}
+{%- endif +%}

@@ -6,3 +6,8 @@ glusterfs:logfile = /var/log/samba/{{ name }}.%M.log
 glusterfs:loglevel = 7
 path = /
 read only = no
+{%- if options is defined +%}
+{%- for option, value in options.items() +%}
+{{ option }} = {{ value }}
+{%- endfor +%}
+{%- endif +%}

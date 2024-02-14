@@ -3,7 +3,6 @@
   include_tasks: centos.yml
 
 - name: Install Python jmespath module
-  yum:
-    name:
-      - python3.11-jmespath
-    state: latest
+  pip:
+    executable: pip3.12
+    name: jmespath

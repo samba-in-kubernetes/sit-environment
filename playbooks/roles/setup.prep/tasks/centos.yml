@@ -9,16 +9,6 @@
     name: epel-release
     state: latest
 
-- name: Install Python3 pip
-  yum:
-    name: python3-pip
-    state: installed
-
-- name: Install pip jinja2 library
-  pip:
-    name: jinja2
-    state: latest
-
 # RHEL 8 image doesn't include make
 - name: Install additional packages
   yum:

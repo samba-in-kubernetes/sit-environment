@@ -1,6 +1,4 @@
 ---
 - name: Install Python jmespath module
-  yum:
-    name:
-      - python3-jmespath
-    state: latest
+  pip:
+    name: jmespath

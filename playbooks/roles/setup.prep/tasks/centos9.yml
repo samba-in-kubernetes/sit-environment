@@ -1,0 +1,12 @@
+---
+- name: Process common OS tasks
+  include_tasks: centos.yml
+
+- name: Install Python3 pip
+  yum:
+    name: python3-pip
+    state: installed
+
+- name: Install pip jinja2 library
+  pip:
+    name: jinja2

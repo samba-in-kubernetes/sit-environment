@@ -4,8 +4,10 @@
   block:
     - name: Process OS specific tasks
       include_tasks: "{{ include_file }}"
+      vars:
+        prefix: "{{ role_path }}/tasks/cephfs/"
       with_first_found:
-        - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
+        - files: "{{ [prefix] | product(config.os[config.nodes[inventory_hostname].os].includes) | map('join') | list }}"
       loop_control:
         loop_var: include_file
 

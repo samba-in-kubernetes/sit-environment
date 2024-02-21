@@ -1,7 +1,1 @@
 ---
-- name: Create the XFS filesystem
-  filesystem:
-    dev: "{{ item.device }}"
-    force: true
-    fstype: xfs
-  loop: "{{ samba_shares }}"

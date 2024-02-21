@@ -1,4 +1,8 @@
 ---
+- name: Create XFS shared volume
+  include_tasks:
+    file: new_volume.yml
+
 - name: Create share config file
   template:
     src: "smb_share.conf.j2"

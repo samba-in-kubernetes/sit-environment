@@ -1,4 +1,8 @@
 ---
+- name: Create the CephFS subvolume
+  include_tasks:
+    file: new_volume.yml
+
 - name: Get the subvolume's path
   command: >
     /root/cephadm shell --

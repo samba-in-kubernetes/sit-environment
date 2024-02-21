@@ -1,10 +1,8 @@
-[{{ name }}]
-comment = For samba share of volume {{ volume }}
+[{{ name }}-{{ config.be.name }}-{{ config.be.variant }}]
+comment = Volume '{{ name }}' from {{ config.be.name }}({{ config.be.variant }})
 vfs objects = acl_xattr
 path = {{ path }}
 read only = no
-{%- if options is defined +%}
-{%- for option, value in options.items() +%}
+{%- for option, value in volume.samba.options.items() | default([]) +%}
 {{ option }} = {{ value }}
 {%- endfor +%}
-{%- endif +%}

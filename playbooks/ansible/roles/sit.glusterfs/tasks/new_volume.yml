@@ -2,36 +2,36 @@
 - name: Create Replicate Volumes
   gluster_volume:
     state: present
-    name: "{{ volume.name }}"
-    bricks: "{{ volume.backends }}"
+    name: "{{ name }}"
+    bricks: "{{ volume.glusterfs.bricks }}"
     cluster: "{{ config.groups['cluster'] }}"
-    replicas: "{{ volume.subvolume_size }}"
+    replicas: "{{ volume.glusterfs.subvolume_size }}"
   run_once: yes
-  when: volume.type == 'replicate'
+  when: volume.glusterfs.type == 'replicate'
 
 - name: Create Dispersed Volumes
   gluster_volume:
     state: present
-    name: "{{ volume.name }}"
-    bricks: "{{ volume.backends }}"
+    name: "{{ name }}"
+    bricks: "{{ volume.glusterfs.bricks }}"
     cluster: "{{ config.groups['cluster'] }}"
-    disperses: "{{ volume.subvolume_size }}"
+    disperses: "{{ volume.glusterfs.subvolume_size }}"
     force: yes
   run_once: yes
-  when: volume.type == 'disperse'
+  when: volume.glusterfs.type == 'disperse'
 
 - name: Set volume options
   gluster_volume:
     state: present
-    name: "{{ volume.name }}"
-    options: "{{ volume.options }}"
+    name: "{{ name }}"
+    options: "{{ volume.glusterfs.options }}"
   run_once: yes
-  when: volume.options is defined
+  when: volume.glusterfs.options is defined
 
 - name: Mount volume
   mount:
-    path: "{{ volume.mount }}"
-    src: "localhost:/{{ volume.name }}"
+    path: "{{ path }}"
+    src: "localhost:/{{ name }}"
     fstype: glusterfs
-    opts: "{{ volume.mount_opts | default(omit) }}"
+    opts: "{{ mount_opts | default(omit) }}"
     state: mounted

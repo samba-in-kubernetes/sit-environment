@@ -97,13 +97,3 @@
       {{ ceph_conf.stdout }}
 
       {{ ceph_auth.stdout }}
-
-- name: Create Ceph subvolumes for samba shares
-  include_tasks:
-    file: new_volume.yml
-  vars:
-    volume:
-      name: "{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}"
-      path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
-      mode: "0777"
-  loop: "{{ samba_shares }}"

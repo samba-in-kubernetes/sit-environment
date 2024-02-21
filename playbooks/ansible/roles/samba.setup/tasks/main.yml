@@ -6,7 +6,7 @@
 
 - name: Create Samba share directories
   file:
-    path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
+    path: "{{ config.paths.mount }}/{{ item.name }}"
     state: directory
     mode: 0777
   loop: "{{ samba_shares }}"
@@ -47,28 +47,30 @@
     group: root
     mode: '0644'
 
-- name: Add share configuration
-  block:
-    - name: Create the share configuration using backend
-      include_role:
-        name: 'sit.{{ config.be.name }}'
-        tasks_from: new_share.yml
-      vars:
-        volume: "{{ item.cluster_volume }}"
-        path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
-        file: "{{ config.paths.samba.etc }}/smb.shares/{{ name }}.conf"
-        options: "{{ item.samba.options }}"
-      with_items: "{{ samba_shares }}"
-
-    - name: Include share configuration into smb.conf
-      lineinfile:
-        path: "{{ config.paths.samba.etc }}/smb.conf"
-        line: "include = {{ config.paths.samba.etc }}/smb.shares/{{ name }}.conf"
-        insertafter: EOF
-      with_items: "{{ samba_shares }}"
+- name: Create the share configuration using backend
+  include_role:
+    name: 'sit.{{ config.be.name }}'
+    tasks_from: new_share.yml
   vars:
-    name: '{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}'
+    name: "{{ item.name }}"
+    path: "{{ config.paths.mount }}/{{ item.name }}"
+    file: "{{ config.paths.samba.etc }}/smb.shares/{{ item.name }}.conf"
+    volume: "{{ item }}"
+  with_items: "{{ samba_shares }}"
+
+- name: Set mount permissions
+  file:
+    path: "{{ config.paths.mount }}/{{ item.name }}"
+    mode: 0777
+  with_items: "{{ samba_shares }}"
+
+- name: Include share configuration into smb.conf
+  lineinfile:
+    path: "{{ config.paths.samba.etc }}/smb.conf"
+    line: "include = {{ config.paths.samba.etc }}/smb.shares/{{ item.name }}.conf"
+    insertafter: EOF
+  with_items: "{{ samba_shares }}"
 
 - name: Update selinux contexts
-  command: restorecon -R "{{ config.paths.mount }}/{{ item.cluster_volume }}"
+  command: restorecon -R "{{ config.paths.mount }}/{{ item.name }}"
   loop: "{{ samba_shares }}"

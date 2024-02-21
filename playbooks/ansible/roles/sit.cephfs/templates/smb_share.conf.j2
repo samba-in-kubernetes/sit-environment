@@ -1,19 +1,15 @@
-[{{ name }}]
-comment = For samba share of subvolume {{ volume }}
+[{{ name }}-{{ config.be.name }}-{{ config.be.variant }}]
+comment = Volume '{{ name }}' from {{ config.be.name }}({{ config.be.variant }})
 vfs objects = acl_xattr
 {%- if config.be.variant == 'vfs' %} ceph
 ceph:config_file = /etc/ceph/sit.ceph.conf
 ceph:user_id = sit
-{%- endif +%}
-browseable = yes
-read only = no
-{%- if config.be.variant == 'vfs' +%}
 path = {{ subvol }}
 {%- else +%}
 path = {{ path }}
 {%- endif +%}
-{%- if options is defined +%}
-{%- for option, value in options.items() +%}
+browseable = yes
+read only = no
+{%- for option, value in volume.samba.options.items() | default([]) +%}
 {{ option }} = {{ value }}
 {%- endfor +%}
-{%- endif +%}

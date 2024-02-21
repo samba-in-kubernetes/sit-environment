@@ -1,0 +1,13 @@
+---
+- name: Create the XFS filesystem
+  filesystem:
+    dev: "{{ volume.xfs.device }}"
+    force: true
+    fstype: xfs
+
+- name: Mount the XFS filesystem
+  mount:
+    path: "{{ path }}"
+    src: "{{ volume.xfs.device }}"
+    fstype: xfs
+    state: mounted

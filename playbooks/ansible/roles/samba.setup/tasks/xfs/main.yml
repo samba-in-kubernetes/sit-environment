@@ -1,9 +1,1 @@
 ---
-- name: Make shares world writable
-  include_tasks:
-    file: "xfs/fix_share_permissions.yml"
-  vars:
-    path: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
-    volume: "{{ item.device }}"
-  with_items: "{{ samba_shares }}"
-  run_once: true

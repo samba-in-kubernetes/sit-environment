@@ -4,7 +4,6 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: new_volume
   vars:
-    volume:
-      name: "ctdb"
-      path: "{{ ctdb_lock_path }}"
-      mode: "0777"
+    name: "ctdb"
+    path: "{{ ctdb_lock_path }}"
+    mode: "0777"

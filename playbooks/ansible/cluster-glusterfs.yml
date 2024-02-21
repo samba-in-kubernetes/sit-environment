@@ -68,8 +68,7 @@ ctdb_cluster_replica_count: "{{ config.groups['cluster']|length }}"
 samba_netbios_name: "SIT-GLUSTERFS-TEST"
 
 samba_shares:
-  - cluster_volume: "vol-replicate"
-    share_name: "replicate"
+  - name: vol-replicate
     samba:
       options:
         "acl_xattr:ignore system acls": "yes"
@@ -90,8 +89,7 @@ samba_shares:
         performance.readdir-ahead: 'on'
         performance.parallel-readdir: 'on'
 
-  - cluster_volume: "vol-disperse"
-    share_name: "disperse"
+  - name: vol-disperse
     samba:
       options:
         "acl_xattr:ignore system acls": "yes"

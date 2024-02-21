@@ -10,15 +10,3 @@
 
 - name: Ensure glusterd service is enabled
   service: name=glusterd state=started enabled=yes
-
-- include_tasks:
-    file: new_volume.yml
-  vars:
-    volume:
-      name: "{{ item.cluster_volume }}"
-      type: "{{ item.glusterfs.type }}"
-      backends: "{{ item.glusterfs.bricks }}"
-      subvolume_size: "{{ item.glusterfs.subvolume_size }}"
-      options: "{{ item.glusterfs.options }}"
-      mount: "{{ config.paths.mount }}/{{ item.cluster_volume }}"
-  with_items: "{{ samba_shares }}"

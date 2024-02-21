@@ -16,15 +16,15 @@
 
 - name: Create backend mount points
   file:
-    path: "{{ config.paths.mount }}/backends/{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}"
+    path: "{{ config.paths.mount }}/backends/{{ item.name }}"
     state: directory
   with_items: "{{ samba_shares }}"
 
 - name: Make the backend filesystems accessible from the client
   command: >-
     sshfs -o reconnect
-      root@{{ config.groups['cluster'][0] }}:{{ config.paths.mount }}/{{ item.cluster_volume }}
-      {{ config.paths.mount }}/backends/{{ item.share_name }}-{{ config.be.name }}-{{ config.be.variant }}
+      root@{{ config.groups['cluster'][0] }}:{{ config.paths.mount }}/{{ item.name }}
+      {{ config.paths.mount }}/backends/{{ item.name }}
   with_items: "{{ samba_shares }}"
 
 - name: Create the test-info.yml file with test cluster information
@@ -35,6 +35,6 @@
     private_interfaces: "{{ ctdb_network_private_interfaces }}"
     public_interfaces: "{{ ctdb_network_public_interfaces }}"
     exported_sharenames: >-
-      {{ samba_shares | map(attribute='share_name') |
+      {{ samba_shares | map(attribute='name') |
       map('regex_replace', '$', '-' + config.be.name + '-' + config.be.variant) | list }}
     test_backend: "{{ config.be.name }}"

@@ -11,17 +11,6 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: common/main.yml
 
-- name: create ansible directory (for ssh key)
-  file:
-    path: /root/ansible
-    state: directory
-
-- name: copy ssh key
-  copy:
-    src: insecure_private_ssh_key
-    dest: /root/ansible/insecure_private_ssh_key
-    mode: 0600
-
 - name: Create /etc/hosts
   template:
     src: hosts.j2

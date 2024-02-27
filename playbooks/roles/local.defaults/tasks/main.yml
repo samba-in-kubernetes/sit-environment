@@ -1,4 +1,10 @@
 ---
+- name: Create .site personal directory
+  file:
+    path: ~/.site
+    mode: 0700
+    state: directory
+
 - name: Check if config.yml exists
   stat:
     path: ansible/config.yml
@@ -54,12 +60,19 @@
 - debug:
     var: config
 
+# TODO: Use openssh_keypair action
+- name: Create SSH key
+  command:
+    cmd: ssh-keygen -C "SITE SSH Key" -f ~/.site/id_rsa -N "" -t rsa -b 2048
+    creates: ~/.site/id_rsa
+
 - name: Update the inventory
   add_host:
     name: "{{ item }}"
     ansible_user: root
     ansible_port: 22
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+    ansible_ssh_private_key_file: "~/.site/id_rsa"
     groups: "{{ config.nodes[item].groups + ['site'] }}"
     site: "{{ config.nodes[item] }}"
   with_items: "{{ config.nodes.keys() }}"

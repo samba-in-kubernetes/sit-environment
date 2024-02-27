@@ -5,7 +5,7 @@
     accounts: "{{ config.accounts[account_group].users }}"
   when:
     - config.accounts[account_group].users
-    - account_group in config.nodes[inventory_hostname].accounts
+    - account_group in site.accounts
   with_items: "{{ config.accounts }}"
   loop_control:
     loop_var: account_group

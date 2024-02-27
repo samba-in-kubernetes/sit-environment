@@ -13,7 +13,7 @@
   vars:
     prefix: "{{ role_path }}/tasks/glusterfs/"
   with_first_found:
-    - files: "{{ [prefix] | product(config.os[config.nodes[inventory_hostname].os].includes) | map('join') | list }}"
+    - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
   loop_control:
     loop_var: include_file
 

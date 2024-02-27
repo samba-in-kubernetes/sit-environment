@@ -1,21 +1,26 @@
 ---
 - name: Setup Vagrant file
+  run_once: true
   template:
     src: Vagrantfile.j2
     dest: Vagrantfile
 
 - name: start vagrant vms
+  run_once: true
   command: vagrant up --no-provision
 
 - name: provision vagrant vms
+  run_once: true
   command: vagrant provision
 
 - name: copy vagrant generated inventory file - local machine
+  run_once: true
   copy:
     src: .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
     dest: ./site_inventory
 
 - name: adapt inventory - ssh options
+  run_once: true
   blockinfile:
     path: ./site_inventory
     block: |
@@ -23,26 +28,31 @@
       ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 - name: copy vagrant generated inventory file - setup machine
+  run_once: true
   copy:
     src: ./site_inventory
     dest: ./ansible/site_inventory
 
 - name: adapt inventory - correct ssh key
+  run_once: true
   replace:
     path: ./ansible/site_inventory
     regexp: "ansible_ssh_private_key_file='.*/\\.vagrant\\.d/insecure_private_key'"
     replace: "ansible_ssh_private_key_file='insecure_private_ssh_key'"
 
 - name: dump ssh config
+  run_once: true
   command: vagrant ssh-config
   register: output
 
 - name: store ssh-config in file
+  run_once: true
   copy:
     content: "{{ output.stdout }}\n"
     dest: ./ssh-config-host
 
 - name: Create host alias
+  run_once: true
   lineinfile:
     path: ./ssh-config-host
     state: present
@@ -51,23 +61,27 @@
   with_items: "{{ config.groups.keys() }}"
 
 - name: copy ssh-config for setup
+  run_once: true
   copy:
     src: ./ssh-config-host
     dest: ./ansible/ssh-config-setup
 
 - name: modify ssh-config-setup
+  run_once: true
   replace:
     path: ./ansible/ssh-config-setup
     regexp: "IdentityFile .*"
     replace: "IdentityFile ~/ansible/insecure_private_ssh_key"
 
 - name: Create state directory structure on host
+  run_once: true
   file:
     path: "{{ config.statedir }}/{{ item }}"
     state: directory
   loop: "{{ config.groups['cluster'] + config.groups['clients'] }}"
 
 - name: Copy common playbook configuration
+  run_once: true
   copy:
     src: ansible/config.yml
     dest: "{{ config.statedir }}"

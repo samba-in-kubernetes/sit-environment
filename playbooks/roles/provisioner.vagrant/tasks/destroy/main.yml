@@ -1,8 +1,10 @@
 ---
 - name: Destroy vagrant machines
+  run_once: true
   command: vagrant destroy -f
 
 - name: Remove vagrant settings
+  run_once: true
   file:
     path: "{{ item }}"
     state: absent

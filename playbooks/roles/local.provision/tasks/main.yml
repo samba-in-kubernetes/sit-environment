@@ -1,10 +1,12 @@
 ---
-- name: Provision all machines
-  include_role:
-    name: "provisioner.{{ provisioner_name }}"
-    tasks_from: "{{ provision_action }}/main.yml"
-  vars:
-    data: "{{ config.provisioners[provisioner_name] }}"
-  loop: "{{ config.provisioners.keys() }}"
-  loop_control:
-    loop_var: provisioner_name
+- name: Preparing environment
+  delegate_to: localhost
+  connection: local
+  become: false
+  block:
+    - name: Provision machines
+      include_role:
+        name: "provisioner.{{ site.provisioner }}"
+        tasks_from: "{{ provision_action }}/main.yml"
+      vars:
+        data: "{{ config.provisioners[site.provisioner] }}"

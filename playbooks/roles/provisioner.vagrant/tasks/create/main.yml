@@ -26,16 +26,3 @@
     name: "{{ item }}"
     ansible_host: "{{ (hostvars[item].vm_ip.stdout | from_json)[0].addr_info[0].local }}"
   with_items: "{{ ansible_play_hosts }}"
-
-- name: Create state directory structure on host
-  run_once: true
-  file:
-    path: "{{ config.statedir }}/{{ item }}"
-    state: directory
-  loop: "{{ config.groups['cluster'] + config.groups['clients'] }}"
-
-- name: Copy common playbook configuration
-  run_once: true
-  copy:
-    src: ansible/config.yml
-    dest: "{{ config.statedir }}"

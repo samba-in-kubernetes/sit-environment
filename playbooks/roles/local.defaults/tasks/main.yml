@@ -1,43 +1,51 @@
 ---
-- name: Load global settings
-  include_vars:
-    name: global_settings
-    file: settings.yml
+- name: Check if config.yml exists
+  stat:
+    path: ansible/config.yml
+  register: config_yml
 
-- name: Load personal settings
-  include_vars:
-    name: personal_settings
-    file: ~/.site/settings.yml
-  failed_when: false
+- name: Generate configuration
+  when: not config_yml.stat.exists
+  block:
+    - name: Load global settings
+      include_vars:
+        name: global_settings
+        file: settings.yml
 
-- name: Load local settings
-  include_vars:
-    name: local_settings
-    file: "{{ lookup('env', 'PWD') | default('.') }}/local.yml"
-  failed_when: false
+    - name: Load personal settings
+      include_vars:
+        name: personal_settings
+        file: ~/.site/settings.yml
+      failed_when: false
 
-- name: Combine settings
-  set_fact:
-    settings: >-
-      {{
-         global_settings |
-         combine(personal_settings, local_settings,
-                 recursive = true, list_merge = 'append_rp')
-      }}
+    - name: Load local settings
+      include_vars:
+        name: local_settings
+        file: "{{ lookup('env', 'PWD') | default('.') }}/local.yml"
+      failed_when: false
 
-- debug:
-    var: settings
+    - name: Combine settings
+      set_fact:
+        settings: >-
+          {{
+             global_settings |
+             combine(personal_settings, local_settings,
+                     recursive = true, list_merge = 'append_rp')
+          }}
 
-- name: Generate config.yml in ansible directory
-  template:
-    src: config.yml.j2
-    dest: ./ansible/config.yml
-  vars:
-    os: "{{ use_distro | default('centos9') }}"
-    be: "{{ (backend | default('xfs') | split('.'))[0] }}"
-    variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
-    max_memory: "{{ ansible_memfree_mb }}"
-    max_cpu: "{{ ansible_processor_nproc }}"
+    - debug:
+        var: settings
+
+    - name: Generate config.yml in ansible directory
+      template:
+        src: config.yml.j2
+        dest: ./ansible/config.yml
+      vars:
+        os: "{{ use_distro | default('centos9') }}"
+        be: "{{ (backend | default('xfs') | split('.'))[0] }}"
+        variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
+        max_memory: "{{ ansible_memfree_mb }}"
+        max_cpu: "{{ ansible_processor_nproc }}"
 
 - name: Load configuration
   include_vars:

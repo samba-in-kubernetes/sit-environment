@@ -53,3 +53,10 @@
 
 - debug:
     var: config
+
+- name: Update the inventory
+  add_host:
+    name: "{{ item }}"
+    groups: "{{ config.nodes[item].groups + ['site'] }}"
+    site: "{{ config.nodes[item] }}"
+  with_items: "{{ config.nodes.keys() }}"

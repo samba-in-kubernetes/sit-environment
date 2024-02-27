@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
     {%- set node = config.nodes[host] %}
     {%- set vm_idx = loop.index0 +%}
     config.vm.define "{{ host }}" do |node|
-        node.vm.box = "{{ settings.provisioners[node.provisioner].images[node.os] }}"
+        node.vm.box = "{{ config.provisioners[node.provisioner].images[node.os] }}"
         node.vm.hostname = "{{ host }}"
     {%- for net in node.networks +%}
         node.vm.network :private_network, ip: "{{ node.networks[net] }}"

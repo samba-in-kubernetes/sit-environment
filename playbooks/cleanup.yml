@@ -3,10 +3,15 @@
   connection: local
   become: no
   gather_facts: false
-  vars_files:
-    - ansible/config.yml
+  roles:
+    - local.defaults
+
+- hosts: site
+  gather_facts: false
   vars:
     provision_action: destroy
+  vars_files:
+    - ansible/config.yml
   roles:
     - local.provision
 

@@ -76,3 +76,14 @@
     groups: "{{ config.nodes[item].groups + ['site'] }}"
     site: "{{ config.nodes[item] }}"
   with_items: "{{ config.nodes.keys() }}"
+
+- name: Create state directory structure on host
+  file:
+    path: "{{ config.statedir }}/{{ item }}"
+    state: directory
+  loop: "{{ groups['site'] }}"
+
+- name: Copy common playbook configuration
+  copy:
+    src: ansible/config.yml
+    dest: "{{ config.statedir }}"

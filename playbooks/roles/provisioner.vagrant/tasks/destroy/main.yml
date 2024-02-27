@@ -11,6 +11,3 @@
   with_items:
     - .vagrant
     - Vagrantfile
-    - ansible/ssh-config-setup
-    - ssh-config-host
-

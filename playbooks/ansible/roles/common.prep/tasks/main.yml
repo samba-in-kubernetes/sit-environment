@@ -22,23 +22,6 @@
     dest: /root/ansible/insecure_private_ssh_key
     mode: 0600
 
-- name: Create .ssh directory
-  file:
-    path: /root/.ssh
-    state: directory
-    mode: 0700
-
-- name: copy ssh config
-  copy:
-    src: ssh-config-setup
-    dest: /root/.ssh/config
-
-- name: Copy authorized_keys
-  copy:
-    src: ~/.ssh/authorized_keys
-    dest: /root/.ssh/authorized_keys
-    mode: 0600
-
 - name: Create /etc/hosts
   template:
     src: hosts.j2

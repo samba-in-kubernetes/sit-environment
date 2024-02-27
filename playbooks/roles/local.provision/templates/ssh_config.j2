@@ -1,0 +1,17 @@
+{%- for host in groups['site'] +%}
+Host {{ host }}
+{%- for group in config.groups -%}
+  {%- if groups[group][0] == host %} {{ group }}{% endif -%}
+{%- endfor +%}
+  HostName {{ hostvars[host].ansible_host }}
+  User {{ hostvars[host].ansible_user }}
+  Port {{ hostvars[host].ansible_port }}
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  {%- if hostvars[host].ansible_ssh_private_key_file is defined +%}
+  PasswordAuthentication no
+  IdentityFile {{ hostvars[host].ansible_ssh_private_key_file }}
+  IdentitiesOnly yes
+  {%- endif +%}
+  LogLevel FATAL
+{%- endfor +%}

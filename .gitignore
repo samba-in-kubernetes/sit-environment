@@ -1,8 +1,7 @@
 *~
 playbooks/.vagrant
 playbooks/ansible/site_inventory
-playbooks/ansible/ssh-config-setup
-playbooks/ssh-config-host
+playbooks/ansible/ssh_config
 playbooks/Vagrantfile
 playbooks/ansible/config.yml
 devel/authorized_keys

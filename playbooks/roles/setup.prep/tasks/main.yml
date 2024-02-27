@@ -11,21 +11,8 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: setup/main.yml
 
-- name: Prepare configuration files
+- name: copy ansible playbooks to setup machine
   become: false
-  block:
-    - name: copy ansible playbooks to setup machine
-      synchronize:
-        src: ansible/
-        dest: ansible
-
-    - name: ensure permissions on ssh key file
-      file:
-        path: ansible/insecure_private_ssh_key
-        mode: u=rw,g=,o=
-
-    - name: copy ssh config in place
-      copy:
-        src: ansible/ssh-config-setup
-        dest: .ssh/config
-        mode: 0600
+  synchronize:
+    src: ansible/
+    dest: ansible

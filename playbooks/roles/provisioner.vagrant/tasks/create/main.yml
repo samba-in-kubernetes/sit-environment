@@ -30,39 +30,6 @@
     ansible_ssh_private_key_file: insecure_private_ssh_key
   with_items: "{{ ansible_play_hosts }}"
 
-- name: dump ssh config
-  run_once: true
-  command: vagrant ssh-config
-  register: output
-
-- name: store ssh-config in file
-  run_once: true
-  copy:
-    content: "{{ output.stdout }}\n"
-    dest: ./ssh-config-host
-
-- name: Create host alias
-  run_once: true
-  lineinfile:
-    path: ./ssh-config-host
-    state: present
-    regexp: '^\s*Host\s+{{ config.groups[item][0] }}.*$'
-    line: "Host {{ config.groups[item][0] }} {{ item }}"
-  with_items: "{{ config.groups.keys() }}"
-
-- name: copy ssh-config for setup
-  run_once: true
-  copy:
-    src: ./ssh-config-host
-    dest: ./ansible/ssh-config-setup
-
-- name: modify ssh-config-setup
-  run_once: true
-  replace:
-    path: ./ansible/ssh-config-setup
-    regexp: "IdentityFile .*"
-    replace: "IdentityFile ~/ansible/insecure_private_ssh_key"
-
 - name: Create state directory structure on host
   run_once: true
   file:

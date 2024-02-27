@@ -11,12 +11,19 @@
       vars:
         data: "{{ config.provisioners[site.provisioner] }}"
 
-    - name: Generate inventory file
+    - name: Generate local files
       when: provision_action == 'create'
       run_once: true
-      template:
-        src: site_inventory.j2
-        dest: ansible/site_inventory
+      block:
+        - name: Generate inventory file
+          template:
+            src: site_inventory.j2
+            dest: ansible/site_inventory
+
+        - name: Generate SSH config file
+          template:
+            src: ssh_config.j2
+            dest: ansible/ssh_config
 
     - name: Cleanup files
       when: provision_action == 'destroy'
@@ -26,3 +33,4 @@
         state: absent
       with_items:
         - ansible/site_inventory
+        - ansible/ssh_config

@@ -2,7 +2,7 @@
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   with_first_found:
-    - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
+    - files: "{{ config.os[site.os].includes }}"
   loop_control:
     loop_var: include_file
 
@@ -12,7 +12,7 @@
     accounts: "{{ config.accounts[account_group].groups }}"
   when:
     - config.accounts[account_group].groups
-    - account_group in config.nodes[inventory_hostname].accounts
+    - account_group in site.accounts
   with_items: "{{ config.accounts }}"
   loop_control:
     loop_var: account_group
@@ -23,7 +23,7 @@
     accounts: "{{ config.accounts[account_group].users }}"
   when:
     - config.accounts[account_group].users
-    - account_group in config.nodes[inventory_hostname].accounts
+    - account_group in site.accounts
   with_items: "{{ config.accounts }}"
   loop_control:
     loop_var: account_group

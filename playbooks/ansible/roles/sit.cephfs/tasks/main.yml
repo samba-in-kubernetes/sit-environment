@@ -11,7 +11,7 @@
     - name: Bootstrap the ceph node
       command: >
         /root/cephadm bootstrap
-        --mon-ip {{ config.nodes[inventory_hostname].networks.private }}
+        --mon-ip {{ site.networks.private }}
         --ssh-private-key /root/.ssh/id_rsa
         --ssh-public-key /root/.ssh/id_rsa.pub
         --skip-monitoring-stack

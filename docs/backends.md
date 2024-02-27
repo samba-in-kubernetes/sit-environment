@@ -58,10 +58,26 @@ file:
    - name: Process OS specific tasks
      include_tasks: "{{ include_file }}"
      with_first_found:
-       - files: "{{ config.os[config.nodes[inventory_hostname].os].includes }}"
+       - files: "{{ config.os[site.os].includes }}"
      loop_control:
        loop_var: include_file
    ```
+
+If the tasks file is not directly inside the _tasks_ directory, it needs to
+be done this way:
+
+   ```yaml
+   - name: Process OS specific tasks
+     include_tasks: "{{ include_file }}"
+     vars:
+       prefix: "{{ role_path }}/tasks/subdir/"
+     with_first_found:
+       - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
+     loop_control:
+       loop_var: include_file
+   ```
+
+This is needed to workaround an ansible issue: https://github.com/ansible/ansible/issues/82695
 
 ### Steps to create the new backend
 

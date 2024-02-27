@@ -57,6 +57,9 @@
 - name: Update the inventory
   add_host:
     name: "{{ item }}"
+    ansible_user: root
+    ansible_port: 22
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
     groups: "{{ config.nodes[item].groups + ['site'] }}"
     site: "{{ config.nodes[item] }}"
   with_items: "{{ config.nodes.keys() }}"

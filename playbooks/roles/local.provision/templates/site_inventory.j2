@@ -1,0 +1,22 @@
+site:
+  hosts:
+{%- for host in groups['site'] +%}
+    {{ host }}:
+  {%- for var in ('host', 'port', 'user', 'ssh_private_key_file', 'ssh_common_args') +%}
+    {%- if hostvars[host]['ansible_' + var] is defined +%}
+      ansible_{{ var }}: {{ hostvars[host]['ansible_' + var] }}
+    {%- endif +%}
+  {%- endfor +%}
+      site:
+        {{ hostvars[host].site | to_nice_yaml(indent = 2) | indent(8) }}
+{%- endfor +%}
+
+{%- for group in groups +%}
+  {%- if group not in ('all', 'ungrouped', 'site') +%}
+{{ group }}:
+  hosts:
+    {%- for host in groups[group] +%}
+    {{ host }}:
+    {%- endfor +%}
+  {%- endif +%}
+{%- endfor +%}

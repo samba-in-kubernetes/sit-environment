@@ -1,4 +1,4 @@
-INVENTORY := ./site_inventory
+INVENTORY := ansible/site_inventory
 VSSH := ssh -F ssh-config-host
 
 ifdef EXTRA_VARS

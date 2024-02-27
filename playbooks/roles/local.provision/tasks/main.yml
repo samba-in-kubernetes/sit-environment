@@ -10,3 +10,19 @@
         tasks_from: "{{ provision_action }}/main.yml"
       vars:
         data: "{{ config.provisioners[site.provisioner] }}"
+
+    - name: Generate inventory file
+      when: provision_action == 'create'
+      run_once: true
+      template:
+        src: site_inventory.j2
+        dest: ansible/site_inventory
+
+    - name: Cleanup files
+      when: provision_action == 'destroy'
+      run_once: true
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - ansible/site_inventory

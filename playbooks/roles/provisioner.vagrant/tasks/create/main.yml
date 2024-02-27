@@ -13,32 +13,22 @@
   run_once: true
   command: vagrant provision
 
-- name: copy vagrant generated inventory file - local machine
-  run_once: true
-  copy:
-    src: .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
-    dest: ./site_inventory
+- name: Get IP address
+  command: vagrant ssh {{ inventory_hostname }} -c "ip -j -4 addr show scope global"
+  register: vm_ip
 
-- name: adapt inventory - ssh options
-  run_once: true
-  blockinfile:
-    path: ./site_inventory
-    block: |
-      [all:vars]
-      ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-
-- name: copy vagrant generated inventory file - setup machine
-  run_once: true
-  copy:
-    src: ./site_inventory
-    dest: ./ansible/site_inventory
-
-- name: adapt inventory - correct ssh key
-  run_once: true
-  replace:
-    path: ./ansible/site_inventory
-    regexp: "ansible_ssh_private_key_file='.*/\\.vagrant\\.d/insecure_private_key'"
-    replace: "ansible_ssh_private_key_file='insecure_private_ssh_key'"
+# Ansible implicitly runs this task as if it had:
+#
+#   delegate_to: localhost
+#   run_once: true
+- name: Update inventory
+  add_host:
+    name: "{{ item }}"
+    ansible_user: vagrant
+    ansible_host: "{{ (hostvars[item].vm_ip.stdout | from_json)[0].addr_info[0].local }}"
+    ansible_port: 22
+    ansible_ssh_private_key_file: insecure_private_ssh_key
+  with_items: "{{ ansible_play_hosts }}"
 
 - name: dump ssh config
   run_once: true

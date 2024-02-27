@@ -1,4 +1,0 @@
----
-- name: no-op
-  hosts: all
-  gather_facts: no

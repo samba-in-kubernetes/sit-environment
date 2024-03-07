@@ -1,5 +1,6 @@
 ---
 - name: Process backend specific tasks
+  when: inventory_hostname in groups['cluster']
   include_role:
     name: 'sit.{{ config.be.name }}'
     tasks_from: logs/main.yml

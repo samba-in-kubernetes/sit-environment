@@ -1,5 +1,5 @@
 ---
-- hosts: cluster:clients
+- hosts: site
   become: yes
   become_method: sudo
   vars_files:

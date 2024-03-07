@@ -4,4 +4,3 @@
   with_items:
     - "{{ config.paths.samba.etc }}"
     - "{{ config.paths.ctdb.etc }}"
-  when: inventory_hostname in groups['cluster']

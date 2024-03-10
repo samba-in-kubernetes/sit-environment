@@ -389,7 +389,6 @@ environments:
       client:
         cpu_weight: 1
         memory_weight: 1
-        os: centos8
         networks:
           public: 5
         groups: [clients]

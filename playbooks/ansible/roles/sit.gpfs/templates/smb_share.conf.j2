@@ -1,6 +1,6 @@
 [{{ name }}-{{ config.be.name }}-{{ config.be.variant }}]
 comment = Volume '{{ name }}' from {{ config.be.name }}({{ config.be.variant }})
-vfs objects = acl_xattr
+vfs objects = acl_xattr {%- if config.be.variant == 'vfs' %} gpfs{% endif +%}
 path = {{ path }}
 read only = no
 {%- for option, value in volume.samba.options.items() | default([]) +%}

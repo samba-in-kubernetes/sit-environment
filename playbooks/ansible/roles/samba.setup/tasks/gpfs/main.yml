@@ -1,1 +1,12 @@
 ---
+- name: Run smbd unconfined
+  when: config.be.variant == 'vfs'
+  block:
+    - name: Configure SElinux context for smbd
+      sefcontext:
+        target: /usr/sbin/smbd
+        setype: bin_t
+        state: present
+
+    - name: Restore SElinux context
+      command: restorecon /usr/sbin/smbd

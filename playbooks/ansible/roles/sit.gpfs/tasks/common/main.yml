@@ -1,1 +1,5 @@
 ---
+- name: Add GPFS tools to path
+  copy:
+    dest: /etc/profile.d/gpfs-path.sh
+    content: "PATH=${PATH}:/usr/lpp/mmfs/bin"

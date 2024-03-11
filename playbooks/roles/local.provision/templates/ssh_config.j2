@@ -1,5 +1,6 @@
 {%- for host in groups['site'] +%}
 Host {{ host }}
+{%- if config.domain is defined %} {{ host }}.{{ config.domain }}{% endif -%}
 {%- for group in config.groups -%}
   {%- if groups[group][0] == host %} {{ group }}{% endif -%}
 {%- endfor +%}

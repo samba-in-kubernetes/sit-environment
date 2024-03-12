@@ -359,6 +359,7 @@ environments:
     cpus: 2
     memory: 1024
     domain: sit.test
+    samba: "{{ variant != 'scale' }}"
 
     data:
       # A zip file is necessary to install GPFS but it's not included with

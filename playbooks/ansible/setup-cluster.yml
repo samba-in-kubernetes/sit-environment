@@ -9,6 +9,8 @@
     - common.prep
     - node.prep
     - "sit.{{ config.be.name }}"
-    - samba.setup
-    - ctdb.setup
+    - role: samba.setup
+      when: config.samba
+    - role: ctdb.setup
+      when: config.samba
     - users.setup

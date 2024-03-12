@@ -12,6 +12,10 @@
 
 - name: Generate configuration
   when: not config_yml.stat.exists
+  vars:
+    os: "{{ use_distro | default('centos9') }}"
+    be: "{{ (backend | default('xfs') | split('.'))[0] }}"
+    variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
   block:
     - name: Load global settings
       include_vars:
@@ -47,9 +51,6 @@
         src: config.yml.j2
         dest: ./ansible/config.yml
       vars:
-        os: "{{ use_distro | default('centos9') }}"
-        be: "{{ (backend | default('xfs') | split('.'))[0] }}"
-        variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
         max_memory: "{{ ansible_memfree_mb }}"
         max_cpu: "{{ ansible_processor_nproc }}"
 

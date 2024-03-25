@@ -12,6 +12,7 @@
       - podman
       - tox
       - sshfs
+      - python3-smbc
     state: latest
 
 - name: Link to pytest

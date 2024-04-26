@@ -1,0 +1,32 @@
+---
+- name: Configure for standard file systems
+  command: >-
+    ./configure --enable-debug \
+                --prefix=/usr \
+                --enable-fhs \
+                --sysconfdir=/etc \
+                --libdir=/usr/lib64 \
+                --localstatedir=/var \
+                --sharedstatedir=/var/lib \
+                --with-piddir=/run \
+                --with-sockets-dir=/run/samba \
+                --with-lockdir=/var/lib/samba/lock \
+                --with-statedir=/var/lib/samba \
+                --with-cachedir=/var/lib/samba \
+                --disable-rpath-install \
+                --with-quotas \
+                --bundled-libraries=!zlib,!popt,talloc,pytalloc,pytalloc-util,tevent,pytevent,tdb,pytdb,ldb,pyldb,pyldb-util \
+                --with-pam \
+                --with-pie \
+                --with-relro \
+                --without-fam \
+                --with-system-mitkrb5 \
+                --with-experimental-mit-ad-dc \
+                --disable-cephfs \
+                --disable-glusterfs \
+                --with-cluster-support \
+                --with-profiling-data \
+                --with-systemd \
+                --systemd-install-services
+  args:
+    chdir: "{{ config.install.samba.git.dest }}"

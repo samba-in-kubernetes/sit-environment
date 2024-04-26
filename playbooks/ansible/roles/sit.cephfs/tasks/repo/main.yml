@@ -2,14 +2,8 @@
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   vars:
-    prefix: "{{ role_path }}/tasks/glusterfs/"
+    prefix: "{{ role_path }}/tasks/repo/"
   with_first_found:
     - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
   loop_control:
     loop_var: include_file
-
-- name: Selinux - Allow Samba to access glusterfs services
-  seboolean:
-    name: samba_load_libgfapi
-    state: yes
-    persistent: yes

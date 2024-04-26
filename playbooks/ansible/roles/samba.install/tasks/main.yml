@@ -1,0 +1,4 @@
+---
+- name: Install samba and ctdb from rpm repositories
+  when: config.install.samba.repo is defined
+  include_tasks: repo/main.yml

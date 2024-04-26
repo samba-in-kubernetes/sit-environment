@@ -19,12 +19,6 @@
         state: yes
         persistent: yes
 
-    - name: Install CephFS VFS module
-      when: config.install.samba.repo is defined
-      yum:
-        name: samba-vfs-cephfs
-        state: present
-
     - name: Skip check of share path
       lineinfile:
         path: "{{ config.paths.ctdb.etc }}/events/legacy/50.samba.options"

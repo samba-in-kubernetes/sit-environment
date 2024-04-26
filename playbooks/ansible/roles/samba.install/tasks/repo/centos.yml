@@ -1,0 +1,14 @@
+---
+- name: Install samba and ctdb
+  when: inventory_hostname in groups['cluster']
+  yum:
+    name:
+      - samba
+      - ctdb
+
+- name: Install samba client/test
+  when: inventory_hostname in groups['clients']
+  yum:
+    name:
+      - samba-client
+      - samba-test

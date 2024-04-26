@@ -14,12 +14,6 @@
         msg: "Please provide these required variable: ctdb_network_public_interface_name"
       when: ctdb_network_public_interface_name is undefined
 
-- name: Add ctdb package
-  when: config.install.samba.repo is defined
-  yum:
-    name: ctdb
-    state: present
-
 - name: Create lock directory
   file:
     path: "{{ config.paths.ctdb.var_lib }}/lock"

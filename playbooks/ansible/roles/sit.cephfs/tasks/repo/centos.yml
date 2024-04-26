@@ -1,0 +1,7 @@
+---
+- name: Install CephFS VFS module
+  when: config.be.variant == 'vfs' and
+        inventory_hostname in groups['cluster']
+  yum:
+    name: samba-vfs-cephfs
+    state: present

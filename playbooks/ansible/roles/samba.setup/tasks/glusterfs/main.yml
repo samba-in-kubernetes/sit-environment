@@ -15,6 +15,7 @@
     persistent: yes
 
 - name: Install samba-vfs-glusterfs package
+  when: config.install.samba.repo is defined
   yum:
     name: samba-vfs-glusterfs
     state: present

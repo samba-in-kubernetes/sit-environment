@@ -1,5 +1,6 @@
 ---
 - name: Install samba packages
+  when: config.install.samba.repo is defined
   yum:
     name: samba
     state: present

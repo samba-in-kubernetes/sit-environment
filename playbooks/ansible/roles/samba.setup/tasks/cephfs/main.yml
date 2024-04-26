@@ -20,6 +20,7 @@
         persistent: yes
 
     - name: Install CephFS VFS module
+      when: config.install.samba.repo is defined
       yum:
         name: samba-vfs-cephfs
         state: present

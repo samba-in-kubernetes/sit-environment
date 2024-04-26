@@ -159,5 +159,21 @@ config:
 
   install:
     samba:
+    {%- if settings.install.samba.git is defined +%}
+      git:
+        repo: {{ settings.install.samba.git.repo | default('git://git.samba.org/samba.git') }}
+        dest: {{ settings.install.samba.git.dest | default('/tmp/samba.git') }}
+      {%- if settings.install.samba.git.mr is defined +%}
+        version: "mr_{{ settings.install.samba.git.mr }}"
+        refspec: "merge-requests/{{ settings.install.samba.git.mr }}/head:mr_{{ settings.install.samba.git.mr }}"
+      {%- elif settings.install.samba.git.pr is defined +%}
+        version: "pr_{{ settings.install.samba.git.pr }}"
+        refspec: "pull/{{ settings.install.samba.git.pr }}/head:pr_{{ settings.install.samba.git.pr }}"
+      {%- else +%}
+        version: {{ settings.install.samba.git.version | default('HEAD') }}
+        refspec: {{ settings.install.samba.git.refspec | default('HEAD') }}
+      {%- endif +%}
+    {%- else +%}
       repo:
         url: {{ settings.install.samba.repo.url | default('https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo') }}
+    {%- endif +%}

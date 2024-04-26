@@ -1,0 +1,6 @@
+---
+- name: Install samba-vfs-glusterfs package
+  when: inventory_hostname in groups['cluster']
+  yum:
+    name: samba-vfs-glusterfs
+    state: present

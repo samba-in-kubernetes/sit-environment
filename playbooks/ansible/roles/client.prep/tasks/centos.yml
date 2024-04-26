@@ -12,13 +12,6 @@
       - sshfs
     state: latest
 
-- name: Install samba client/test
-  when: config.install.samba.repo is defined
-  yum:
-    name:
-      - samba-test
-      - samba-client
-
 - name: Link to pytest
   file:
     src: /usr/bin/pytest-3

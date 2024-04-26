@@ -1,10 +1,4 @@
 ---
-- name: Install samba packages
-  when: config.install.samba.repo is defined
-  yum:
-    name: samba
-    state: present
-
 - name: Create Samba share directories
   file:
     path: "{{ config.paths.mount }}/{{ item.name }}"

@@ -31,6 +31,27 @@ misc:
 #
 #     url: (optional, default: https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo)
 #       Link to yum/dnf repo file holding samba rpms.
+#
+#   git:
+#     Indicates installation from git repository.
+#
+#     repo: (optional, default: git://git.samba.org/samba.git)
+#       Git repository url to be cloned for installation.
+#
+#     dest: (optional, default: /tmp/samba.git)
+#       The path where the repository should be checked out.
+#
+#     version: (optional, default: HEAD)
+#       Branch, tag or commit to be fetched.
+#
+#     mr: (optional)
+#       GitLab merge request number to be fetched.
+#
+#     pr: (optional)
+#       GitHub pull request number to be fetched.
+#
+#     refspec: (optional)
+#       Additional refspec to specify branch or tag containing a commit.
 
 paths:
   samba:

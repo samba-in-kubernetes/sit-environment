@@ -1,0 +1,6 @@
+---
+- name: Install CephFS API development packages
+  yum:
+    name:
+      - libcephfs-devel
+      - librados-devel

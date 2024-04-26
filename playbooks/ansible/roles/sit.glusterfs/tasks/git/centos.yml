@@ -1,0 +1,6 @@
+---
+- name: Install GlusterFS API development packages
+  yum:
+    name:
+      - libgfapi-devel
+      - libglusterfs-devel

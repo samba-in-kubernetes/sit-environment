@@ -1,0 +1,37 @@
+---
+- name: Process OS specific tasks
+  include_tasks: "{{ include_file }}"
+  vars:
+    prefix: "{{ role_path }}/tasks/git/"
+  with_first_found:
+    - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
+  loop_control:
+    loop_var: include_file
+
+- name: Install backend specific packages
+  include_role:
+    name: "sit.{{ config.be.name }}"
+    tasks_from: git/main.yml
+
+- name: Setup git repository
+  git:
+    repo: "{{ config.install.samba.git.repo }}"
+    dest: "{{ config.install.samba.git.dest }}"
+    version: "{{ config.install.samba.git.version }}"
+    refspec: "{{ config.install.samba.git.refspec }}"
+
+- name: Configure samba installation(backend specific)
+  include_role:
+    name: "sit.{{ config.be.name }}"
+    tasks_from: git/configure.yml
+
+- name: Install samba and ctdb
+  command: make -j install
+  args:
+    chdir: "{{ config.install.samba.git.dest }}"
+
+- name: Prepare the installation
+  shell: |
+    ldconfig
+    systemctl daemon-reload
+    restorecon -vR /etc /run /usr/bin /usr/sbin /usr/libexec /usr/lib64 /usr/share /usr/lib/systemd/system /var/lib /var/log

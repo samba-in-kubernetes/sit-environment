@@ -156,3 +156,8 @@ config:
 
   statedir: "{{ settings.misc.host.statedir }}/sit_statedump"
   configdir: "{{ settings.misc.host.configdir }}"
+
+  install:
+    samba:
+      repo:
+        url: {{ settings.install.samba.repo.url | default('https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo') }}

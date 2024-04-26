@@ -3,8 +3,6 @@
   yum:
     name:
       - cifs-utils
-      - samba-test
-      - samba-client
       - python3-pip
       - git
       - make
@@ -13,6 +11,13 @@
       - tox
       - sshfs
     state: latest
+
+- name: Install samba client/test
+  when: config.install.samba.repo is defined
+  yum:
+    name:
+      - samba-test
+      - samba-client
 
 - name: Link to pytest
   file:

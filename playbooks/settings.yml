@@ -18,6 +18,20 @@ misc:
     statedir: "/tmp"
     configdir: "/tmp/config"
 
+# Installation of components:
+#
+# Here we define how the installation happens for various components involved
+# using 'install' object:
+#
+# Specify the installation method for Samba and CTDB using 'samba' subobject.
+# Each subobject can have following properties.
+#
+#   repo:
+#     Indicates installation using rpms.
+#
+#     url: (optional, default: https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo)
+#       Link to yum/dnf repo file holding samba rpms.
+
 paths:
   samba:
     etc: /etc/samba

@@ -1,0 +1,21 @@
+---
+- name: Identify latest ceph:{{ config.data.branch }} build
+  uri:
+    url: "https://shaman.ceph.com/api/search?\
+            project=ceph&\
+            ref={{ config.data.branch }}&\
+            flavor=default&\
+            status=ready&\
+            distros=centos/{{ config.os[site.os].version }}/x86_64&\
+            sha1=latest"
+    return_content: true
+  register: ceph_shaman
+
+- name: Create ceph repo
+  yum_repository:
+    name: "ceph-{{ config.data.branch }}-{{ ceph_shaman.json[0].sha1 }}"
+    baseurl: "{{ ceph_shaman.json[0].url }}/x86_64"
+    description: "Ceph {{ config.data.branch }} ({{ ceph_shaman.json[0].sha1 }})"
+    enabled: true
+    gpgcheck: false
+    state: present

@@ -62,14 +62,9 @@
   vars:
     name: "{{ item.name }}"
     path: "{{ config.paths.mount }}/{{ item.name }}"
+    mode: "0777"
     file: "{{ config.paths.samba.etc }}/smb.shares/{{ item.name }}.conf"
     volume: "{{ item }}"
-  with_items: "{{ samba_shares }}"
-
-- name: Set mount permissions
-  file:
-    path: "{{ config.paths.mount }}/{{ item.name }}"
-    mode: 0777
   with_items: "{{ samba_shares }}"
 
 - name: Include share configuration into smb.conf

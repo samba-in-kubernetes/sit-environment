@@ -115,6 +115,7 @@
           vars:
             name: "{{ item.name }}"
             path: "{{ config.paths.mount }}/{{ item.name }}"
+            mode: "0777"
             volume: "{{ item }}"
           include_tasks:
             file: new_volume.yml

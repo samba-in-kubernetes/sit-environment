@@ -6,4 +6,3 @@
   vars:
     name: "ctdb"
     path: "{{ ctdb_lock_path }}"
-    mode: "0777"

@@ -11,3 +11,8 @@
     src: "{{ volume.xfs.device }}"
     fstype: xfs
     state: mounted
+
+- name: Set mount permissions
+  file:
+    path: "{{ path }}"
+    mode: "{{ mode }}"

@@ -35,3 +35,9 @@
     fstype: glusterfs
     opts: "{{ mount_opts | default(omit) }}"
     state: mounted
+
+- name: Set mount permissions
+  when: mode is defined
+  file:
+    path: "{{ path }}"
+    mode: "{{ mode }}"

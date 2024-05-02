@@ -1,20 +1,18 @@
-public_interfaces:
-  {{ public_interfaces | to_nice_yaml | indent(2) }}
+server: {{ public_interfaces[0] }}
 
-exported_sharenames:
-  {{ exported_sharenames | to_nice_yaml | indent(2) }}
-
-test_users:
+users:
   {%- for name in config.accounts +%}
     {%- for user_name in config.accounts[name].users +%}
       {%- set user = config.accounts[name].users[user_name] +%}
       {%- if user.samba +%}
-  - username: {{ user_name }}
-    uid: {{ user.uid }}
-    password: {{ user.password }}
-    nodes: {{ config.nodes | dict2items | selectattr('value.accounts', 'contains', name) | map(attribute='key') | list }}
+  {{ user_name }}: {{ user.password }}
       {%- endif +%}
     {%- endfor +%}
   {%- endfor +%}
 
-test_backend: {{ test_backend }}
+backend: {{ test_backend }}
+
+shares:
+  {%- for share in exported_sharenames +%}
+  {{ share }}:
+  {%- endfor +%}

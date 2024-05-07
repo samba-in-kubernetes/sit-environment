@@ -4,5 +4,6 @@
   become_method: sudo
   vars_files:
     - config.yml
+    - cluster-{{ config.be.name }}.yml
   roles:
     - tests

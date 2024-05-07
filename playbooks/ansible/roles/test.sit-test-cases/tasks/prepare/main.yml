@@ -25,6 +25,18 @@
     version: "{{ test_repo_branch }}"
     dest: /root/sit-test-cases
 
+- name: Create the test-info.yml file with test cluster information
+  template:
+    src: test-info.yml.j2
+    dest: /root/test-info.yml
+  vars:
+    private_interfaces: "{{ ctdb_network_private_interfaces }}"
+    public_interfaces: "{{ ctdb_network_public_interfaces }}"
+    exported_sharenames: >-
+      {{ samba_shares | map(attribute='name') |
+      map('regex_replace', '$', '-' + config.be.name + '-' + config.be.variant) | list }}
+    test_backend: "{{ config.be.name }}"
+
 - name: Create a symlink for test-info.yml file
   file:
     src: /root/test-info.yml

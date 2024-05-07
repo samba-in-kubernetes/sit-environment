@@ -30,7 +30,6 @@
     src: test-info.yml.j2
     dest: /root/test-info.yml
   vars:
-    private_interfaces: "{{ ctdb_network_private_interfaces }}"
     public_interfaces: "{{ ctdb_network_public_interfaces }}"
     exported_sharenames: >-
       {{ samba_shares | map(attribute='name') |

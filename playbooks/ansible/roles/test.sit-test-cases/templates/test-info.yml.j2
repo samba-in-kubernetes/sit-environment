@@ -13,6 +13,8 @@ users:
 backend: {{ test_backend }}
 
 shares:
-  {%- for share in exported_sharenames +%}
-  {{ share }}:
+  {%- for share in sharenames +%}
+  {{ share }}-{{ config.be.name }}-{{ config.be.variant }}:
+    backend:
+      path: {{ config.paths.mount }}/backends/{{ share }}
   {%- endfor +%}

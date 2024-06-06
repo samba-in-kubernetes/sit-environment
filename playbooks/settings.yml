@@ -416,7 +416,7 @@ environments:
       setup:
         cpu_weight: 2
         memory_weight: 2
-        os: centos8
+        kernel: 5.14.0-503
         networks:
           private: 200
           public: 200
@@ -435,8 +435,8 @@ environments:
       storage:
         cpu_weight: 2
         memory_weight: 2
-        os: centos8
         instances: 2
+        kernel: 5.14.0-503
         disks: [10]
         networks:
           private: 50

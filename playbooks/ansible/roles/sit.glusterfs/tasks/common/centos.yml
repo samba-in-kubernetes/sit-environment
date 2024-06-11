@@ -1,0 +1,6 @@
+---
+# required for dependencies
+- name: Enable GlusterFS repo
+  yum:
+    name: centos-release-gluster
+    state: latest

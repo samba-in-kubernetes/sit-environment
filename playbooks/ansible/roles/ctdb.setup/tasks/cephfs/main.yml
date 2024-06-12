@@ -1,5 +1,6 @@
 ---
 - name: Create the ctdb shared subvolume
+  when: config.data.ctdb_mutex is not defined
   include_role:
     name: 'sit.{{ config.be.name }}'
     tasks_from: new_volume

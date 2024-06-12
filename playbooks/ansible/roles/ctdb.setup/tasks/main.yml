@@ -15,6 +15,7 @@
       when: ctdb_network_public_interface_name is undefined
 
 - name: Create lock directory
+  when: config.data.ctdb_mutex is not defined
   file:
     path: "{{ config.paths.ctdb.var_lib }}/lock"
     state: directory
@@ -25,6 +26,7 @@
     ctdb_lock_path: "{{ config.paths.ctdb.var_lib }}/lock"
 
 - name: Update selinux contexts
+  when: config.data.ctdb_mutex is not defined
   command: restorecon -R "{{ config.paths.ctdb.var_lib }}/lock"
 
 - name: Check firewall

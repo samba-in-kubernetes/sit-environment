@@ -361,6 +361,7 @@ environments:
 
     data:
       branch: main
+      ctdb_mutex: rados
 
     nodes:
       setup:

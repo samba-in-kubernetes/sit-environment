@@ -7,3 +7,41 @@
   vars:
     name: "ctdb"
     path: "{{ ctdb_lock_path }}"
+
+- name: Configure RADOS mutex helper
+  when: config.data.ctdb_mutex == 'rados'
+  block:
+    - name: Create a user with rwx caps on dedicated pool
+      run_once: true
+      block:
+        - name: Create a dedicated pool
+          command: /root/cephadm shell -- ceph osd pool create ctdb
+
+        - name: Create a dedicated client
+          command: >
+            /root/cephadm shell --
+              ceph auth add client.ctdb mon 'allow r'
+                osd 'allow rwx pool=ctdb namespace=sit'
+
+    - name: Export keyring for client.ctdb
+      shell:
+        /root/cephadm shell --
+          ceph auth export client.ctdb > /etc/ceph/ceph.client.ctdb.keyring
+
+    - name: Update SELinux context for ceph configurations
+      command: restorecon -R /etc/ceph
+
+    - name: Allow CTDB to connect to mon over unreserved ports
+      seboolean:
+        name: nis_enabled
+        state: yes
+        persistent: yes
+
+    - name: Add RADOS mutex helper to ctdb.conf
+      ini_file:
+        path: "{{ config.paths.ctdb.etc }}/ctdb.conf"
+        section: cluster
+        option: cluster lock
+        value: '!/usr/libexec/ctdb/ctdb_mutex_ceph_rados_helper
+                  ceph client.ctdb ctdb cluster.lock -n sit'
+        state: present

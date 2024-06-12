@@ -53,6 +53,7 @@
     option: "{{ item.option }}"
     value: "{{ item.value }}"
     state: present
+  when: item.option != "cluster lock" or config.data.ctdb_mutex is not defined
   with_items:
     - section: cluster
       option: cluster lock

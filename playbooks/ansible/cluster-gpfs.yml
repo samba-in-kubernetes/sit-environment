@@ -22,8 +22,5 @@ samba_netbios_name: "SIT-GPFS-TEST"
 
 samba_shares:
   - name: share
-    samba:
-      options:
-        "acl_xattr:ignore system acls": "yes"
 
 nsd_device: "/dev/vdb"

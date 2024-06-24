@@ -22,5 +22,8 @@ samba_netbios_name: "SIT-XFS-TEST"
 
 samba_shares:
   - name: share
+    samba:
+      options:
+        "acl_xattr:security_acl_name": "user.NTACL"
     xfs:
       device: "/dev/vdb"

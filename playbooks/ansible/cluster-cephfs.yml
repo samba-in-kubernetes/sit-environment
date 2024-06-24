@@ -22,3 +22,6 @@ samba_netbios_name: "SIT-CEPHFS-TEST"
 
 samba_shares:
   - name: share
+    samba:
+      options:
+        "acl_xattr:security_acl_name": "user.NTACL"

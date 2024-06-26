@@ -1,1 +1,1 @@
-../playbooks/site_inventory
+../playbooks/ansible/site_inventory

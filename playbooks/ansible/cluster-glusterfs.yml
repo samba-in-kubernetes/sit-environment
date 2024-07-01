@@ -71,7 +71,7 @@ samba_shares:
   - name: vol-replicate
     samba:
       options:
-        "acl_xattr:ignore system acls": "yes"
+        "acl_xattr:security_acl_name": "user.NTACL"
     glusterfs:
       type: "replicate"
       subvolume_size: "{{ config.groups['cluster']|length }}"
@@ -92,7 +92,7 @@ samba_shares:
   - name: vol-disperse
     samba:
       options:
-        "acl_xattr:ignore system acls": "yes"
+        "acl_xattr:security_acl_name": "user.NTACL"
     glusterfs:
       type: "disperse"
       subvolume_size: 3

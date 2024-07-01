@@ -24,4 +24,4 @@ samba_shares:
   - name: share
     samba:
       options:
-        "acl_xattr:ignore system acls": "yes"
+        "acl_xattr:security_acl_name": "user.NTACL"

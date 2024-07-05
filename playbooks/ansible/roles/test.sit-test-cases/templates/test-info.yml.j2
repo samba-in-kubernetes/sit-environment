@@ -10,7 +10,7 @@ users:
     {%- endfor +%}
   {%- endfor +%}
 
-backend: {{ test_backend }}
+backend: {{ config.be.name }}
 
 shares:
   {%- for share in sharenames +%}

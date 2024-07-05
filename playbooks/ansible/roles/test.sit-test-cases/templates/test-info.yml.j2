@@ -16,5 +16,7 @@ shares:
   {%- for share in sharenames +%}
   {{ share }}-{{ config.be.name }}-{{ config.be.variant }}:
     backend:
+      name: {{ config.be.name }}
+      variant: {{ config.be.variant}}
       path: {{ config.paths.mount }}/backends/{{ share }}
   {%- endfor +%}

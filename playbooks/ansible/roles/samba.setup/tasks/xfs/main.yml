@@ -1,1 +1,31 @@
 ---
+- name: Temporarily allow cap_dac_override for smbd from SELinux
+  block:
+    - name: Remove any existing policy package
+      command: semodule -r smbd_dac_override
+      failed_when: false
+
+    - name: Copy required type enforcement file
+      copy:
+        src: smbd_dac_override.te
+        dest: /tmp
+
+    - name: Compile SELinux module file
+      command: checkmodule -M -m -o smbd_dac_override.mod smbd_dac_override.te
+      args:
+        chdir: /tmp
+
+    - name: Build SELinux policy package
+      command: semodule_package -o smbd_dac_override.pp -m smbd_dac_override.mod
+      args:
+        chdir: /tmp
+
+    - name: Load SELinux policy package
+      command: semodule -i smbd_dac_override.pp
+      args:
+        chdir: /tmp
+
+    - name: Remove temporary policy files
+      file:
+        path: /tmp/smbd_dac_override.*
+        state: absent

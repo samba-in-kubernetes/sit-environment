@@ -301,7 +301,6 @@ environments:
         networks:
           private: 200
         groups: [admin]
-        os: centos8
 
       client:
         cpu_weight: 1
@@ -321,7 +320,6 @@ environments:
         ctdb:
           public: 10
         groups: [cluster]
-        os: centos8
         accounts: [default]
 
   xfs:

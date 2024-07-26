@@ -1,0 +1,39 @@
+resources:
+- resource_type: ceph.smb.usersgroups
+  users_groups_id: siteacct
+  intent: present
+  values:
+    {%- for account_group in config.accounts +%}
+      {%- if config.accounts[account_group].users +%}
+      users:
+        {%- for user_name in config.accounts[account_group].users +%}
+          {%- set account = config.accounts[account_group].users[user_name] +%}
+          {%- if account.samba +%}
+        - name: {{ user_name }}
+          password: {{ account.password }}
+          {%- endif +%}
+        {%- endfor +%}
+      {%- else +%}
+      users: []
+      {%- endif +%}
+    {%- endfor +%}
+    {%- for account_group in config.accounts +%}
+      {%- if config.accounts[account_group].groups +%}
+      groups:
+        {%- for group_name in config.accounts[account_group].groups +%}
+        - name: {{ group_name }}
+        {%- endfor +%}
+      {%- else +%}
+      groups: []
+      {%- endif +%}
+    {%- endfor +%}
+
+- resource_type: ceph.smb.cluster
+  cluster_id: site
+  intent: present
+  auth_mode: user
+  user_group_settings:
+    - source_type: resource
+      ref: siteacct
+  placement:
+    hosts: [ {{ inventory_hostname }} ]

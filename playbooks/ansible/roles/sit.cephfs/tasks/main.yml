@@ -90,6 +90,26 @@
       command: /root/cephadm shell -- ceph config generate-minimal-conf
       register: ceph_conf
 
+    - name: Enable and create smb cluster using mgr module
+      when: config.be.variant == 'mgr'
+      block:
+        - name: Enable smb mgr module
+          command: /root/cephadm shell -- ceph mgr module enable smb
+
+        - name: Wait for mgr restart
+          command: /root/cephadm shell -- ceph orch ls mgr --format=json
+          register: mgr_status
+          until: >-
+            mgr_status.stdout | from_json | json_query(
+              "[*] | [status.running == status.size]") | length > 0
+          retries: 100
+          delay: 1
+
+        - name: Create a smb cluster
+          command: /root/cephadm shell -- ceph smb apply -i -
+          args:
+            stdin: "{{ lookup('template', 'ceph.smb.cluster.yml.j2') }}"
+
 - name: Generate a ceph conf with key
   copy:
     dest: "/etc/ceph/sit.ceph.conf"
@@ -97,3 +117,22 @@
       {{ ceph_conf.stdout }}
 
       {{ ceph_auth.stdout }}
+
+- name: Create and configure shares
+  when: config.be.variant == 'mgr'
+  block:
+    - name: Create shares
+      vars:
+        name: "{{ item.name }}"
+        path: "{{ config.paths.mount }}/{{ item.name }}"
+        mode: "0777"
+        volume: "{{ item }}"
+      include_tasks:
+        file: new_volume.yml
+      loop: "{{ samba_shares }}"
+
+    - name: Create samba shares
+      command: /root/cephadm shell -- ceph smb apply -i -
+      args:
+        stdin: "{{ lookup('template', 'ceph.smb.share.yml.j2') }}"
+      run_once: true

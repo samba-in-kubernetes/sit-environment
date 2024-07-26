@@ -356,6 +356,7 @@ environments:
   cephfs:
     cpus: 2
     memory: 1024
+    samba: "{{ variant != 'mgr' }}"
 
     data:
       branch: main

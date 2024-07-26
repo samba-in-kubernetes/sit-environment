@@ -30,7 +30,7 @@
     src: test-info.yml.j2
     dest: /root/test-info.yml
   vars:
-    public_interfaces: "{{ ctdb_network_public_interfaces }}"
+    public_interfaces: "{{ (config.be.variant == 'mgr') | ternary(node_network_public_interfaces, ctdb_network_public_interfaces) }}"
     sharenames: "{{ samba_shares | map(attribute='name') | list }}"
 
 - name: Create a symlink for test-info.yml file

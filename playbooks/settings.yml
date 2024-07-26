@@ -357,6 +357,7 @@ environments:
     cpus: 2
     memory: 1024
     samba: "{{ variant != 'mgr' }}"
+    users: "{{ variant != 'mgr' }}"
 
     data:
       branch: main

@@ -75,6 +75,7 @@ config:
   tests: {{ settings.tests }}
 
   samba: {{ settings.environments[be].samba | default('true') }}
+  users: {{ settings.environments[be].users | default('true') }}
 
   provisioners:
   {%- for prov in settings.environments[be].nodes | dict2items | map(attribute='value.provisioner', default='vagrant') | unique +%}

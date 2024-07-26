@@ -15,4 +15,5 @@
       when: config.samba
     - role: ctdb.setup
       when: config.samba
-    - users.setup
+    - role: users.setup
+      when: config.users

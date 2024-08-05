@@ -16,3 +16,4 @@
     dest: "{{ file }}"
   vars:
     subvol: "{{ ceph_subvol.stdout }}"
+    vfs_mode: "{{ (config.be.suffix == 'new') | ternary('ceph_new', 'ceph') }}"

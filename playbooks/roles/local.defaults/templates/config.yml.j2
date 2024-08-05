@@ -15,6 +15,7 @@ config:
   be:
     name: "{{ be }}"
     variant: "{{ variant }}"
+    suffix: "{{ suffix }}"
 
 {%- if settings.environments[be].domain is defined +%}
   domain: "{{ settings.environments[be].domain }}"

@@ -16,6 +16,7 @@
     os: "{{ use_distro | default('centos9') }}"
     be: "{{ (backend | default('xfs') | split('.'))[0] }}"
     variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
+    suffix: "{{ (backend | default('xfs') | split('.', 2))[2] | default('default') }}"
   block:
     - name: Load global settings
       include_vars:

@@ -124,6 +124,6 @@
         - name: Configure shares
           command: >-
             /usr/lpp/mmfs/bin/mmsmb export add
-              {{ item.name }}-{{ config.be.name }}-{{ config.be.variant }}
-              /gpfs/sit_fs/{{ item.name }}
-          loop: "{{ samba_shares }}"
+              {{ item[0].name }}-{{ config.be.name }}-{{ config.be.variant }}-{{ item[1] }}
+              /gpfs/sit_fs/{{ item[0].name }}
+          loop: "{{ samba_shares | product(config.be.methods) | list }}"

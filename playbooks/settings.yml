@@ -410,6 +410,7 @@ environments:
       # file inside the zip. It must have a capturing group to extract the
       # version number.
       pattern: "Storage_Scale_Developer-([0-9.]+)-x86_64-Linux-install"
+      methods: ['kclient', 'vfs']
 
     nodes:
       setup:

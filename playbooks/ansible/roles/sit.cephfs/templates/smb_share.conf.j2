@@ -1,15 +1,18 @@
-[{{ name }}-{{ config.be.name }}-{{ config.be.variant }}]
-comment = Volume '{{ name }}' from {{ config.be.name }}({{ config.be.variant }})
+{%- for method in config.be.methods +%}
+[{{ volume.name }}-{{ config.be.name }}-{{ config.be.variant }}-{{ method }}]
+comment = Volume '{{ volume.name }}' from {{ config.be.name }}({{ config.be.variant }} {{ method }})
 vfs objects = acl_xattr ceph_snapshots
-{%- if config.be.variant == 'vfs' %} ceph
-ceph:config_file = /etc/ceph/sit.ceph.conf
-ceph:user_id = sit
+  {%- if method != 'kclient' %}
+    {%- set vfs = 'ceph' %} {{ vfs }}
+{{ vfs }}:config_file = /etc/ceph/sit.ceph.conf
+{{ vfs }}:user_id = sit
 path = {{ subvol }}
-{%- else +%}
+  {%- else +%}
 path = {{ path }}
-{%- endif +%}
+  {%- endif +%}
 browseable = yes
 read only = no
-{%- for option, value in volume.samba.options.items() | default([]) +%}
+  {%- for option, value in volume.samba.options.items() | default([]) +%}
 {{ option }} = {{ value }}
+  {%- endfor +%}
 {%- endfor +%}

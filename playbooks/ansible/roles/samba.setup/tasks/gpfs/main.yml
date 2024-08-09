@@ -1,6 +1,5 @@
 ---
 - name: Run smbd unconfined
-  when: config.be.variant == 'vfs'
   block:
     - name: Configure SElinux context for smbd
       sefcontext:

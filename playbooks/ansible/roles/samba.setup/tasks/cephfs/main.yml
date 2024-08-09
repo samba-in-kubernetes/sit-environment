@@ -1,6 +1,5 @@
 ---
 - name: Prepare CephFS VFS support
-  when: config.be.variant == 'vfs'
   block:
     - name: Process OS specific tasks
       include_tasks: "{{ include_file }}"
@@ -28,7 +27,6 @@
         state: present
 
 - name: Temporarily allow cap_dac_override for smbd from SELinux
-  when: config.be.variant == 'default'
   block:
     - name: Remove any existing policy package
       command: semodule -r smbd_dac_override

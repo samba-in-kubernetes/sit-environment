@@ -13,10 +13,20 @@ users:
 backend: {{ config.be.name }}
 
 shares:
-  {%- for share in sharenames +%}
-  {{ share }}-{{ config.be.name }}-{{ config.be.variant }}:
+  {%- for share in samba_shares +%}
+    {%- if config.be.methods is defined +%}
+      {%- for method in config.be.methods +%}
+  {{ share.name }}-{{ config.be.name }}-{{ config.be.variant}}-{{ method }}:
     backend:
       name: {{ config.be.name }}
       variant: {{ config.be.variant}}
-      path: {{ config.paths.mount }}/backends/{{ share }}
+      path: {{ config.paths.mount }}/backends/{{ share.name }}
+      {%- endfor +%}
+    {%- else +%}
+  {{ share.name }}-{{ config.be.name }}-{{ config.be.variant }}:
+    backend:
+      name: {{ config.be.name }}
+      variant: {{ config.be.variant}}
+      path: {{ config.paths.mount }}/backends/{{ share.name }}
+    {%- endif +%}
   {%- endfor +%}

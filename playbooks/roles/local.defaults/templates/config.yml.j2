@@ -15,6 +15,13 @@ config:
   be:
     name: "{{ be }}"
     variant: "{{ variant }}"
+    {%- if settings.environments[be].data.methods is defined +%}
+      {%- set methods = settings.environments[be].data.methods +%}
+      {%- if variant != 'default' +%}
+        {%- set methods = ['vfs'] +%}
+      {%- endif +%}
+    methods: {{ methods }}
+    {%- endif +%}
 
 {%- if settings.environments[be].domain is defined +%}
   domain: "{{ settings.environments[be].domain }}"

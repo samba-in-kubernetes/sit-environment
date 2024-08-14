@@ -19,6 +19,9 @@ config:
       {%- set methods = settings.environments[be].data.methods +%}
       {%- if variant != 'default' +%}
         {%- set methods = ['vfs'] +%}
+        {%- if variant == 'mgr' %}
+          {{ methods.append('vfs-new') }}
+        {%- endif +%}
       {%- endif +%}
     methods: {{ methods }}
     {%- endif +%}

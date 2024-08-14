@@ -3,7 +3,10 @@
 comment = Volume '{{ volume.name }}' from {{ config.be.name }}({{ config.be.variant }} {{ method }})
 vfs objects = acl_xattr ceph_snapshots
   {%- if method != 'kclient' %}
-    {%- set vfs = 'ceph' %} {{ vfs }}
+    {%- set vfs = 'ceph_new' %}
+    {%- if method == 'vfs' %}
+      {%- set vfs = 'ceph' %}
+    {%- endif %} {{ vfs }}
 {{ vfs }}:config_file = /etc/ceph/sit.ceph.conf
 {{ vfs }}:user_id = sit
 path = {{ subvol }}

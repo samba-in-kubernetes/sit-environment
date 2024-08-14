@@ -1,10 +1,13 @@
 resources:
 {%- for share in samba_shares +%}
   {%- for method in config.be.methods +%}
-    {%- set provider = 'samba-vfs' +%}
+    {%- set provider = 'samba-vfs/new' +%}
+    {%- if method == 'vfs' +%}
+      {%- set provider = 'samba-vfs/classic' +%}
+    {%- endif +%}
 - resource_type: ceph.smb.share
   cluster_id: site
-  share_id: {{ share.name }}
+  share_id: {{ share.name }}-{{ method }}
   intent: present
   name: {{ share.name }}-{{ config.be.name }}-{{ config.be.variant }}-{{ method }}
   cephfs:

@@ -362,7 +362,7 @@ environments:
     data:
       branch: main
       ctdb_mutex: rados
-      methods: ['klcient', 'vfs']
+      methods: ['klcient', 'vfs', 'vfs.new']
 
     nodes:
       setup:

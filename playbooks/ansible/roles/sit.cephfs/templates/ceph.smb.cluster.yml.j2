@@ -36,4 +36,9 @@ resources:
     - source_type: resource
       ref: siteacct
   placement:
-    hosts: [ {{ inventory_hostname }} ]
+    count: {{ config.groups['cluster'] | length }}
+  clustering: always
+  public_addrs:
+    {%- for addr in ctdb_network_public_interfaces +%}
+    - address: {{ addr }}/{{ ctdb_network_public_interface_subnet_mask }}
+    {%- endfor +%}

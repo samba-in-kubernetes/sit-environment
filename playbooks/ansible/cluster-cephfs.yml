@@ -1,13 +1,4 @@
 ---
-node_network_public_interfaces: >-
-  {{
-    config.nodes |
-    dict2items |
-    selectattr('value.groups', 'contains', 'cluster') |
-    map(attribute='value.networks.public') |
-    list
-  }}
-
 ctdb_network_private_interfaces: >-
   {{
     config.nodes |

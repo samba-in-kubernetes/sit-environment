@@ -1,0 +1,21 @@
+---
+- name: Install sysstat
+  yum:
+    name: sysstat
+    state: latest
+
+- name: Disable sysstat service and timers
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    masked: true
+    state: stopped
+  loop:
+    - sysstat
+    - sysstat-collect.timer
+    - sysstat-summary.timer
+
+- name: Make sure statedir is present
+  file:
+    path: "{{ config.statedir }}"
+    state: directory

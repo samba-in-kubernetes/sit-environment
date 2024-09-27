@@ -3,7 +3,7 @@
   dnf:
     name:
       - unzip
-      - python3
+      - python39
       - kernel-devel
       - kernel-headers
       - gcc

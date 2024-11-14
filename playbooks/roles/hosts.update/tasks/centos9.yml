@@ -1,3 +1,9 @@
 ---
+# https://github.com/samba-in-kubernetes/sit-environment/issues/125
+- name: Remove system installed libldb
+  yum:
+    name: libldb
+    state: absent
+
 - name: Process common OS tasks
   include_tasks: centos.yml

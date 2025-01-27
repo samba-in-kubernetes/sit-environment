@@ -26,6 +26,11 @@
         line: "CTDB_SAMBA_SKIP_SHARE_CHECK=yes"
         state: present
 
+    # We create the socket under /run/samba/ to avoid SELinux AVC denial
+    # https://github.com/samba-in-kubernetes/sit-environment/pull/128#issuecomment-2624527331
+    - name: Run libcephfsd for proxy
+      shell: LIBCEPHFSD_SOCKET=/run/samba/libcephfsd.sock nohup /usr/sbin/libcephfsd &> /var/log/ceph/libcephfsd.log &
+
 - name: Temporarily allow cap_dac_override for smbd from SELinux
   block:
     - name: Remove any existing policy package

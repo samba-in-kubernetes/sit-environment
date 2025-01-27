@@ -362,7 +362,7 @@ environments:
     data:
       branch: main
       ctdb_mutex: rados
-      methods: ['kclient', 'vfs', 'vfs-new']
+      methods: ['kclient', 'vfs', 'vfs-new', 'vfs-new-proxy']
 
     nodes:
       setup:

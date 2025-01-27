@@ -7,6 +7,13 @@
         name: samba-vfs-cephfs
         state: present
 
+    - name: Install CephFS proxy components
+      yum:
+        name:
+          - libcephfs-proxy2
+          - libcephfs-daemon
+        state: present
+
     - name: Install CTDB RADOS helper
       when: config.data.ctdb_mutex == 'rados'
       yum:

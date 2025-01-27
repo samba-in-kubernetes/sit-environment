@@ -4,3 +4,11 @@
     name:
       - libcephfs-devel
       - librados-devel
+    state: present
+
+- name: Install CephFS proxy components
+  yum:
+    name:
+      - libcephfs-proxy2
+      - libcephfs-daemon
+    state: present

@@ -96,6 +96,9 @@
 - name: Enable samba management by ctdb
   command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 50.samba'
 
+- name: Configure libcephfs_proxy socket path for smbd
+  command: systemctl set-environment LIBCEPHFSD_SOCKET=/run/samba/libcephfsd.sock
+
 - name: Restart ctdb
   service: name=ctdb state=restarted enabled=yes
 

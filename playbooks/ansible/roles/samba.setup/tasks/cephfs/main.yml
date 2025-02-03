@@ -34,4 +34,7 @@
 - name: Temporarily allow cap_dac_override for smbd from SELinux
   include_tasks: custom_selinux_policy.yml
   vars:
-    module_name: smbd_dac_override
+    module_name: "{{ item }}"
+  with_items:
+    - smbd_dac_override
+    - smbd_connect_proxy

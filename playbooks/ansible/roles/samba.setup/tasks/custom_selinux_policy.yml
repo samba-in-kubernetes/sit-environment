@@ -1,0 +1,29 @@
+---
+- name: Remove any existing policy package
+  command: semodule -r "{{ module_name }}"
+  failed_when: false
+
+- name: Copy required type enforcement file
+  copy:
+    src: "{{ module_name }}.te"
+    dest: /tmp
+
+- name: Compile SELinux module file
+  command: checkmodule -M -m -o "{{ module_name }}.mod" "{{ module_name }}.te"
+  args:
+    chdir: /tmp
+
+- name: Build SELinux policy package
+  command: semodule_package -o "{{ module_name }}.pp" -m "{{ module_name }}.mod"
+  args:
+    chdir: /tmp
+
+- name: Load SELinux policy package
+  command: semodule -i "{{ module_name }}.pp"
+  args:
+    chdir: /tmp
+
+- name: Remove temporary policy files
+  file:
+    path: "/tmp/{{ module_name }}.*"
+    state: absent

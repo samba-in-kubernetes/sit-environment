@@ -184,7 +184,7 @@ tests:
 provisioners:
   vagrant:
     images:
-      centos9: generic/centos9s
+      centos9: centos/stream9
 
     networks:
       private: 192.168.122.0/24

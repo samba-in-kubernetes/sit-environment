@@ -4,6 +4,8 @@ resources:
     {%- set provider = 'samba-vfs/new' +%}
     {%- if method == 'vfs' +%}
       {%- set provider = 'samba-vfs/classic' +%}
+    {%- elif method == 'vfs-proxy' +%}
+      {%- set provider = 'samba-vfs/proxied' +%}
     {%- endif +%}
 - resource_type: ceph.smb.share
   cluster_id: site

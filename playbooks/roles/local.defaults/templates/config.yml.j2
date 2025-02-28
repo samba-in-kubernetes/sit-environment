@@ -21,6 +21,7 @@ config:
         {%- set methods = ['vfs'] +%}
         {%- if variant == 'mgr' %}
           {{ methods.append('vfs-new') }}
+          {{ methods.append('vfs-proxy') }}
         {%- endif +%}
       {%- endif +%}
     methods: {{ methods }}

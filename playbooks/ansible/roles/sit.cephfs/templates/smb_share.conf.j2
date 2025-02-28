@@ -9,7 +9,7 @@ vfs objects = acl_xattr ceph_snapshots
     {%- endif %} {{ vfs }}
 {{ vfs }}:config_file = /etc/ceph/sit.ceph.conf
 {{ vfs }}:user_id = sit
-    {%- if method == 'vfs-new-proxy' +%}
+    {%- if method == 'vfs-proxy' +%}
 {{ vfs }}:proxy = yes
     {%- endif +%}
 path = {{ subvol }}

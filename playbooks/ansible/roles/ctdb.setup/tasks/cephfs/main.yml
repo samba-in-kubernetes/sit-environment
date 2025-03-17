@@ -43,5 +43,5 @@
         section: cluster
         option: cluster lock
         value: '!/usr/libexec/ctdb/ctdb_mutex_ceph_rados_helper
-                  ceph client.ctdb ctdb cluster.lock -n sit'
+                  ceph client.ctdb ctdb cluster.lock -n sit -R'
         state: present

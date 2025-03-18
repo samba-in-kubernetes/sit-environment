@@ -4,8 +4,8 @@ module smbd_connect_proxy 1.0;
 require {
 	type smbd_t;
 	type unconfined_t;
-	class unix_stream_socket connectto;
+	class unix_stream_socket { connectto read write };
 }
 
 #============= smbd_t ==============
-allow smbd_t unconfined_t:unix_stream_socket connectto;
+allow smbd_t unconfined_t:unix_stream_socket { connectto read write };

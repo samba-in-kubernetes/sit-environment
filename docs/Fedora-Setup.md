@@ -58,3 +58,15 @@ $ cd sit-environment/
 $ make clean
 ```
 This clears up all the vms and temporary files created by the tool and the system is ready for a rebuild
+
+To setup the host system to allow direct ssh into the test vms, edit ~/.ssh/config and add the following line
+```
+Include /path/to/sit-environment/playbooks/ansible/ssh_config
+```
+Change the path to your own instance of the sit-environment repo. You should now be able to directly ssh into the test systems.
+eg: client0
+```
+$ ssh client0
+Last login: Fri Mar 28 12:57:45 2025 from 192.168.121.1
+[root@client0 ~]#
+```

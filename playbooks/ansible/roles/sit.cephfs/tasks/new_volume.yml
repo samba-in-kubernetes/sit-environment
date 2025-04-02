@@ -3,7 +3,7 @@
   command: >
     /root/cephadm shell --
       ceph fs subvolume create sit_fs {{ name }}
-        --mode {{ mode | default('0755') }}
+        --mode {{ mode | default('0755') }} --case-insensitive
   run_once: true
 
 - name: Wait until subvolume is ready

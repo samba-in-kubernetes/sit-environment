@@ -30,7 +30,7 @@
     # https://github.com/samba-in-kubernetes/sit-environment/pull/128#issuecomment-2624527331
     - name: Run libcephfsd for proxy
       shell: >
-        LIBCEPHFSD_SOCKET=/run/samba/libcephfsd.sock nohup stdbuf -oL -eL
+        LIBCEPHFSD_SOCKET=/run/samba/libcephfsd.sock nohup
         /usr/sbin/libcephfsd < /dev/null &> /var/log/ceph/libcephfsd.log &
 
 - name: Temporarily allow cap_dac_override for smbd from SELinux

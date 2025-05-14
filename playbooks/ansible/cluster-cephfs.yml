@@ -25,3 +25,10 @@ samba_shares:
     samba:
       options:
         "acl_xattr:security_acl_name": "user.NTACL"
+  - name: share-cs
+    samba:
+      options:
+        "acl_xattr:security_acl_name": "user.NTACL"
+    cephfs:
+      options:
+        "casesensitive": yes

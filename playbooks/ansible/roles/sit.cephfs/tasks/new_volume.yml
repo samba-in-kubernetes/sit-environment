@@ -5,6 +5,16 @@
       ceph fs subvolume create sit_fs {{ name }}
         --mode {{ mode | default('0755') }}
   run_once: true
+  when: volume.cephfs.options.casesensitive | default(false)
+
+- name: Create the CephFS subvolume without casesensitivity
+  command: >
+    /root/cephadm shell --
+      ceph fs subvolume create sit_fs {{ name }}
+        --mode {{ mode | default('0755') }}
+          --casesensitive 0
+  run_once: true
+  when: not (volume.cephfs.options.casesensitive | default(false))
 
 - name: Wait until subvolume is ready
   command: /root/cephadm shell -- ceph fs subvolume info sit_fs {{ name }}

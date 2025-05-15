@@ -20,6 +20,7 @@ shares:
     backend:
       name: {{ config.be.name }}
       variant: {{ config.be.variant}}
+      method: {{ method }}
       path: {{ config.paths.mount }}/backends/{{ share.name }}
       {%- endfor +%}
     {%- else +%}
@@ -27,6 +28,7 @@ shares:
     backend:
       name: {{ config.be.name }}
       variant: {{ config.be.variant}}
+      method: default
       path: {{ config.paths.mount }}/backends/{{ share.name }}
     {%- endif +%}
   {%- endfor +%}

@@ -1,24 +1,26 @@
 {%- for method in config.be.methods +%}
+  {%- if method != 'kclient' or (volume.cephfs.options.casesensitive | default(false)) +%}
 [{{ volume.name }}-{{ config.be.name }}-{{ config.be.variant }}-{{ method }}]
 comment = Volume '{{ volume.name }}' from {{ config.be.name }}({{ config.be.variant }} {{ method }})
 vfs objects = acl_xattr ceph_snapshots
-  {%- if method != 'kclient' %}
-    {%- set vfs = 'ceph_new' %}
-    {%- if method == 'vfs' %}
-      {%- set vfs = 'ceph' %}
-    {%- endif %} {{ vfs }}
+    {%- if method != 'kclient' %}
+      {%- set vfs = 'ceph_new' %}
+      {%- if method == 'vfs' %}
+        {%- set vfs = 'ceph' %}
+      {%- endif %} {{ vfs }}
 {{ vfs }}:config_file = /etc/ceph/sit.ceph.conf
 {{ vfs }}:user_id = sit
-    {%- if method == 'vfs-proxy' +%}
+      {%- if method == 'vfs-proxy' +%}
 {{ vfs }}:proxy = yes
-    {%- endif +%}
+      {%- endif +%}
 path = {{ subvol }}
-  {%- else +%}
+    {%- else +%}
 path = {{ path }}
-  {%- endif +%}
+    {%- endif +%}
 browseable = yes
 read only = no
-  {%- for option, value in volume.samba.options.items() | default([]) +%}
+    {%- for option, value in volume.samba.options.items() | default([]) +%}
 {{ option }} = {{ value }}
-  {%- endfor +%}
+    {%- endfor +%}
+  {%- endif +%}
 {%- endfor +%}

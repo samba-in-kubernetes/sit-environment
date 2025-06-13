@@ -1,4 +1,54 @@
 ---
+- name: Install custom kernel
+  when: config.nodes[inventory_hostname].kernel is defined
+  vars:
+    version: "{{ config.nodes[inventory_hostname].kernel.split('-')[0] }}"
+    release: "{{ config.nodes[inventory_hostname].kernel.split('-')[1] }}.el{{ config.os[config.nodes[inventory_hostname].os].version }}"
+    arch: "x86_64"
+  block:
+    - name: Install repository management tool
+      yum:
+        name: createrepo_c
+        state: latest
+
+    - name: Create local repository directory
+      file:
+        path: /root/repo
+        state: directory
+
+    - name: Download kernel packages
+      get_url:
+        dest: "/root/repo/kernel{{item}}-{{version}}-{{release}}.{{arch}}.rpm"
+        url: "https://kojihub.stream.centos.org/kojifiles/packages/kernel/{{version}}/{{release}}/{{arch}}/kernel{{item}}-{{version}}-{{release}}.{{arch}}.rpm"
+      loop:
+        - ""
+        - "-core"
+        - "-modules"
+        - "-modules-core"
+        - "-devel"
+        - "-headers"
+
+    - name: Create local repository
+      command: createrepo_c /root/repo
+
+    - name: Avoid installing kernel from other repositories
+      shell: sed -i 's/^\[.*/&\nexclude=kernel*/' /etc/yum.repos.d/*.repo
+
+    - name: Define local repository
+      yum_repository:
+        name: "local"
+        description: "Local repository"
+        baseurl: "file:///root/repo"
+        enabled: true
+        gpgcheck: false
+        state: present
+
+    - name: Install custom kernel
+      yum:
+        name: "kernel-{{version}}-{{release}}"
+        state: present
+      register: yum_kernel
+
 - name: Perform a complete update
   yum:
     name: '*'
@@ -6,7 +56,7 @@
   register: yum_update
 
 - name: Reboot node
-  when: yum_update is changed
+  when: (yum_update is changed) or (yum_kernel is changed)
   reboot:
     connect_timeout: 5
     reboot_timeout: 60

@@ -141,6 +141,9 @@ config:
       groups: {{ data.groups }}
       provisioner: {{ prov }}
       os: {{ data.os | default(settings.environments[be].os | default(os)) }}
+      {%- if data.kernel is defined +%}
+      kernel: "{{ data.kernel }}"
+      {%- endif +%}
       cpus: {{ (data.cpus | default(settings.environments[be].cpus)) + ((extra_cpu * (data.cpu_weight | default(1))) | int) }}
       memory: {{ (data.memory | default(settings.environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
       disks: {{ data.disks | default([]) }}

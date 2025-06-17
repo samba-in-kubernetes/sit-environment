@@ -1,9 +1,0 @@
----
-# required for python3-pyxattr
-- name: Enable PowerTools repo
-  command: yum-config-manager --enable powertools
-
-- name: Enable Samba nightly rpms repository
-  command: >-
-    yum-config-manager --add-repo {{ config.install.samba.repo.url }}
-  when: config.install.samba.repo is defined

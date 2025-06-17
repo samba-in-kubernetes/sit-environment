@@ -1,3 +1,0 @@
----
-- name: Process common OS tasks
-  include_tasks: centos.yml

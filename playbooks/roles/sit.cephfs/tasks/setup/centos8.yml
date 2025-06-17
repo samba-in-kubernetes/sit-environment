@@ -1,5 +1,0 @@
----
-- name: Install Python jmespath module
-  pip:
-    executable: pip3.12
-    name: jmespath

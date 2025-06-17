@@ -3,11 +3,6 @@
 # This determines the properties of each OS so that it can be used for better
 # conditionals and reduce duplication in some places.
 os_info:
-  centos8:
-    family: redhat
-    distro: centos
-    version: 8
-
   centos9:
     family: redhat
     distro: centos
@@ -189,7 +184,6 @@ tests:
 provisioners:
   vagrant:
     images:
-      centos8: generic/centos8s
       centos9: generic/centos9s
 
     networks:

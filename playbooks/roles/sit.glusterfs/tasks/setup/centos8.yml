@@ -1,8 +1,0 @@
----
-- name: Process common OS tasks
-  include_tasks: centos.yml
-
-- name: Install Python jmespath module
-  pip:
-    executable: pip3.12
-    name: jmespath

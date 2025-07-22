@@ -1,0 +1,14 @@
+shares:
+  {%- for share in samba_shares +%}
+    {%- if test_casesensitive_cephfs is defined or not (share.cephfs.options.casesensitive | default(false)) +%}
+      {%- for method in config.be.methods +%}
+        {%- if method != 'kclient' or (share.cephfs.options.casesensitive | default(false)) +%}
+  {{ share.name }}-{{ config.be.name }}-{{ config.be.variant}}-{{ method }}:
+    backend:
+      name: {{ config.be.name }}
+      variant: {{ config.be.variant}}
+      path: {{ config.paths.mount }}/backends/{{ share.name }}
+        {%- endif +%}
+      {%- endfor +%}
+    {%- endif +%}
+  {%- endfor +%}

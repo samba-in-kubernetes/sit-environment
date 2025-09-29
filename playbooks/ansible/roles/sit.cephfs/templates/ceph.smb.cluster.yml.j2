@@ -42,3 +42,6 @@ resources:
     {%- for addr in ctdb_network_public_interfaces +%}
     - address: {{ addr }}/{{ ctdb_network_public_interface_subnet_mask }}
     {%- endfor +%}
+  custom_smb_global_options:
+    "_allow_customization": "i-take-responsibility-for-all-samba-configuration-errors"
+    "posix locking": "no"

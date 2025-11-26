@@ -1,4 +1,9 @@
 ---
+- name: Enable EPEL repository
+  yum:
+    name: epel-release
+    state: latest
+
 - name: Install required packages
   yum:
     name:

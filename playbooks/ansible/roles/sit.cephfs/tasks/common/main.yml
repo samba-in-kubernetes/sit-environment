@@ -1,4 +1,9 @@
 ---
+- name: Enable EPEL repository
+  yum:
+    name: epel-release
+    state: latest
+
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   vars:

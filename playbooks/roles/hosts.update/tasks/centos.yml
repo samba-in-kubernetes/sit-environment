@@ -5,6 +5,11 @@
     name: libldb
     state: absent
 
+- name: Remove any system installed samba packages
+  yum:
+    name: "samba*"
+    state: absent
+
 - name: Install custom kernel
   when: config.nodes[inventory_hostname].kernel is defined
   vars:

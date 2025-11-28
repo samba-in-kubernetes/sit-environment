@@ -58,6 +58,7 @@
       yum:
         name: "kernel-{{version}}-{{release}}"
         state: present
+        allow_downgrade: true
       register: yum_kernel
 
 - name: Perform a complete update

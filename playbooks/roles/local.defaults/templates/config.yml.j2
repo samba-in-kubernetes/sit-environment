@@ -146,6 +146,9 @@ config:
       {%- endif +%}
       cpus: {{ (data.cpus | default(settings.environments[be].cpus)) + ((extra_cpu * (data.cpu_weight | default(1))) | int) }}
       memory: {{ (data.memory | default(settings.environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
+      {%- if data.system_disk is defined +%}
+      system_disk: {{ data.system_disk }}
+      {%- endif +%}
       disks: {{ data.disks | default([]) }}
       networks:
       {%- for net in data.networks | default({}) +%}

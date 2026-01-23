@@ -38,6 +38,9 @@ Vagrant.configure("2") do |config|
             vb.cpus = {{ node.cpus }}
         end
         node.vm.provider :libvirt do  |lv|
+    {%- if node.system_disk is defined +%}
+            lv.machine_virtual_size = {{ node.system_disk }}
+    {%- endif +%}
     {%- if data.pool is defined +%}
             lv.storage_pool_name = "{{ data.pool }}"
     {%- endif +%}
@@ -51,6 +54,8 @@ Vagrant.configure("2") do |config|
 {% endfor %}
 
     config.vm.provision "shell", inline: <<-SHELL
+        echo y | parted /dev/vda ---pretend-input-tty resizepart 1 100%
+        resize2fs /dev/vda1
         mkdir /root/.ssh
         chmod 0700 /root/.ssh
         echo "{{ ssh_key_pub }}" >>/root/.ssh/authorized_keys

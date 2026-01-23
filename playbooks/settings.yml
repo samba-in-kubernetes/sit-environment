@@ -260,6 +260,10 @@ provisioners:
 #     minimum memory defined by the `memory` option. See the comment in the
 #     `resources` section to see how this value works.
 #
+#   system_disk: (optional, default: the value defined in the vagrant box
+#                 metadata)
+#     Size (in GiB) of the default disk provisioned for the root file system.
+#
 #   disks: (optional, default: [])
 #     List of additional disks for this type of VM (besides the system
 #     disk). For each disk, only the size (in GiB) is specified.

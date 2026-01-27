@@ -374,6 +374,7 @@ environments:
         instances: 3
         cpu_weight: 2
         memory_weight: 2
+        system_disk: 20
         disks: [10, 10, 10]
         networks:
           private: 100

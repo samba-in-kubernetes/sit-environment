@@ -303,6 +303,7 @@ environments:
       client:
         cpu_weight: 1
         memory_weight: 1
+        system_disk: 20
         networks:
           public: 5
         groups: [clients]
@@ -347,6 +348,7 @@ environments:
       client:
         cpu_weight: 1
         memory_weight: 1
+        system_disk: 20
         networks:
           public: 5
         groups: [clients]
@@ -387,6 +389,7 @@ environments:
       client:
         cpu_weight: 1
         memory_weight: 1
+        system_disk: 20
         networks:
           public: 5
         groups: [clients]
@@ -427,6 +430,7 @@ environments:
       client:
         cpu_weight: 1
         memory_weight: 1
+        system_disk: 20
         networks:
           public: 5
         groups: [clients]

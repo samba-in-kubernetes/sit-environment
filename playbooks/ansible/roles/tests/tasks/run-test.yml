@@ -5,18 +5,27 @@
     line: "PREPARING {{ role }}"
 
 - name: Prepare test {{ role }}
+  when: inventory_hostname in groups['clients']
   include_role:
     name: "{{ role }}"
     tasks_from: prepare/main.yml
 
 - name: Process test {{ role }}
   block:
+    - name: Start monitoring
+      include_role:
+        name: monitor
+        tasks_from: start.yml
+      vars:
+        name: "{{ role }}"
+
     - name: Log test start time
       include_tasks: log.yml
       vars:
         line: "RUNNING {{ role }}"
 
     - name: Run test {{ role }}
+      when: inventory_hostname in groups['clients']
       include_role:
         name: "{{ role }}"
 
@@ -27,6 +36,7 @@
         line: "RECOVERING {{ role }}"
 
     - name: Recover from failure of {{ role }}
+      when: inventory_hostname in groups['clients']
       include_role:
         name: "{{ role }}"
         tasks_from: recover/main.yml
@@ -41,7 +51,13 @@
       vars:
         line: "FINISHED {{ role }}"
 
+    - name: Stop monitoring
+      include_role:
+        name: monitor
+        tasks_from: stop.yml
+
     - name: Cleanup for {{ role }}
+      when: inventory_hostname in groups['clients']
       include_role:
         name: "{{ role }}"
         tasks_from: cleanup/main.yml

@@ -1,0 +1,20 @@
+---
+- name: Check if sadc is running
+  stat:
+    path: /tmp/sadc.pid
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: sadc_pid
+
+- name: Stop sadc if running
+  when: sadc_pid.stat.exists
+  block:
+    - name: Wait few seconds to monitor idle activity
+      pause:
+        seconds: 5
+
+    - name: Stop sadc
+      shell:
+        executable: /bin/bash
+        cmd: "kill -TERM $(cat /tmp/sadc.pid) && rm -f /tmp/sadc.pid"

@@ -1,0 +1,15 @@
+---
+- name: Stop monitoring if enabled
+  include_tasks: stop.yml
+
+- name: Launch background sadc monitoring
+  shell:
+    executable: /bin/bash
+    cmd: >-
+      nohup /usr/lib64/sa/sadc -S XALL 1 </dev/null 2>/dev/null
+      > >(nohup xz - >{{ config.statedir }}/sadc_{{ name }}.xz 2>/dev/null) &
+      echo ${!} >/tmp/sadc.pid
+
+- name: Wait few seconds to monitor idle activity
+  pause:
+    seconds: 5

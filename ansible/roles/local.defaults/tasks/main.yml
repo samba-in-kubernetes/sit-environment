@@ -1,13 +1,7 @@
 ---
-- name: Create .site personal directory
-  file:
-    path: ~/.site
-    mode: 0700
-    state: directory
-
 - name: Check if config.yml exists
   stat:
-    path: ansible/config.yml
+    path: "{{ site_dir }}/config.yml"
   register: config_yml
 
 - name: Generate configuration
@@ -20,7 +14,7 @@
     - name: Load global settings
       include_vars:
         name: global_settings
-        file: settings.yml
+        file: "{{ playbook_dir }}/settings.yml"
 
     - name: Load personal settings
       include_vars:
@@ -31,7 +25,7 @@
     - name: Load local settings
       include_vars:
         name: local_settings
-        file: "{{ lookup('env', 'PWD') | default('.') }}/local.yml"
+        file: "{{ site_dir }}/settings.yml"
       failed_when: false
 
     - name: Combine settings
@@ -43,37 +37,47 @@
                      recursive = true, list_merge = 'append_rp')
           }}
 
-    - debug:
-        var: settings
-
-    - name: Generate config.yml in ansible directory
+    - name: Generate config.yml
       template:
         src: config.yml.j2
-        dest: ./ansible/config.yml
+        dest: "{{ site_dir }}/config.yml"
       vars:
         max_memory: "{{ ansible_facts.memfree_mb }}"
         max_cpu: "{{ ansible_facts.processor_nproc }}"
 
 - name: Load configuration
   include_vars:
-    file: "ansible/config.yml"
+    file: "{{ site_dir }}/config.yml"
 
 - debug:
     var: config
 
+- name: Create ssh directory
+  file:
+    path: "{{ site_dir }}/ssh"
+    state: directory
+
 # TODO: Use openssh_keypair action
 - name: Create SSH key
   command:
-    cmd: ssh-keygen -C "SITE SSH Key" -f ~/.site/id_rsa -N "" -t rsa -b 2048
-    creates: ~/.site/id_rsa
+    cmd: >-
+      ssh-keygen
+        -C "SITE SSH Key"
+        -f {{ site_dir }}/ssh/id_rsa
+        -N ""
+        -t rsa
+        -b 2048
+    creates: "{{ site_dir }}/ssh/id_rsa"
 
 - name: Update the inventory
   add_host:
     name: "{{ item }}"
     ansible_user: root
     ansible_port: 22
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-    ansible_ssh_private_key_file: "~/.site/id_rsa"
+    ansible_ssh_common_args: >-
+        -o StrictHostKeyChecking=no
+        -o UserKnownHostsFile=/dev/null
+    ansible_ssh_private_key_file: "{{ site_dir }}/ssh/id_rsa"
     groups: "{{ config.nodes[item].groups + ['site'] }}"
     site: "{{ config.nodes[item] }}"
   with_items: "{{ config.nodes.keys() }}"
@@ -86,5 +90,5 @@
 
 - name: Copy common playbook configuration
   copy:
-    src: ansible/config.yml
+    src: "{{ site_dir }}/config.yml"
     dest: "{{ config.statedir }}"

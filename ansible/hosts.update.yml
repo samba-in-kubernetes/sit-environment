@@ -6,6 +6,6 @@
   become: yes
   become_method: sudo
   vars_files:
-    - ansible/config.yml
+    - "{{ site_dir }}/config.yml"
   roles:
     - hosts.update

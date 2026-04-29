@@ -6,6 +6,6 @@
   connection: local
   become: no
   vars_files:
-    - ansible/config.yml
+    - "{{ site_dir }}/config.yml"
   roles:
     - setup.prep

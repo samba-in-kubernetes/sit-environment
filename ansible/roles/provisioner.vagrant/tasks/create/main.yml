@@ -3,18 +3,24 @@
   run_once: true
   template:
     src: Vagrantfile.j2
-    dest: Vagrantfile
+    dest: "{{ site_dir }}/Vagrantfile"
 
 - name: start vagrant vms
   run_once: true
   command: vagrant up --no-provision
+  args:
+    chdir: "{{ site_dir }}"
 
 - name: provision vagrant vms
   run_once: true
   command: vagrant provision
+  args:
+    chdir: "{{ site_dir }}"
 
 - name: Get IP address
   command: vagrant ssh {{ inventory_hostname }} -c "ip -j -4 addr show scope global"
+  args:
+    chdir: "{{ site_dir }}"
   register: vm_ip
 
 # Ansible implicitly runs this task as if it had:

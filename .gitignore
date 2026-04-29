@@ -1,9 +1,3 @@
 *~
-playbooks/.vagrant
-playbooks/ansible/site_inventory
-playbooks/ansible/ssh_config
-playbooks/Vagrantfile
-playbooks/ansible/config.yml
 devel/authorized_keys
-local.yml
 sites

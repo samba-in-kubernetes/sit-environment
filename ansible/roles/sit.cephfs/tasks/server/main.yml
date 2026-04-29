@@ -8,27 +8,6 @@
   loop_control:
     loop_var: include_file
 
-- name: "Create SSH key-pairs"
-  command: >
-    ssh-keygen -q -f /root/.ssh/id_rsa -N '' -C "ceph-management@{{ inventory_hostname }}"
-  args:
-    creates: "/root/.ssh/id_rsa.pub"
-
-- name: "Fetching bootstrap node's public key"
-  when: "inventory_hostname == config.groups['cluster'][0]"
-  fetch:
-    flat: true
-    src: /root/.ssh/id_rsa.pub
-    dest: ceph-node-0-ssh-key.pub
-
-- name: Populating non-bootstrap nodes authorized keys
-  authorized_key:
-    user: root
-    state: present
-    key: "{{ lookup('file', pubkey) }}"
-  vars:
-    pubkey: ceph-node-0-ssh-key.pub
-
 # Pull ceph container image for all nodes
 - name: Pull containers
   command: /root/cephadm pull

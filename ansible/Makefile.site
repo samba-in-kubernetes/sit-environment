@@ -21,11 +21,9 @@ statedump: nodes.statedump
 help:
 	@cat <<< "$${HELP_TEXT}"
 
-INVENTORY := $(BASE)/ansible/site_inventory
+INVENTORY := site_inventory
 
-ifdef EXTRA_VARS
-	ANSIBLE_EXTRA_VARS := -e '${EXTRA_VARS}'
-endif
+ANSIBLE_EXTRA_VARS := -e 'site_dir=${SITE_DIR} ${EXTRA_VARS}'
 
 local:
 	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} $(BASE)/local.yml

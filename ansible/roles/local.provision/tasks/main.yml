@@ -19,12 +19,12 @@
         - name: Generate inventory file
           template:
             src: site_inventory.j2
-            dest: ansible/site_inventory
+            dest: "{{ site_dir }}/site_inventory"
 
         - name: Generate SSH config file
           template:
             src: ssh_config.j2
-            dest: ansible/ssh_config
+            dest: "{{ site_dir }}/ssh/config"
 
     - name: Cleanup files
       when: provision_action == 'destroy'
@@ -33,38 +33,38 @@
         path: "{{ item }}"
         state: absent
       with_items:
-        - ansible/site_inventory
-        - ansible/ssh_config
+        - "{{ site_dir }}/site_inventory"
+        - "{{ site_dir }}/ssh/config"
 
 - name: Configure machines
   when: provision_action == 'create'
   block:
-    - name: Create .site directory in machines
-      file:
-        path: ~/.site
-        mode: 0700
-        state: directory
-
     - name: Copy SSH private key
       copy:
         src: "{{ ansible_ssh_private_key_file }}"
-        dest: "{{ item }}/id_rsa"
+        dest: ~/.ssh/id_rsa
         mode: 0600
-      with_items:
-        - ~/.site
-        - ~/.ssh
 
     - name: Copy SSH public key
       copy:
-        src: "{{ ansible_ssh_private_key_file + '.pub'}}"
-        dest: "{{ item }}/id_rsa.pub"
+        src: "{{ ansible_ssh_private_key_file }}.pub"
+        dest: ~/.ssh/id_rsa.pub
         mode: 0600
-      with_items:
-        - ~/.site
-        - ~/.ssh
+
+    - name: Authorize SSH key
+      authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('file', ansible_ssh_private_key_file + '.pub') }}"
 
     - name: Copy SSH config file
       copy:
-        src: "ansible/ssh_config"
+        src: "{{ site_dir }}/ssh/config"
         dest: "~/.ssh/config"
         mode: 0600
+
+    - name: Update SSH IdentityFile path
+      replace:
+        path: "~/.ssh/config"
+        regexp: '^(\s*IdentityFile)\s.*'
+        replace: "\\1 ~/.ssh/id_rsa"

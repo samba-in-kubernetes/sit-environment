@@ -10,6 +10,6 @@
   vars:
     provision_action: create
   vars_files:
-    - ansible/config.yml
+    - "{{ site_dir }}/config.yml"
   roles:
     - local.provision

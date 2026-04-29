@@ -2,6 +2,8 @@
 - name: Destroy vagrant machines
   run_once: true
   command: vagrant destroy -f
+  args:
+    chdir: "{{ site_dir }}"
 
 - name: Remove vagrant settings
   run_once: true
@@ -10,4 +12,4 @@
     state: absent
   with_items:
     - .vagrant
-    - Vagrantfile
+    - "{{ site_dir }}/Vagrantfile"

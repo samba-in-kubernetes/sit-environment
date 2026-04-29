@@ -11,7 +11,7 @@
   vars:
     provision_action: destroy
   vars_files:
-    - ansible/config.yml
+    - "{{ site_dir }}/config.yml"
   roles:
     - local.provision
 

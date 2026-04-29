@@ -1,8 +1,0 @@
----
-- hosts: admin
-  become: yes
-  become_method: sudo
-  vars_files:
-    - config.yml
-  roles:
-    - local.test

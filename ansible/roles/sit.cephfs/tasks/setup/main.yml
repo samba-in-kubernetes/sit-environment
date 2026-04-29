@@ -1,17 +1,6 @@
 ---
-- name: Install ansible
-  yum:
-    name:
-      - ansible-core
-      - ansible-collection-ansible-posix
-      - ansible-collection-community-general
+- name: Install python packages
+  pip:
     state: latest
-
-- name: Process OS specific tasks
-  include_tasks: "{{ include_file }}"
-  vars:
-    prefix: "{{ role_path }}/tasks/setup/"
-  with_first_found:
-    - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
-  loop_control:
-    loop_var: include_file
+    name:
+      - jmespath

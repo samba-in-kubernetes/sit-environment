@@ -1,4 +1,0 @@
----
-- name: Install Python jmespath module
-  pip:
-    name: jmespath

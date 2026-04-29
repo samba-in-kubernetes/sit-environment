@@ -2,9 +2,9 @@
 #
 # prepare the setup machine
 #
-- hosts: admin
-  become: yes
-  become_method: sudo
+- hosts: localhost
+  connection: local
+  become: no
   vars_files:
     - ansible/config.yml
   roles:

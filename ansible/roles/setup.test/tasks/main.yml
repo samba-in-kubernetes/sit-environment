@@ -1,6 +1,0 @@
----
-- name: test playbook node connectivity on the setup machine
-  command:
-    chdir: ansible
-    cmd: >-
-      ansible-playbook -i site_inventory test.local.yml

@@ -1,9 +1,0 @@
----
-#
-# run the cluster creation on the setup machine
-#
-- hosts: admin
-  become: yes
-  become_method: sudo
-  roles:
-    - setup.test

@@ -1,18 +1,5 @@
 ---
-- name: Process OS specific tasks
-  include_tasks: "{{ include_file }}"
-  with_first_found:
-    - files: "{{ config.os[site.os].includes }}"
-  loop_control:
-    loop_var: include_file
-
 - name: Process backend specific tasks (setup)
   include_role:
     name: 'sit.{{ config.be.name }}'
     tasks_from: setup/main.yml
-
-- name: copy ansible playbooks to setup machine
-  become: false
-  synchronize:
-    src: ansible/
-    dest: ansible

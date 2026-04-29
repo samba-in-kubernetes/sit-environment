@@ -1,0 +1,13 @@
+---
+roles:
+  - name: gluster.cluster
+    src: git+https://github.com/gluster/gluster-ansible-cluster.git
+
+  - name: gluster.features
+    src: git+https://github.com/gluster/gluster-ansible-features.git
+
+  - name: gluster.infra
+    src: git+https://github.com/gluster/gluster-ansible-infra.git
+
+  - name: gluster.repositories
+    src: git+https://github.com/gluster/gluster-ansible-repositories.git

@@ -1,9 +1,13 @@
 ---
 - name: Install GPFS
-  delegate_to: localhost
-  become: true
+  delegate_to: "{{ config.groups['cluster'][0] }}"
   run_once: true
   block:
+    - name: Upload installation files
+      unarchive:
+        src: "{{ config.data.package }}"
+        dest: "/root"
+
     - name: Identify installation file
       find:
         path: /root
@@ -40,11 +44,10 @@
         creates: "{{ gpfs_toolkit }}"
 
     - name: Setup installer node
-      command: "{{ gpfs_toolkit }} setup -s {{ config.nodes['setup0'].networks.private }} -i ~/.ssh/id_rsa"
+      command: "{{ gpfs_toolkit }} setup -s {{ config.nodes[config.groups['cluster'][0]].networks.private }} -i ~/.ssh/id_rsa"
 
     - name: Define admin nodes
-      command: "{{ gpfs_toolkit }} node add {{ item }} -a"
-      loop: "{{ config.groups['admin'] }}"
+      command: "{{ gpfs_toolkit }} node add {{ config.groups['cluster'][0] }} -a"
 
     - name: Define manager nodes
       command: "{{ gpfs_toolkit }} node add {{ item }} -m -q"

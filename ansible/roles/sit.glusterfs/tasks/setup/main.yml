@@ -1,14 +1,12 @@
 ---
-- name: Install yum copr plugin
-  yum:
-    name: yum-plugin-copr
+- name: Install python packages
+  pip:
     state: latest
+    name:
+      - jmespath
 
-- name: Process OS specific tasks
-  include_tasks: "{{ include_file }}"
-  vars:
-    prefix: "{{ role_path }}/tasks/setup/"
-  with_first_found:
-    - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
-  loop_control:
-    loop_var: include_file
+- name: Install ansible roles
+  community.general.ansible_galaxy_install:
+    type: role
+    dest: "{{ site_dir }}/ansible/roles"
+    requirements_file: "{{ backend_dir }}/requirements.yml"

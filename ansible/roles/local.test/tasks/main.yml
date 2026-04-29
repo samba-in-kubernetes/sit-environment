@@ -1,9 +1,0 @@
----
-- name: read list of nodes from file cluster_nodes.yml
-  include_vars:
-    file: cluster-{{ config.be.name }}.yml
-
-- name: Test ssh to nodes via node address
-  command: /bin/true
-  delegate_to: "{{ item }}"
-  with_items: "{{ config.groups['cluster'] }}"

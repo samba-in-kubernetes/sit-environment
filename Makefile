@@ -60,8 +60,8 @@ export MFD
 # Determine path of the site repository
 DIR := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 
-# Base directory of ansible playbooks
-BASE := $(DIR)/playbooks
+# Base directory of ansible
+BASE := $(DIR)/ansible
 export BASE
 
 # Base directory for python virtual environments

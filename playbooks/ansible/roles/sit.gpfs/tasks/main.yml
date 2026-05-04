@@ -113,7 +113,7 @@
 
         - name: Create shares
           vars:
-            name: "{{ item.name }}"
+            vol_name: "{{ item.name }}"
             path: "{{ config.paths.mount }}/{{ item.name }}"
             mode: "0777"
             volume: "{{ item }}"

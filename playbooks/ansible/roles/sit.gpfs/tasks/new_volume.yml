@@ -1,23 +1,23 @@
 ---
 - name: Create GPFS fileset
-  command: "/usr/lpp/mmfs/bin/mmcrfileset sit_fs {{ name }}"
+  command: "/usr/lpp/mmfs/bin/mmcrfileset sit_fs {{ vol_name }}"
   run_once: true
 
 - name: Create fileset junction
-  command: "/usr/lpp/mmfs/bin/mmlinkfileset sit_fs {{ name }} -J /gpfs/sit_fs/{{ name }}"
+  command: "/usr/lpp/mmfs/bin/mmlinkfileset sit_fs {{ vol_name }} -J /gpfs/sit_fs/{{ vol_name }}"
   run_once: true
 
 - name: Set fileset permissions
   when: mode is defined
   run_once: true
   file:
-    path: "/gpfs/sit_fs/{{ name }}"
+    path: "/gpfs/sit_fs/{{ vol_name }}"
     mode: "{{ mode }}"
 
 - name: Bind the fileset
   mount:
     path: "{{ path }}"
-    src: "/gpfs/sit_fs/{{ name }}"
+    src: "/gpfs/sit_fs/{{ vol_name }}"
     opts: bind
     fstype: none
     state: mounted

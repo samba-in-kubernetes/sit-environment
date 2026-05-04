@@ -55,7 +55,7 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: new_share.yml
   vars:
-    name: "{{ item.name }}"
+    vol_name: "{{ item.name }}"
     path: "{{ config.paths.mount }}/{{ item.name }}"
     mode: "0777"
     file: "{{ config.paths.samba.etc }}/smb.shares/{{ item.name }}.conf"

@@ -6,7 +6,7 @@
 - name: Get the subvolume's path
   command: >
     /root/cephadm shell --
-      ceph fs subvolume getpath sit_fs {{ name }}
+      ceph fs subvolume getpath sit_fs {{ vol_name }}
   run_once: true
   register: ceph_subvol
 

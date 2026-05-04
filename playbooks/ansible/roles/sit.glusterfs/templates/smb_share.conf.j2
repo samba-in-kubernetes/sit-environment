@@ -1,8 +1,8 @@
-[{{ name }}-{{ config.be.name }}-{{ config.be.variant }}]
-comment = Volume '{{ name }}' from {{ config.be.name }}({{ config.be.variant }})
+[{{ vol_name }}-{{ config.be.name }}-{{ config.be.variant }}]
+comment = Volume '{{ vol_name }}' from {{ config.be.name }}({{ config.be.variant }})
 vfs objects = acl_xattr glusterfs
-glusterfs:volume = {{ name }}
-glusterfs:logfile = /var/log/samba/{{ name }}.%M.log
+glusterfs:volume = {{ vol_name }}
+glusterfs:logfile = /var/log/samba/{{ vol_name }}.%M.log
 glusterfs:loglevel = 7
 path = /
 read only = no

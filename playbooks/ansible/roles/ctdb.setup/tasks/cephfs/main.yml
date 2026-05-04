@@ -5,7 +5,7 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: new_volume
   vars:
-    name: "ctdb"
+    vol_name: "ctdb"
     path: "{{ ctdb_lock_path }}"
 
 - name: Configure RADOS mutex helper

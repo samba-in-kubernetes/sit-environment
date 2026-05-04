@@ -2,7 +2,7 @@
 - name: Create the CephFS subvolume
   command: >
     /root/cephadm shell --
-      ceph fs subvolume create sit_fs {{ name }}
+      ceph fs subvolume create sit_fs {{ vol_name }}
         --mode {{ mode | default('0755') }}
   run_once: true
   when: volume.cephfs.options.casesensitive | default(false)
@@ -10,14 +10,14 @@
 - name: Create the CephFS subvolume without casesensitivity
   command: >
     /root/cephadm shell --
-      ceph fs subvolume create sit_fs {{ name }}
+      ceph fs subvolume create sit_fs {{ vol_name }}
         --mode {{ mode | default('0755') }}
           --casesensitive=0
   run_once: true
   when: not (volume.cephfs.options.casesensitive | default(false))
 
 - name: Wait until subvolume is ready
-  command: /root/cephadm shell -- ceph fs subvolume info sit_fs {{ name }}
+  command: /root/cephadm shell -- ceph fs subvolume info sit_fs {{ vol_name }}
   register: ceph_status
   until: ceph_status.stdout | from_json | json_query("state") == "complete"
   retries: 100
@@ -27,7 +27,7 @@
 - name: Get the subvolume's path
   command: >
     /root/cephadm shell --
-      ceph fs subvolume getpath sit_fs {{ name }}
+      ceph fs subvolume getpath sit_fs {{ vol_name }}
   run_once: true
   register: ceph_subvol
 

@@ -22,7 +22,7 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: new_volume
   vars:
-    name: "{{ ctdb_cluster_volume }}"
+    vol_name: "{{ ctdb_cluster_volume }}"
     path: "{{ ctdb_lock_path }}"
     mount_opts: "_netdev,transport=tcp,xlator-option=*client*.ping-timeout=10"
     volume:

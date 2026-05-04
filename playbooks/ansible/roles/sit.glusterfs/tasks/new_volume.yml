@@ -2,7 +2,7 @@
 - name: Create Replicate Volumes
   gluster_volume:
     state: present
-    name: "{{ name }}"
+    name: "{{ vol_name }}"
     bricks: "{{ volume.glusterfs.bricks }}"
     cluster: "{{ config.groups['cluster'] }}"
     replicas: "{{ volume.glusterfs.subvolume_size }}"
@@ -12,7 +12,7 @@
 - name: Create Dispersed Volumes
   gluster_volume:
     state: present
-    name: "{{ name }}"
+    name: "{{ vol_name }}"
     bricks: "{{ volume.glusterfs.bricks }}"
     cluster: "{{ config.groups['cluster'] }}"
     disperses: "{{ volume.glusterfs.subvolume_size }}"
@@ -23,7 +23,7 @@
 - name: Set volume options
   gluster_volume:
     state: present
-    name: "{{ name }}"
+    name: "{{ vol_name }}"
     options: "{{ volume.glusterfs.options }}"
   run_once: yes
   when: volume.glusterfs.options is defined
@@ -31,7 +31,7 @@
 - name: Mount volume
   mount:
     path: "{{ path }}"
-    src: "localhost:/{{ name }}"
+    src: "localhost:/{{ vol_name }}"
     fstype: glusterfs
     opts: "{{ mount_opts | default(omit) }}"
     state: mounted

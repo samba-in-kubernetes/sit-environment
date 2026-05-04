@@ -4,5 +4,5 @@
     name: 'sit.{{ config.be.name }}'
     tasks_from: new_volume.yml
   vars:
-    name: "ctdb"
+    vol_name: "ctdb"
     path: "{{ ctdb_lock_path }}"

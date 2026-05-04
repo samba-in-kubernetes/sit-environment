@@ -2,11 +2,9 @@
 - name: Process samba users
   include_tasks: create_users.yml
   vars:
-    accounts: "{{ config.accounts[account_group].users }}"
-  when:
-    - config.accounts[account_group].users
-    - account_group in site.accounts
-  with_items: "{{ config.accounts }}"
+    accounts: "{{ account_group.value.users | default({}, true) }}"
+  when: account_group.key in site.accounts
+  with_items: "{{ config.accounts | dict2items }}"
   loop_control:
     loop_var: account_group
   run_once: yes

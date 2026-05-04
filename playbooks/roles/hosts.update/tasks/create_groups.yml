@@ -1,7 +1,7 @@
 ---
 - name: Create group
   group:
-    name: "{{ item }}"
-    gid: "{{ accounts[item] }}"
+    name: "{{ item.key }}"
+    gid: "{{ item.value }}"
     state: present
-  with_items: "{{ accounts }}"
+  with_items: "{{ accounts | dict2items }}"

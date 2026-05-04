@@ -1,7 +1,7 @@
 ---
 - name: Create Samba user
   shell: >-
-    (echo {{ accounts[item].password }}; echo {{ accounts[item].password }}) |
-      smbpasswd -a {{ item }}
-  when: accounts[item].samba
-  with_items: "{{ accounts }}"
+    (echo {{ item.value.password }}; echo {{ item.value.password }}) |
+      smbpasswd -a {{ item.key }}
+  when: item.value.samba
+  with_items: "{{ accounts | dict2items }}"

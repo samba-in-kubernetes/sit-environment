@@ -51,8 +51,8 @@
         src: config.yml.j2
         dest: ./ansible/config.yml
       vars:
-        max_memory: "{{ ansible_memfree_mb }}"
-        max_cpu: "{{ ansible_processor_nproc }}"
+        max_memory: "{{ ansible_facts.memfree_mb }}"
+        max_cpu: "{{ ansible_facts.processor_nproc }}"
 
 - name: Load configuration
   include_vars:

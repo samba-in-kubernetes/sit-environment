@@ -2,7 +2,7 @@ site:
   hosts:
 {%- for host in groups['site'] +%}
     {{ host }}:
-  {%- for var in ('host', 'port', 'user', 'ssh_private_key_file', 'ssh_common_args') +%}
+  {%- for var in ('python_interpreter', 'host', 'port', 'user', 'ssh_private_key_file', 'ssh_common_args') +%}
     {%- if hostvars[host]['ansible_' + var] is defined +%}
       ansible_{{ var }}: {{ hostvars[host]['ansible_' + var] }}
     {%- endif +%}

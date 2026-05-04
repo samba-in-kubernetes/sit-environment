@@ -4,3 +4,4 @@ any_errors_fatal = True
 # disabled by ansible in a future version
 inject_facts_as_vars = True
 callbacks_enabled = profile_tasks
+interpreter_python = ${SITE_DIR}/bin/python3

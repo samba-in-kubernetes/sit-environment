@@ -119,7 +119,11 @@ help:
 $(SITE_DIR):
 	@$(PYTHON) -m venv --symlinks --prompt "SITE: $(SITE)" "$@"
 	@source "$@/bin/activate" && pip install -r requirements.txt
-	@cp "$(BASE)/ansible.cfg" "$@/"
+	@$(PYTHON) -c \
+		"import sys,os; sys.stdout.write(os.path.expandvars(sys.stdin.read()))" \
+		<"$(BASE)/ansible.tpl" \
+		>"$@/ansible.cfg"
+
 	@ln -s $$(realpath --relative-to "$@" "$(MFD)")/Makefile "$@"
 
 .PHONY: site site/$(SITE)

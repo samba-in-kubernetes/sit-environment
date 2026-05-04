@@ -3,12 +3,12 @@
   block:
     - name: Get current time
       command: date "+%Y-%m-%d %H-%M-%S.%3N"
-      register: now
+      register: time_now
 
     - name: Write the log entry to site-tests.log
       lineinfile:
         dest: /var/log/site-tests.log
-        line: "{{ now.stdout }} {{ line }}"
+        line: "{{ time_now.stdout }} {{ line }}"
         insertafter: EOF
         create: true
         state: present

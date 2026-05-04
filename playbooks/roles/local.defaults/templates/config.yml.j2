@@ -105,6 +105,8 @@ config:
       {%- endfor +%}
   {%- endfor +%}
 
+{%- set max_memory = max_memory | int +%}
+{%- set max_cpu = max_cpu | int +%}
 {%- set total_mem = max_memory * ((memory | default(settings.resources.memory | default(50))) | int) / 100 +%}
 {%- set total_cpu = max_cpu * ((cpu | default(settings.resources.cpu | default(100))) | int) / 100 +%}
 {%- set extra_mem = 0 +%}

@@ -6,3 +6,4 @@ playbooks/Vagrantfile
 playbooks/ansible/config.yml
 devel/authorized_keys
 local.yml
+sites

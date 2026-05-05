@@ -1,0 +1,74 @@
+
+define HELP_TEXT
+  test           Create, build and test a site
+  statedump      Dump the state of the site
+endef
+export HELP_TEXT
+
+ifneq ($(filter-out help,$(MAKECMDGOALS)),)
+ifndef VIRTUAL_ENV
+$(error Site's Makefile must be called inside a Python virtual environment)
+endif
+endif
+
+.PHONY: test
+test: setup.site
+
+.PHONY: statedump
+statedump: nodes.statedump
+
+.PHONY: help
+help:
+	@cat <<< "$${HELP_TEXT}"
+
+INVENTORY := $(BASE)/ansible/site_inventory
+VSSH := ssh -F $(BASE)/ansible/ssh_config
+
+ifdef EXTRA_VARS
+	ANSIBLE_EXTRA_VARS := -e '${EXTRA_VARS}'
+	SSH_EXTRA_VARS := EXTRA_VARS='${EXTRA_VARS}'
+endif
+
+local:
+	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} $(BASE)/local.yml
+
+hosts.update.only:
+	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/hosts.update.yml
+
+setup.prep.only:
+	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/setup.prep.yml
+
+setup.prep: local hosts.update.only setup.prep.only
+
+setup.prep.copy:
+	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} --start-at-task "copy ansible playbooks to setup machine" $(BASE)/setup.prep.yml
+
+setup.test.only:
+	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/setup.test.yml
+
+setup.cluster.only:
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible setup.cluster"
+
+setup.cluster: setup.prep setup.test.only setup.cluster.only
+
+setup.clients:
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible setup.clients"
+
+generate.report:
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible generate.report"
+
+nodes.statedump:
+	@ansible-playbook --inventory $(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/nodes.statedump.yml
+
+client.test:
+	@$(VSSH) admin "${SSH_EXTRA_VARS} make -C ansible client.test"
+
+setup.site: setup.cluster setup.clients generate.report client.test
+
+client1.test:
+	@$(VSSH) clients "sudo make -C /root/sit-test-cases test"
+
+clean:
+	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} $(BASE)/cleanup.yml
+
+.PHONY: local hosts.update.only setup.prep.only setup.prep setup.test.only setup.cluster.only setup.cluster setup.clients client.test setup.site client1.test clean

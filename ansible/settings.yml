@@ -293,13 +293,6 @@ environments:
     memory: 1024
 
     nodes:
-      setup:
-        cpu_weight: 0
-        memory_weight: 0
-        networks:
-          private: 200
-        groups: [admin]
-
       client:
         cpu_weight: 1
         memory_weight: 1
@@ -326,13 +319,6 @@ environments:
     memory: 1024
 
     nodes:
-      setup:
-        cpu_weight: 0
-        memory_weight: 0
-        networks:
-          private: 200
-        groups: [admin]
-
       storage:
         cpu_weight: 1
         memory_weight: 1
@@ -365,13 +351,6 @@ environments:
       methods: ['kclient', 'vfs', 'vfs-new', 'vfs-proxy']
 
     nodes:
-      setup:
-        cpu_weight: 0
-        memory_weight: 0
-        networks:
-          private: 200
-        groups: [admin]
-
       storage:
         instances: 3
         cpu_weight: 2
@@ -424,7 +403,7 @@ environments:
           public: 200
         ctdb:
           public: 20
-        groups: [cluster, installer, gui, admin]
+        groups: [cluster, installer, gui]
         accounts: [default]
 
       client:

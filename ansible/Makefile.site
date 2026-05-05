@@ -21,44 +21,45 @@ statedump: nodes.statedump
 help:
 	@cat <<< "$${HELP_TEXT}"
 
-INVENTORY := site_inventory
-
 ANSIBLE_EXTRA_VARS := -e 'site_dir=${SITE_DIR} ${EXTRA_VARS}'
 
+ansible = ansible-playbook --inventory localhost, $(addprefix --tags ,$(1)) \
+			$(ANSIBLE_EXTRA_VARS) $(BASE)/site.yml
+
 local:
-	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} $(BASE)/local.yml
+	@$(call ansible,initialize)
 
 hosts.update.only:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/hosts.update.yml
+	@$(call ansible,update)
 
 setup.prep.only:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/setup.prep.yml
+	@$(call ansible,prepare)
 
-setup.prep: local hosts.update.only setup.prep.only
-
-setup.prep.copy:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} --start-at-task "copy ansible playbooks to setup machine" $(BASE)/setup.prep.yml
+setup.prep:
+	@$(call ansible,initialize update prepare)
 
 setup.cluster.only:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/setup-cluster.yml
+	@$(call ansible,cluster)
 
-setup.cluster: setup.prep setup.cluster.only
+setup.cluster:
+	@$(call ansible,initialize update prepare cluster)
 
 setup.clients:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/setup-clients.yml
+	@$(call ansible,clients)
 
 generate.report:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/generate-report.yml
+	@$(call ansible,report)
 
 nodes.statedump:
-	@ansible-playbook --inventory $(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/nodes.statedump.yml
+	@$(call ansible,statedump)
 
 client.test:
-	@ansible-playbook --inventory=$(INVENTORY) ${ANSIBLE_EXTRA_VARS} $(BASE)/client-test.yml
+	@$(call ansible,test)
 
-setup.site: setup.cluster setup.clients generate.report client.test
+setup.site:
+	@$(call ansible,initialize update prepare cluster clients report test)
 
 clean:
-	@ansible-playbook --inventory localhost, ${ANSIBLE_EXTRA_VARS} $(BASE)/cleanup.yml
+	@$(call ansible,cleanup)
 
 .PHONY: local hosts.update.only setup.prep.only setup.prep setup.test.only setup.cluster.only setup.cluster setup.clients client.test setup.site clean

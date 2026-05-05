@@ -1,3 +1,130 @@
 ---
-- import_playbook: setup-cluster.yml
-- import_playbook: setup-clients.yml
+- name: Create configuration
+  hosts: localhost
+  connection: local
+  become: no
+  tags: [never, initialize]
+  roles:
+    - local.defaults
+
+- name: Update inventory
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  tags: [always]
+  roles:
+    - update.inventory
+
+- name: Load configuration
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [always]
+  roles:
+    - load.config
+
+- name: Provision machines
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, initialize]
+  vars:
+    provision_action: create
+  roles:
+    - local.provision
+
+- name: Destroy machines
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, cleanup]
+  vars:
+    provision_action: destroy
+  roles:
+    - local.provision
+
+- name: Clear configuration
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  tags: [never, cleanup]
+  roles:
+    - local.clean
+
+- name: Update hosts
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, update]
+  roles:
+    - hosts.update
+
+- name: Prepare environment
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  tags: [never, prepare]
+  roles:
+    - setup.prep
+
+- name: Install cluster
+  hosts: cluster
+  become: no
+  gather_facts: false
+  tags: [never, cluster]
+  roles:
+    - role: common.prep
+
+    - role: node.prep
+
+    - role: backend
+
+    - role: samba.install
+      when: config.samba
+
+    - role: samba.setup
+      when: config.samba
+
+    - role: ctdb.setup
+      when: config.samba
+
+    - role: users.setup
+      when: config.users
+
+- name: Install clients
+  hosts: clients
+  become: no
+  gather_facts: false
+  tags: [never, clients]
+  roles:
+    - common.prep
+    - client.prep
+    - samba.install
+
+- name: Report versions
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, report]
+  roles:
+    - report.versions
+
+- name: Run tests
+  hosts: clients
+  become: no
+  gather_facts: false
+  tags: [never, test]
+  roles:
+    - tests
+
+- name: Collect execution information
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, statedump]
+  roles:
+    - logs.collect
+    - config.collect

@@ -1,0 +1,13 @@
+---
+- name: Load global configuration
+  include_vars:
+    file: "{{ site_dir }}/config.yml"
+
+- name: Load cluster configuration
+  include_vars:
+    file: "{{ playbook_dir }}/cluster-{{ config.be.name }}.yml"
+
+- name: Current configuration
+  run_once: true
+  debug:
+    var: config

@@ -5,7 +5,7 @@
 - hosts: localhost
   connection: local
   become: no
-  vars_files:
-    - "{{ site_dir }}/config.yml"
   roles:
+    - update.inventory
+    - load.config
     - setup.prep

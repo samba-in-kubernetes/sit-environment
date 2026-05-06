@@ -4,15 +4,14 @@
   become: no
   gather_facts: false
   roles:
-    - local.defaults
+    - update.inventory
 
 - hosts: site
   gather_facts: false
   vars:
     provision_action: destroy
-  vars_files:
-    - "{{ site_dir }}/config.yml"
   roles:
+    - load.config
     - local.provision
 
 - hosts: localhost

@@ -1,11 +1,16 @@
 ---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  roles:
+    - update.inventory
+
 - hosts: cluster
   become: yes
   become_method: sudo
-  vars_files:
-    - "{{ site_dir }}/config.yml"
-    - cluster-{{ config.be.name }}.yml
   roles:
+    - load.config
     - common.prep
     - node.prep
     - "sit.{{ config.be.name }}"

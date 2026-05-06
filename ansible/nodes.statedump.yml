@@ -1,9 +1,15 @@
 ---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  roles:
+    - update.inventory
+
 - hosts: site
   become: yes
   become_method: sudo
-  vars_files:
-    - "{{ site_dir }}/config.yml"
   roles:
+    - load.config
     - logs.collect
     - config.collect

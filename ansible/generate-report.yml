@@ -1,7 +1,13 @@
 ---
+- hosts: localhost
+  connection: local
+  become: no
+  gather_facts: false
+  roles:
+    - update.inventory
+
 - hosts: all
   become: yes
-  vars_files:
-    - "{{ site_dir }}/config.yml"
   roles:
+    - load.config
     - report.versions

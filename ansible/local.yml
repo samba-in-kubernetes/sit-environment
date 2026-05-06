@@ -4,12 +4,12 @@
   become: no
   roles:
     - local.defaults
+    - update.inventory
 
 - hosts: site
   gather_facts: false
   vars:
     provision_action: create
-  vars_files:
-    - "{{ site_dir }}/config.yml"
   roles:
+    - load.config
     - local.provision

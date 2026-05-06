@@ -12,7 +12,7 @@
 
 - name: Create share config file
   template:
-    src: "smb_share.conf.j2"
+    src: "{{ backend_dir }}/smb_share.conf.j2"
     dest: "{{ file }}"
   vars:
     subvol: "{{ ceph_subvol.stdout }}"

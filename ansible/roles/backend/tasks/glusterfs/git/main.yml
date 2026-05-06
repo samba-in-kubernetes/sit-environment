@@ -1,0 +1,7 @@
+---
+- name: Process OS specific tasks
+  include_tasks: "{{ include_file }}"
+  with_first_found:
+    - files: "{{ [backend_dir] | product(config.os[site.os].includes) | map('join', '/') | list }}"
+  loop_control:
+    loop_var: include_file

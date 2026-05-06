@@ -8,8 +8,8 @@
 
 - name: Process backend specific tasks (client)
   include_role:
-    name: 'sit.{{ config.be.name }}'
-    tasks_from: client/main.yml
+    name: backend
+    tasks_from: client.yml
 
 - debug:
     msg: "{{ ctdb_network_public_interfaces }}"

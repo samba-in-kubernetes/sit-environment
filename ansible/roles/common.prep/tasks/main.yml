@@ -8,8 +8,8 @@
 
 - name: Process backend specific tasks (common)
   include_role:
-    name: 'sit.{{ config.be.name }}'
-    tasks_from: common/main.yml
+    name: backend
+    tasks_from: common.yml
 
 - name: Create /etc/hosts
   template:

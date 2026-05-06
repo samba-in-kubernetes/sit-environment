@@ -13,7 +13,7 @@
     - load.config
     - common.prep
     - node.prep
-    - "sit.{{ config.be.name }}"
+    - backend
     - role: samba.install
       when: config.samba
     - role: samba.setup

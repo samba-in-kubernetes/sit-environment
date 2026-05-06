@@ -52,7 +52,7 @@
 
 - name: Create the share configuration using backend
   include_role:
-    name: 'sit.{{ config.be.name }}'
+    name: backend
     tasks_from: new_share.yml
   vars:
     vol_name: "{{ item.name }}"

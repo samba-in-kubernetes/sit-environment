@@ -19,8 +19,8 @@
 
 - name: Create and mount the ctdb shared volume
   include_role:
-    name: 'sit.{{ config.be.name }}'
-    tasks_from: new_volume
+    name: backend
+    tasks_from: new_volume.yml
   vars:
     vol_name: "{{ ctdb_cluster_volume }}"
     path: "{{ ctdb_lock_path }}"

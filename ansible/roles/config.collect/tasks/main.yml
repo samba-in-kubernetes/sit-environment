@@ -7,8 +7,8 @@
 - name: Process backend specific tasks
   when: inventory_hostname in groups['cluster']
   include_role:
-    name: 'sit.{{ config.be.name }}'
-    tasks_from: config/main.yml
+    name: backend
+    tasks_from: config.yml
 
 - name: Copy test configuration data
   shell: cp /root/test-info.yml {{ config.configdir }}

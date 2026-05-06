@@ -1,9 +1,9 @@
 ---
-- name: Create the GlusterFS volume
+- name: Create the GPFS volume
   include_tasks:
     file: new_volume.yml
 
 - name: Create share config file
   template:
-    src: "smb_share.conf.j2"
+    src: "{{ backend_dir }}/smb_share.conf.j2"
     dest: "{{ file }}"

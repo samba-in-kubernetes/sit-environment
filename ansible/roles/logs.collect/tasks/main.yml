@@ -2,8 +2,8 @@
 - name: Process backend specific tasks
   when: inventory_hostname in groups['cluster']
   include_role:
-    name: 'sit.{{ config.be.name }}'
-    tasks_from: logs/main.yml
+    name: backend
+    tasks_from: logs.yml
 
 - name: Extract journal since last boot
   shell: journalctl -xb -n all > /var/log/journal

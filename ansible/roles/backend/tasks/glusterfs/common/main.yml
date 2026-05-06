@@ -14,9 +14,7 @@
 
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
-  vars:
-    prefix: "{{ role_path }}/tasks/common/"
   with_first_found:
-    - files: "{{ [prefix] | product(config.os[site.os].includes) | map('join') | list }}"
+    - files: "{{ [backend_dir] | product(config.os[site.os].includes) | map('join','/') | list }}"
   loop_control:
     loop_var: include_file

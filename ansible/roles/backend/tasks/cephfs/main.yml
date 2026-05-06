@@ -108,7 +108,7 @@
         - name: Create a smb cluster
           command: /root/cephadm shell -- ceph smb apply -i -
           args:
-            stdin: "{{ lookup('template', 'ceph.smb.cluster.yml.j2') }}"
+            stdin: "{{ lookup('template', backend_dir + '/ceph.smb.cluster.yml.j2') }}"
 
 - name: Generate a ceph conf with key
   copy:
@@ -134,5 +134,5 @@
     - name: Create samba shares
       command: /root/cephadm shell -- ceph smb apply -i -
       args:
-        stdin: "{{ lookup('template', 'ceph.smb.share.yml.j2') }}"
+        stdin: "{{ lookup('template', backend_dir + '/ceph.smb.share.yml.j2') }}"
       run_once: true

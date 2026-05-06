@@ -10,8 +10,8 @@
 
 - name: Install backend specific packages
   include_role:
-    name: "sit.{{ config.be.name }}"
-    tasks_from: git/main.yml
+    name: backend
+    tasks_from: git_prepare.yml
 
 - name: Setup git repository
   git:
@@ -22,8 +22,8 @@
 
 - name: Configure samba installation(backend specific)
   include_role:
-    name: "sit.{{ config.be.name }}"
-    tasks_from: git/configure.yml
+    name: backend
+    tasks_from: git_configure.yml
 
 - name: Install samba and ctdb
   command: make -j install

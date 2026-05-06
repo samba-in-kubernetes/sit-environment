@@ -1,0 +1,29 @@
+---
+- name: Load global configuration
+  include_vars:
+    file: "{{ site_dir }}/config.yml"
+
+- name: Update the inventory
+  add_host:
+    name: "{{ item }}"
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_user: root
+    ansible_port: 22
+    ansible_ssh_common_args: >-
+        -o StrictHostKeyChecking=no
+        -o UserKnownHostsFile=/dev/null
+    ansible_ssh_private_key_file: "{{ site_dir }}/ssh/id_rsa"
+    groups: "{{ config.nodes[item].groups + ['site'] }}"
+    site: "{{ config.nodes[item] }}"
+  with_items: "{{ config.nodes.keys() }}"
+
+- name: Create state directory structure on host
+  file:
+    path: "{{ config.statedir }}/{{ item }}"
+    state: directory
+  loop: "{{ groups['site'] }}"
+
+- name: Copy common playbook configuration
+  copy:
+    src: "{{ site_dir }}/config.yml"
+    dest: "{{ config.statedir }}"

@@ -1,0 +1,6 @@
+---
+- name: Process {{ config.be.name }} specific tasks (new_share)
+  include_tasks:
+    file: "{{ backend_dir }}/new_share.yml"
+  vars:
+    backend_dir: "{{ role_path }}/tasks/{{ config.be.name }}"

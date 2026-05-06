@@ -1,0 +1,6 @@
+---
+- name: Process {{ config.be.name }} specific tasks (repo)
+  include_tasks:
+    file: "{{ backend_dir }}/main.yml"
+  vars:
+    backend_dir: "{{ role_path }}/tasks/{{ config.be.name }}/repo"

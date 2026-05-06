@@ -1,0 +1,6 @@
+---
+- name: Process {{ config.be.name }} specific tasks (new_volume)
+  include_tasks:
+    file: "{{ backend_dir }}/new_volume.yml"
+  vars:
+    backend_dir: "{{ role_path }}/tasks/{{ config.be.name }}"

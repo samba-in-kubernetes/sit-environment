@@ -21,7 +21,7 @@ statedump: nodes.statedump
 help:
 	@cat <<< "$${HELP_TEXT}"
 
-ANSIBLE_EXTRA_VARS := -e 'site_dir=${SITE_DIR} ${EXTRA_VARS}'
+ANSIBLE_EXTRA_VARS := -e 'site_dir=${SITE_DIR} site_name=${SITE} ${EXTRA_VARS}'
 
 ansible = ansible-playbook --inventory localhost, $(addprefix --tags ,$(1)) \
 			$(ANSIBLE_EXTRA_VARS) $(BASE)/site.yml

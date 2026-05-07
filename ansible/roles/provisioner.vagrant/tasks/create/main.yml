@@ -23,12 +23,6 @@
     chdir: "{{ site_dir }}"
   register: vm_ip
 
-# Ansible implicitly runs this task as if it had:
-#
-#   delegate_to: localhost
-#   run_once: true
-- name: Update inventory
-  add_host:
-    name: "{{ item }}"
-    ansible_host: "{{ (hostvars[item].vm_ip.stdout | from_json)[0].addr_info[0].local }}"
-  with_items: "{{ ansible_play_hosts }}"
+- name: Extract IP address
+  set_fact:
+    host_ip: "{{ (vm_ip.stdout | from_json)[0].addr_info[0].local }}"

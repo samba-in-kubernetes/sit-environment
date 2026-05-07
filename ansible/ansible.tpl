@@ -5,3 +5,6 @@ any_errors_fatal = True
 inject_facts_as_vars = True
 callbacks_enabled = profile_tasks
 interpreter_python = ${SITE_DIR}/bin/python3
+
+[ssh_connection]
+ssh_common_args = -F ${SITE_DIR}/ssh/config

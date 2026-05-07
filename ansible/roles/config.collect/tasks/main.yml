@@ -20,3 +20,4 @@
     src: "{{ config.configdir }}"
     dest: "{{ config.statedir }}/{{ inventory_hostname }}"
     mode: pull
+    use_ssh_args: true

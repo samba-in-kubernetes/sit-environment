@@ -10,7 +10,7 @@
         tasks_from: "{{ provision_action }}/main.yml"
       vars:
         data: "{{ config.provisioners[site.provisioner] }}"
-        ssh_key_pub: "{{ lookup('file', ansible_ssh_private_key_file + '.pub') }}"
+        ssh_key_pub: "{{ lookup('file', site_dir + '/ssh/id_rsa.pub') }}"
 
     - name: Generate local files
       when: provision_action == 'create'
@@ -41,13 +41,13 @@
   block:
     - name: Copy SSH private key
       copy:
-        src: "{{ ansible_ssh_private_key_file }}"
+        src: "{{ site_dir }}/ssh/id_rsa"
         dest: ~/.ssh/id_rsa
         mode: 0600
 
     - name: Copy SSH public key
       copy:
-        src: "{{ ansible_ssh_private_key_file }}.pub"
+        src: "{{ site_dir }}/ssh/id_rsa.pub"
         dest: ~/.ssh/id_rsa.pub
         mode: 0600
 
@@ -55,7 +55,7 @@
       authorized_key:
         user: root
         state: present
-        key: "{{ lookup('file', ansible_ssh_private_key_file + '.pub') }}"
+        key: "{{ lookup('file', site_dir + '/ssh/id_rsa.pub') }}"
 
     - name: Copy SSH config file
       copy:

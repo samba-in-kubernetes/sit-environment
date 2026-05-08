@@ -16,11 +16,6 @@
       when: provision_action == 'create'
       run_once: true
       block:
-        - name: Generate inventory file
-          template:
-            src: site_inventory.j2
-            dest: "{{ site_dir }}/site_inventory"
-
         - name: Generate SSH config file
           template:
             src: ssh_config.j2
@@ -30,11 +25,8 @@
       when: provision_action == 'destroy'
       run_once: true
       file:
-        path: "{{ item }}"
+        path: "{{ site_dir }}/ssh/config"
         state: absent
-      with_items:
-        - "{{ site_dir }}/site_inventory"
-        - "{{ site_dir }}/ssh/config"
 
 - name: Configure machines
   when: provision_action == 'create'

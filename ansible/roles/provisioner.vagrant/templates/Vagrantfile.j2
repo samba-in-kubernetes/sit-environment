@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
     {%- set node = config.nodes[host] %}
     config.vm.define "{{ host }}" do |node|
         node.vm.box = "{{ config.provisioners[node.provisioner].images[node.os] }}"
-        node.vm.hostname = "{{ host }}"
+        node.vm.hostname = "{{ host }}.{{ node.domain }}"
     {%- for net in node.networks +%}
         # Confine the DHCP pool to the upper half of the subnet so the lower
         # range stays free for the statically assigned CTDB virtual IPs. The

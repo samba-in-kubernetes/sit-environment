@@ -27,9 +27,7 @@ config:
     methods: {{ methods }}
     {%- endif +%}
 
-{%- if settings.environments[be].domain is defined +%}
-  domain: "{{ settings.environments[be].domain }}"
-{%- endif +%}
+{%- set domain = settings.environments[be].domain | default(site_name ~ ".site.test") +%}
 
   data: {{ settings.environments[be].data | default({}) }}
 
@@ -152,6 +150,7 @@ config:
       system_disk: {{ data.system_disk }}
       {%- endif +%}
       disks: {{ data.disks | default([]) }}
+      domain: "{{ data.domain | default(domain) }}"
       networks:
       {%- for net in data.networks | default({}) +%}
         {{ net }}: {{ settings.provisioners[prov].networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}

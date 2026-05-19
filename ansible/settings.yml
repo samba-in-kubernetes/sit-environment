@@ -220,9 +220,9 @@ provisioners:
 #     Default minimum amount of memory (in MiB) assigned to each VM. This
 #     value can be overridden by specific VM type definitions.
 #
-#   domain: (optional, default: None)
-#     The DNS domain name to append to the VM's name to form a FQDN. If
-#     it's not present, the machine's hostname will be just its name.
+#   domain: (optional, default: '{{ site_name }}.site.test')
+#     The DNS domain name to append to the VM's name to form a FQDN. This value
+#     can be overridden by specific VM type definitions.
 #
 #   data: (optional, default: {})
 #     This field contains any extra data specific to the environment that
@@ -272,6 +272,9 @@ provisioners:
 #   disks: (optional, default: [])
 #     List of additional disks for this type of VM (besides the system
 #     disk). For each disk, only the size (in GiB) is specified.
+#
+#   domain: (optional, default: the value of `domain` in the environment)
+#     The DNS domain name to append to the VM's name to form a FQDN.
 #
 #   networks: (optional, default: {})
 #     This field enumerates the networks to connect to the VMs of this
@@ -388,7 +391,6 @@ environments:
   gpfs:
     cpus: 2
     memory: 1024
-    domain: sit.test
     samba: "{{ variant != 'scale' }}"
 
     data:

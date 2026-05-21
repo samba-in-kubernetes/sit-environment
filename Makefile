@@ -24,8 +24,9 @@ Targets (only one target allowed per invocation):
   site           Create Python virtual environment for default site
   site/<site>    Create Python virtual environment with specified name
   destroy        Destroy current Python virtual environment
+  test           Create, build and test a site
+  statedump      Dump the state of the site
 endef
-export HELP_TEXT
 
 # Enforce a single goal (at most) in the command line
 ifneq ($(word 2,$(MAKECMDGOALS)),)
@@ -55,14 +56,12 @@ set_site = \
 
 # Determine parent directory of the current Makefile
 MFD := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-export MFD
 
 # Determine path of the site repository
 DIR := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 
 # Base directory of ansible
 BASE := $(DIR)/ansible
-export BASE
 
 # Base directory for python virtual environments
 VENV := $(DIR)/sites
@@ -93,41 +92,29 @@ endif
 
 # Set the default SITE if none has been detected or provided
 SITE ?= default
-export SITE
 
 SITE_DIR := $(VENV)/$(SITE)
-export SITE_DIR
 
-GLOBAL_GOALS := all help site site/$(SITE) $(SITE_DIR) destroy yamllint
-
-.PHONY: all clean
-GOALS := all $(filter-out $(GLOBAL_GOALS),$(MAKECMDGOALS))
-
-$(GOALS): site
-ifndef VIRTUAL_ENV
-	@source "$(SITE_DIR)/bin/activate" && \
-		$(MAKE) -C "$(SITE_DIR)" $(MAKECMDGOALS)
-else
-	@cd "$(SITE_DIR)" && $(MAKE) -f "$(BASE)/Makefile.site" $(MAKECMDGOALS)
-endif
+# Default target
+.PHONY: test
+test: setup.site
 
 .PHONY: help
 help:
-	@cat <<< "$${HELP_TEXT}"
-	@$(MAKE) -f "$(BASE)/Makefile.site" help
+	$(info $(HELP_TEXT))
+	@:
+
+.PHONY: statedump
+statedump: nodes.statedump
+
+.PHONY: site site/$(SITE)
+site site/$(SITE): $(SITE_DIR)
 
 $(SITE_DIR):
 	@$(PYTHON) -m venv --symlinks --prompt "SITE: $(SITE)" "$@"
 	@source "$@/bin/activate" && pip install -r requirements.txt
-	@$(PYTHON) -c \
-		"import sys,os; sys.stdout.write(os.path.expandvars(sys.stdin.read()))" \
-		<"$(BASE)/ansible.tpl" \
-		>"$@/ansible.cfg"
-
-	@ln -s $$(realpath --relative-to "$@" "$(MFD)")/Makefile "$@"
-
-.PHONY: site site/$(SITE)
-site site/$(SITE): $(SITE_DIR)
+	@sed 's#\$${SITE_DIR}#$@#g' <"$(BASE)/ansible.tpl" >"$@/ansible.cfg"
+	@ln -s $$(realpath --relative-to "$@" "$(DIR)")/Makefile "$@"
 
 .PHONY: destroy
 destroy:
@@ -142,3 +129,60 @@ endif
 .PHONY: yamllint
 yamllint:
 	@$(YAMLLINT) -c "$(DIR)/.yamllint" "$(DIR)"
+
+ANSIBLE_EXTRA_VARS := -e 'site_dir=${SITE_DIR} site_name=${SITE} ${EXTRA_VARS}'
+
+ansible = \
+	cd "$(SITE_DIR)" && source "bin/activate" && \
+	ansible-playbook --inventory localhost, $(addprefix --tags ,$(1)) \
+		$(ANSIBLE_EXTRA_VARS) $(BASE)/site.yml
+
+# Ansible targets
+
+.PHONY: local
+local: site
+	@$(call ansible,initialize)
+
+.PHONY: hosts.update.only
+hosts.update.only: site
+	@$(call ansible,update)
+
+.PHONY: setup.prep.only
+setup.prep.only: site
+	@$(call ansible,prepare)
+
+.PHONY: setup.prep
+setup.prep: site
+	@$(call ansible,initialize update prepare)
+
+.PHONY: setup.cluster.only
+setup.cluster.only: site
+	@$(call ansible,cluster)
+
+.PHONY: setup.cluster
+setup.cluster: site
+	@$(call ansible,initialize update prepare cluster)
+
+.PHONY: setup.clients
+setup.clients: site
+	@$(call ansible,clients)
+
+.PHONY: generate.report
+generate.report: site
+	@$(call ansible,report)
+
+.PHONY: nodes.statedump
+nodes.statedump: site
+	@$(call ansible,statedump)
+
+.PHONY: client.test
+client.test: site
+	@$(call ansible,test)
+
+.PHONY: setup.site
+setup.site: site
+	@$(call ansible,initialize update prepare cluster clients report test)
+
+.PHONY: clean
+clean: site
+	@$(call ansible,cleanup)

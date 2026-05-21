@@ -42,14 +42,6 @@
         state: directory
         mode: '0755'
 
-- name: Create smb.conf
-  template:
-    src: smb.conf.j2
-    dest: "{{ config.paths.samba.etc }}/smb.conf"
-    owner: root
-    group: root
-    mode: '0644'
-
 - name: Create the share configuration using backend
   include_role:
     name: backend

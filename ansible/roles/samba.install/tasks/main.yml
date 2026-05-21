@@ -6,3 +6,101 @@
 - name: Install samba and ctdb from git sources
   when: config.install.samba.git is defined
   include_tasks: git/main.yml
+
+- name: Apply common settings to smb.conf
+  vars:
+    smb_conf:
+      netbios name: "{{ site.netbios }}"
+  ini_file:
+    path: /etc/samba/smb.conf
+    section: global
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ smb_conf | dict2items }}"
+
+- name: Apply cluster settings to smb.conf
+  when: inventory_hostname in groups['cluster']
+  vars:
+    smb_conf:
+      server string: "SITE {{ site.domain }} (Samba %v)"
+      clustering: yes
+      log file: /var/log/samba/log.%m
+      max log size: 0
+      log level: 0
+      posix locking: No
+      kernel change notify: no
+      load printers: no
+      printcap name: /dev/null
+      disable spoolss: yes
+      printing: bsd
+      show add printer wizard: no
+      smbd:FSCTL_SMBTORTURE: yes
+  ini_file:
+    path: /etc/samba/smb.conf
+    section: global
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ smb_conf | dict2items }}"
+
+- name: Apply member server settings to smb.conf
+  when:
+    - config.ad.enabled
+    - site.ad == 'member'
+  vars:
+    smb_conf:
+      workgroup: "{{ config.ad.domains[site.domain].workgroup }}"
+      realm: "{{ config.ad.domains[site.domain].realm }}"
+      security: ads
+      server role: member server
+  ini_file:
+    path: /etc/samba/smb.conf
+    section: global
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ smb_conf | dict2items }}"
+
+- name: Apply standalone settings to smb.conf
+  when:
+    - config.ad.enabled
+    - site.ad == 'standalone'
+  vars:
+    smb_conf:
+      server role: standalone
+      security: user
+      workgroup: "{{ config.ad.domains[site.domain].workgroup }}"
+  ini_file:
+    path: /etc/samba/smb.conf
+    section: global
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ smb_conf | dict2items }}"
+
+- name: Apply domain settings to smb.conf
+  when:
+    - config.ad.enabled
+    - site.ad != 'standalone'
+  vars:
+    smb_conf: >-
+      {{
+        {
+          "idmap config * : backend": "autorid",
+          "idmap config * : range": config.ad.idmap.min ~ "-" ~ (config.ad.idmap.min + config.ad.idmap.size - 1),
+          "idmap config * : rangesize": config.ad.idmap.block
+        } | combine({} if config.ad.domains[site.domain].rfc2307 is not defined else {
+          "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : backend": "ad",
+          "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : schema_mode": "rfc2307",
+          "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : unix_primary_group": config.ad.domains[site.domain].rfc2307.unix_primary_group | ternary("yes", "no"),
+          "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : range": config.ad.domains[site.domain].rfc2307.min ~ "-" ~ (config.ad.domains[site.domain].rfc2307.min + config.ad.domains[site.domain].rfc2307.size - 1)
+        })
+      }}
+  ini_file:
+    path: /etc/samba/smb.conf
+    section: global
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ smb_conf | dict2items }}"

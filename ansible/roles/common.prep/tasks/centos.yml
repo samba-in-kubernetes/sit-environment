@@ -3,6 +3,11 @@
 - name: Enable CRB repo
   command: dnf config-manager --set-enabled crb
 
+- name: Enable EPEL repository
+  yum:
+    name: epel-release
+    state: latest
+
 - name: Enable Samba nightly rpms repository
   command: >-
     yum-config-manager --add-repo {{ config.install.samba.repo.url }}

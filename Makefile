@@ -96,16 +96,12 @@ SITE ?= default
 SITE_DIR := $(VENV)/$(SITE)
 
 # Default target
-.PHONY: test
-test: setup.site
+.DEFAULT_GOAL = test
 
 .PHONY: help
 help:
 	$(info $(HELP_TEXT))
 	@:
-
-.PHONY: statedump
-statedump: nodes.statedump
 
 .PHONY: site site/$(SITE)
 site site/$(SITE): $(SITE_DIR)
@@ -171,16 +167,16 @@ setup.clients: site
 generate.report: site
 	@$(call ansible,report)
 
-.PHONY: nodes.statedump
-nodes.statedump: site
+.PHONY: statedump nodes.statedump
+statedump nodes.statedump: site
 	@$(call ansible,statedump)
 
 .PHONY: client.test
 client.test: site
 	@$(call ansible,test)
 
-.PHONY: setup.site
-setup.site: site
+.PHONY: test setup.site
+test setup.site: site
 	@$(call ansible,initialize update prepare cluster clients report test)
 
 .PHONY: clean

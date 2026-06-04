@@ -70,14 +70,21 @@
   roles:
     - setup.prep
 
+- name: Prepare Active Directory
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, cluster, clients]
+  roles:
+    - common.prep
+    - ad.setup
+
 - name: Install cluster
   hosts: cluster
   become: no
   gather_facts: false
   tags: [never, cluster]
   roles:
-    - role: common.prep
-
     - role: node.prep
 
     - role: backend
@@ -91,8 +98,7 @@
     - role: ctdb.setup
       when: config.samba
 
-    - role: users.setup
-      when: config.users
+    - role: ad.member
 
 - name: Install clients
   hosts: clients
@@ -100,9 +106,18 @@
   gather_facts: false
   tags: [never, clients]
   roles:
-    - common.prep
     - client.prep
     - samba.install
+    - ad.member
+
+- name: Create users
+  hosts: site
+  become: no
+  gather_facts: false
+  tags: [never, cluster, clients]
+  roles:
+    - role: users.setup
+      when: config.users
 
 - name: Report versions
   hosts: site

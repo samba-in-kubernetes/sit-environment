@@ -5,21 +5,3 @@
     - files: "{{ config.os[site.os].includes }}"
   loop_control:
     loop_var: include_file
-
-- name: Process group accounts
-  include_tasks: create_groups.yml
-  vars:
-    accounts: "{{ account_group.value.groups | default({}, true) }}"
-  when: account_group.key in site.accounts
-  with_items: "{{ config.accounts | dict2items }}"
-  loop_control:
-    loop_var: account_group
-
-- name: Process user accounts
-  include_tasks: create_users.yml
-  vars:
-    accounts: "{{ account_group.value.users | default({}, true) }}"
-  when: account_group.key in site.accounts
-  with_items: "{{ config.accounts | dict2items }}"
-  loop_control:
-    loop_var: account_group

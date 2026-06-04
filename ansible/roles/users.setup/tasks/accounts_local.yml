@@ -1,0 +1,27 @@
+---
+- name: Create local groups
+  group:
+    name: "{{ item.key }}"
+    gid: "{{ item.value.gid }}"
+    state: present
+  with_items: "{{ accounts.groups | dict2items }}"
+
+- name: Create local users
+  user:
+    name: "{{ item.key }}"
+    uid: "{{ item.value.uid }}"
+    password: "{{ item.value.password | password_hash }}"
+    group: "{{ item.value.primary_group | default(omit) }}"
+    comment: "{{ item.value.comment | default(omit) }}"
+    groups: "{{ item.value.groups | default(omit) }}"
+    state: present
+  with_items: "{{ accounts.users | dict2items }}"
+
+- name: Create Samba users
+  when:
+    - item.value.samba
+    - inventory_hostname in groups['cluster']
+  shell: >-
+    (echo {{ item.value.password }}; echo {{ item.value.password }}) |
+      smbpasswd -a {{ item.key }}
+  with_items: "{{ accounts.users | dict2items }}"

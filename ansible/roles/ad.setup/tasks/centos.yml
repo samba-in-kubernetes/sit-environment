@@ -1,0 +1,13 @@
+---
+- name: Install samba packages for AD
+  vars:
+    common_packages:
+      - krb5-workstation
+      - samba-winbind
+      - samba-winbind-clients
+      - samba-tools
+      - bind-utils
+    dc_packages: "{{ ['samba-dc', 'python3-libsemanage'] if site.ad == 'dc' else [] }}"
+  yum:
+    name: "{{ common_packages + dc_packages }}"
+    state: present

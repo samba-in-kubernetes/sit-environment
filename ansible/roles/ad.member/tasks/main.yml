@@ -1,0 +1,48 @@
+---
+- name: Configure AD members
+  when:
+    - config.ad.enabled
+    - site.ad == 'member'
+  block:
+    - name: Configure AD cluster members
+      when:
+        - inventory_hostname in groups['cluster']
+        - config.ad.managed
+      block:
+        - name: Join the cluster to the AD domain
+          when: inventory_hostname == groups['cluster'][0]
+          command: >
+            net ads join
+            -U {{ config.ad.domains[site.domain].admin }}%{{ config.ad.domains[site.domain].adminpass }}
+
+        - name: Enable winbind management by ctdb on cluster nodes
+          command: '{{ config.paths.ctdb.bin }}/ctdb event script enable legacy 49.winbind'
+
+        - name: Restart ctdb
+          service: name=ctdb state=restarted enabled=yes
+
+        - name: Ensure cluster is in HEALTHY state
+          run_once: true
+          command: ctdb nodestatus all
+          register: nodestatus
+          until: nodestatus.rc == 0
+          retries: 20
+          delay: 3
+
+    - name: Configure AD client members
+      when: inventory_hostname not in groups['cluster']
+      block:
+        - name: Join additional members to the AD domain
+          command: >
+            net ads join
+            -U {{ config.ad.domains[site.domain].admin }}%{{ config.ad.domains[site.domain].adminpass }}
+
+        - name: Start winbind on client nodes
+          systemd:
+            name: winbind
+            state: started
+            enabled: yes
+
+    - name: Use winbind for identification and authentication
+      when: config.ad.managed or inventory_hostname not in groups['cluster']
+      command: authselect select --force winbind

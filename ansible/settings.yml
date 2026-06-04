@@ -440,6 +440,7 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
 
       storage:
@@ -452,8 +453,18 @@ environments:
           public: 100
         ctdb:
           public: 10
+        ad: member
         groups: [cluster]
         accounts: [default]
+
+      ad:
+        cpu_weight: 0
+        memory_weight: 0
+        memory: 2048
+        networks:
+          public: 200
+        ad: dc
+        groups: []
 
   xfs:
     cpus: 2
@@ -469,6 +480,7 @@ environments:
           public: 100
         ctdb:
           public: 10
+        ad: member
         groups: [cluster]
         accounts: [default]
 
@@ -478,13 +490,25 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
+
+      ad:
+        instances: 2
+        cpu_weight: 0
+        memory_weight: 0
+        networks:
+          public: 200
+        ad: dc
+        groups: []
 
   cephfs:
     cpus: 2
     memory: 1024
+    ad:
+      managed: "{{ variant != 'mgr' }}"
     samba: "{{ variant != 'mgr' }}"
-    users: "{{ variant != 'mgr' }}"
+    users: "{{ ad or (variant != 'mgr') }}"
 
     data:
       branch: main
@@ -503,6 +527,7 @@ environments:
           public: 100
         ctdb:
           public: 10
+        ad: member
         groups: [cluster]
         accounts: [default]
 
@@ -512,11 +537,22 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
+
+      ad:
+        cpu_weight: 0
+        memory_weight: 0
+        networks:
+          public: 200
+        ad: dc
+        groups: []
 
   gpfs:
     cpus: 2
     memory: 1024
+    ad:
+      managed: "{{ variant != 'scale' }}"
     samba: "{{ variant != 'scale' }}"
 
     data:
@@ -543,6 +579,7 @@ environments:
           public: 200
         ctdb:
           public: 20
+        ad: member
         groups: [cluster, installer, gui]
         accounts: [default]
 
@@ -552,6 +589,7 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
 
       storage:
@@ -565,5 +603,14 @@ environments:
           public: 50
         ctdb:
           public: 10
+        ad: member
         groups: [cluster, nsd, quorum, manager]
         accounts: [default]
+
+      ad:
+        cpu_weight: 0
+        memory_weight: 0
+        networks:
+          public: 250
+        ad: dc
+        groups: []

@@ -16,7 +16,9 @@
   loop_control:
     loop_var: include_file
 
+# TODO: This is in "common", but should only be applied to cluster servers
 - name: Process backend specific tasks (common)
+  when: inventory_hostname in groups['cluster']
   include_role:
     name: backend
     tasks_from: common.yml

@@ -1,10 +1,22 @@
 ---
-- name: Process samba users
-  include_tasks: create_users.yml
+- name: Create local accounts
+  when: config.ad.enabled == false
   vars:
-    accounts: "{{ account_group.value.users | default({}, true) }}"
-  when: account_group.key in site.accounts
-  with_items: "{{ config.accounts | dict2items }}"
+    accounts: "{{ config.accounts[account_group] }}"
+  include_tasks: accounts_local.yml
+  with_items: "{{ site.accounts }}"
   loop_control:
     loop_var: account_group
-  run_once: yes
+
+- name: Create AD accounts
+  when:
+    - config.ad.enabled
+    - site.ad == 'dc'
+    - inventory_hostname == config.ad.domains[site.domain].dc[0]
+  vars:
+    domain: "{{ config.ad.domains[site.domain] }}"
+    accounts: "{{ config.accounts[account_group] }}"
+  include_tasks: accounts_ad.yml
+  with_items: "{{ config.ad.domains[site.domain].accounts }}"
+  loop_control:
+    loop_var: account_group

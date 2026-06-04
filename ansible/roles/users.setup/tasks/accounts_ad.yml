@@ -1,0 +1,53 @@
+---
+- name: Assign RFC2307 IDs to users
+  when: domain.rfc2307 is defined
+  command: >-
+    samba-tool user addunixattrs "{{ item.key }}" {{ item.value.uid }}
+      --username "{{ domain.admin }}"
+      --password "{{ domain.adminpass }}"
+      --gid-number {{ item.value.primary_group | default(item.value.uid) }}
+  with_items: "{{ domain.rfc2307.users | dict2items }}"
+
+- name: Assign RFC2307 IDs to groups
+  when: domain.rfc2307 is defined
+  command: >-
+    samba-tool group addunixattrs "{{ item.key }}" {{ item.value }}
+      --username "{{ domain.admin }}"
+      --password "{{ domain.adminpass }}"
+  with_items: "{{ domain.rfc2307.groups | dict2items }}"
+
+- name: Create AD groups
+  command: >-
+    samba-tool group add "{{ item.key }}"
+      --username "{{ domain.admin }}"
+      --password "{{ domain.adminpass }}"
+      {%- if domain.rfc2307 is defined +%}
+      --gid-number {{ item.value.gid }}
+      --nis-domain "{{ domain.workgroup }}"
+      {%- endif +%}
+  with_items: "{{ accounts.groups | dict2items }}"
+
+- name: Create AD users
+  command: >-
+    samba-tool user add "{{ item.key }}" "{{ item.value.password }}"
+      --username "{{ domain.admin }}"
+      --password "{{ domain.adminpass }}"
+      {%- if item.value.comment is defined +%}
+      --description "{{ item.value.comment }}"
+      {%- endif +%}
+      {%- if domain.rfc2307 is defined +%}
+      --uid-number {{ item.value.uid }}
+        {%- if item.value.primary_group is defined +%}
+      --gid-number {{ accounts.groups[item.value.primary_group].gid }}
+        {%- else +%}
+      --gid-number {{ item.value.uid }}
+        {%- endif +%}
+      {%- endif +%}
+  with_items: "{{ accounts.users | dict2items }}"
+
+- name: Assign users to groups
+  when: item.value.members | default([]) | length > 0
+  command: >-
+    samba-tool group addmembers "{{ item.key }}"
+      {{ item.value.members | join(',') }}
+  with_items: "{{ accounts.groups | dict2items }}"

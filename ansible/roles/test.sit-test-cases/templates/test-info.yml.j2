@@ -5,7 +5,7 @@ users:
     {%- for user_name in config.accounts[name].users +%}
       {%- set user = config.accounts[name].users[user_name] +%}
       {%- if user.samba +%}
-  {{ user_name }}: {{ user.password }}
+  {% if config.ad.enabled and (site.ad == 'member') %}{{ config.ad.domains[site.domain].workgroup }}\{% endif %}{{ user_name }}: {{ user.password }}
       {%- endif +%}
     {%- endfor +%}
   {%- endfor +%}

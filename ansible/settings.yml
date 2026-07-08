@@ -7,6 +7,10 @@ os_info:
     family: redhat
     distro: centos
     version: 9
+  centos10:
+    family: redhat
+    distro: centos
+    version: 10
 
 misc:
   host:
@@ -185,6 +189,7 @@ provisioners:
   vagrant:
     images:
       centos9: centos/stream9
+      centos10: centos/stream10
 
     networks:
       private: 192.168.122.0/24
@@ -203,7 +208,7 @@ provisioners:
 #     Default provisioner used to provision the hosts of the environment.
 #     This value can be overridden by specific VM type definitions.
 #
-#   os: (optional, default: `use_distro` if defined, 'centos9' otherwise)
+#   os: (optional, default: `use_distro` if defined, 'centos10' otherwise)
 #     Default OS installed on all hosts of the environment. This value can
 #     be overridden by specific VM type definitions.
 #
@@ -295,6 +300,7 @@ provisioners:
 #
 environments:
   glusterfs:
+    os: centos9
     cpus: 2
     memory: 1024
 
@@ -403,7 +409,7 @@ environments:
       setup:
         cpu_weight: 2
         memory_weight: 2
-        kernel: 5.14.0-570
+        kernel: 6.12.0-211
         networks:
           private: 200
           public: 200
@@ -424,7 +430,7 @@ environments:
         cpu_weight: 2
         memory_weight: 2
         instances: 2
-        kernel: 5.14.0-570
+        kernel: 6.12.0-211
         disks: [10]
         networks:
           private: 50

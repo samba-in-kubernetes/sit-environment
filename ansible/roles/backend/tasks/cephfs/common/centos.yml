@@ -1,4 +1,14 @@
 ---
+# shaman publishes ceph builds under a different distro depending on the EL
+# version: EL9 lives under centos/9, but from EL10 on there is no centos
+# build and the packages live under rocky/10. Derive the right distro from
+# the OS set for the node instead of hard-coding it.
+- name: Determine shaman distro for the node OS
+  set_fact:
+    ceph_shaman_distro: >-
+      {{ ('rocky' if config.os[site.os].version | int >= 10
+          else config.os[site.os].distro) ~ '/' ~ config.os[site.os].version }}
+
 - name: Identify latest ceph:{{ config.data.branch }} build
   uri:
     url: "https://shaman.ceph.com/api/search?\
@@ -6,7 +16,7 @@
             ref={{ config.data.branch }}&\
             flavor=default&\
             status=ready&\
-            distros=centos/{{ config.os[site.os].version }}/x86_64&\
+            distros={{ ceph_shaman_distro }}/x86_64&\
             sha1=latest"
     return_content: true
   register: ceph_shaman

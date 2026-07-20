@@ -38,5 +38,6 @@
   vars:
     module_name: "{{ item }}"
   with_items:
+    - smbd_dac_override
     - ctdbd_smbd_pid
     - smbd_connect_proxy

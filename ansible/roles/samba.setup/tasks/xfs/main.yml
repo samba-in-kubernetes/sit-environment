@@ -1,5 +1,8 @@
 ---
-- name: Temporarily allow access on smbd_var_run_t for ctdbd from SELinux
+- name: Temporarily allow access for smbd and/or ctdbd from SELinux
   include_tasks: custom_selinux_policy.yml
   vars:
-    module_name: ctdbd_smbd_pid
+    module_name: "{{ item }}"
+  with_items:
+    - smbd_dac_override
+    - ctdbd_smbd_pid

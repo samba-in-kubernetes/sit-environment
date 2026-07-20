@@ -1,0 +1,10 @@
+
+module smbd_dac_override 1.0;
+
+require {
+	type smbd_t;
+	class capability dac_override;
+}
+
+#============= smbd_t ==============
+allow smbd_t self:capability dac_override;

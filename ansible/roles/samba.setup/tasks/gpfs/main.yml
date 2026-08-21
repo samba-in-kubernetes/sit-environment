@@ -1,9 +1,11 @@
 ---
 - name: Run smbd unconfined
+  vars:
+    smbd_fcontext: "{{ '/usr/bin/smbd' if config.os[site.os].version | int >= 10 else '/usr/sbin/smbd' }}"
   block:
     - name: Configure SElinux context for smbd
       sefcontext:
-        target: /usr/sbin/smbd
+        target: "{{ smbd_fcontext }}"
         setype: bin_t
         state: present
 

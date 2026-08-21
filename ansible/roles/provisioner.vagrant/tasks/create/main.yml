@@ -26,3 +26,15 @@
 - name: Extract IP address
   set_fact:
     host_ip: "{{ (vm_ip.stdout | from_json)[0].addr_info[0].local }}"
+
+# The IP that actually ends up on each interface is assigned by Vagrant on
+# EL9 but by DHCP on EL10 (NetworkManager no longer reads the ifcfg files
+# Vagrant writes). Rather than forcing a value, adopt whatever the interface
+# got by matching it against the subnet of each configured network.
+- name: Adopt the IPs assigned to the configured networks
+  set_fact:
+    discovered_networks: "{{ discovered_networks | default({}) | combine({item: assigned_ip}) }}"
+  vars:
+    assigned_ips: "{{ vm_ip.stdout | from_json | map(attribute='addr_info') | flatten | map(attribute='local') | list }}"
+    assigned_ip: "{{ assigned_ips | map('ansible.utils.ipaddr', data.networks[item]) | select('string') | first }}"
+  loop: "{{ config.nodes[inventory_hostname].networks.keys() | list }}"

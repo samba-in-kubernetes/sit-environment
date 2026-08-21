@@ -1,4 +1,14 @@
 ---
+# The interface IPs are discovered after provisioning (see the vagrant
+# provisioner). Fold them back into the configuration so that every consumer
+# (/etc/hosts, CTDB, backend clustering) uses the addresses the interfaces
+# actually got instead of the ones computed from the settings.
+- name: Adopt discovered interface IPs into the configuration
+  set_fact:
+    config: "{{ config | combine({'nodes': {item: {'networks': hostvars[item].discovered_networks}}}, recursive=true) }}"
+  loop: "{{ config.nodes.keys() | list }}"
+  when: hostvars[item].discovered_networks is defined
+
 - name: Process OS specific tasks
   include_tasks: "{{ include_file }}"
   with_first_found:

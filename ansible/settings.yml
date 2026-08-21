@@ -275,6 +275,12 @@ provisioners:
 #     provided. The actual IP address will be computed combining the
 #     defined network with the host number.
 #
+#     Note: the host number only anchors the interface to the right subnet
+#     (and is the static address on EL9). From EL10 on the interface gets
+#     its address via DHCP, so the effective IP is discovered after
+#     provisioning rather than dictated here. CTDB virtual IPs (`ctdb`
+#     below) remain statically assigned from their host numbers.
+#
 #   ctdb: (optional, default: {})
 #     This field is similar to the `networks` field but defines virtual
 #     IPs used by CTDB.

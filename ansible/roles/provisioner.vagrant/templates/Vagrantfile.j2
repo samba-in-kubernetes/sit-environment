@@ -26,7 +26,14 @@ Vagrant.configure("2") do |config|
         node.vm.box = "{{ config.provisioners[node.provisioner].images[node.os] }}"
         node.vm.hostname = "{{ host }}"
     {%- for net in node.networks +%}
-        node.vm.network :private_network, ip: "{{ node.networks[net] }}"
+        # Confine the DHCP pool to the upper half of the subnet so the lower
+        # range stays free for the statically assigned CTDB virtual IPs. The
+        # address that ends up on the interface (static on EL9, DHCP on EL10)
+        # is discovered after provisioning rather than assumed here.
+        node.vm.network :private_network,
+            ip: "{{ node.networks[net] }}",
+            libvirt__dhcp_start: "{{ data.networks[net] | ansible.utils.ipaddr('100') | ansible.utils.ipaddr('address') }}",
+            libvirt__dhcp_stop: "{{ data.networks[net] | ansible.utils.ipaddr('250') | ansible.utils.ipaddr('address') }}"
     {%- endfor +%}
         node.vm.provider :virtualbox do |vb|
     {%- for size in node.disks +%}

@@ -11,4 +11,5 @@
       - elfutils
       - elfutils-devel
       - make
+      - ethtool
     state: latest

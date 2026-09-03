@@ -13,3 +13,8 @@
     name: samba_load_libgfapi
     state: yes
     persistent: yes
+
+- name: Temporarily allow access on smbd_var_run_t for ctdbd from SELinux
+  include_tasks: custom_selinux_policy.yml
+  vars:
+    module_name: ctdbd_smbd_pid

@@ -10,9 +10,18 @@
     - fail:
         msg: "Please provide these required variable: ctdb_network_public_interface_subnet_mask"
       when: ctdb_network_public_interface_subnet_mask is undefined
-    - fail:
-        msg: "Please provide these required variable: ctdb_network_public_interface_name"
-      when: ctdb_network_public_interface_name is undefined
+
+# The public interface name is not stable across boots or OS versions
+# (predictable naming may rename e.g. eth2 to ens8), so resolve it from the
+# public subnet at run time instead of relying on a hard-coded value.
+- name: Determine the public network interface
+  command: "ip -o -4 addr show to {{ config.provisioners[site.provisioner].networks.public }}"
+  register: ctdb_public_iface
+  changed_when: false
+
+- name: Set the CTDB public interface name
+  set_fact:
+    ctdb_network_public_interface_name: "{{ ctdb_public_iface.stdout_lines[0].split()[1] }}"
 
 - name: Create lock directory
   when: config.data.ctdb_mutex is not defined

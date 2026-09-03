@@ -16,7 +16,6 @@ ctdb_network_public_interfaces: >-
     list
   }}
 ctdb_network_public_interface_subnet_mask: "24"
-ctdb_network_public_interface_name: "eth2"
 
 samba_netbios_name: "SIT-CEPHFS-TEST"
 

@@ -1,4 +1,5 @@
 [defaults]
+log_path = ${SITE_DIR}/site.log
 any_errors_fatal = True
 # This one is required by the GlusterFS backend, but it will be forcibly
 # disabled by ansible in a future version

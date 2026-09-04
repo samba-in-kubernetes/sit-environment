@@ -1,4 +1,13 @@
 ---
+- name: Copy ansible log
+  run_once: true
+  delegate_to: localhost
+  connection: local
+  become: false
+  copy:
+    src: "{{ site_dir }}/site.log"
+    dest: "{{ config.statedir }}"
+
 - name: Process backend specific tasks
   when: inventory_hostname in groups['cluster']
   include_role:

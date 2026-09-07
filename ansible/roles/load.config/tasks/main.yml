@@ -11,3 +11,8 @@
   run_once: true
   debug:
     var: config
+
+- name: Check NetBIOS name length
+  when: site.netbios | length > 15
+  fail:
+    msg: "NetBIOS name of {{ inventory_hostname }} is too long ({{ site.netbios }})"

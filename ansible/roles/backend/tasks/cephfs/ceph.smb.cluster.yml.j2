@@ -1,4 +1,11 @@
 resources:
+{%- if config.ad.enabled and (site.ad == 'member') +%}
+- resource_type: ceph.smb.join.auth
+  auth_id: join-credentials
+  auth:
+    username: "{{ config.ad.domains[site.domain].admin }}"
+    password: "{{ config.ad.domains[site.domain].adminpass }}"
+{%- else +%}
 - resource_type: ceph.smb.usersgroups
   users_groups_id: siteacct
   intent: present
@@ -27,14 +34,32 @@ resources:
       groups: []
       {%- endif +%}
     {%- endfor +%}
+{%- endif +%}
 
 - resource_type: ceph.smb.cluster
   cluster_id: site
   intent: present
+{%- if config.ad.enabled and (site.ad == 'member') +%}
+  auth_mode: active-directory
+  domain_settings:
+    realm: "{{ config.ad.domains[site.domain].realm }}"
+    join_sources:
+      - source_type: resource
+        ref: join-credentials
+  {%- if config.ad.domains[site.domain].rfc2307 is defined +%}
+  custom_smb_global_options:
+    _allow_customization: i-take-responsibility-for-all-samba-configuration-errors
+    "{{ "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : backend" }}": ad
+    "{{ "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : schema_mode" }}": rfc2307
+    "{{ "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : unix_primary_group" }}": {{ config.ad.domains[site.domain].rfc2307.unix_primary_group | ternary("yes", "no") }}
+    "{{ "idmap config " ~ config.ad.domains[site.domain].workgroup ~ " : range" }}": "{{ config.ad.domains[site.domain].rfc2307.min ~ "-" ~ (config.ad.domains[site.domain].rfc2307.min + config.ad.domains[site.domain].rfc2307.size - 1) }}"
+  {%- endif +%}
+{%- else +%}
   auth_mode: user
   user_group_settings:
     - source_type: resource
       ref: siteacct
+{%- endif +%}
   placement:
     count: {{ config.groups['cluster'] | length }}
   clustering: always

@@ -62,9 +62,18 @@ Vagrant.configure("2") do |config|
 {% endfor %}
 
     config.vm.provision "shell", inline: <<-SHELL
-        echo y | parted /dev/vda ---pretend-input-tty resizepart 1 100%
-        resize2fs /dev/vda1
-        mkdir /root/.ssh
+        set -e
+        root_part=$(findmnt -nro SOURCE /)
+        part_num=${root_part##*[!0-9]}
+        root_device=${root_part%"$part_num"}
+        parted --script --fix "$root_device" print
+        echo y | parted "$root_device" ---pretend-input-tty resizepart "$part_num" 100%
+        case $(findmnt -nro FSTYPE /) in
+            ext*) resize2fs "$root_part" ;;
+            xfs) xfs_growfs / ;;
+            *) echo "Unsupported root filesystem" >&2; exit 1 ;;
+        esac
+        mkdir -p /root/.ssh
         chmod 0700 /root/.ssh
         echo "{{ ssh_key_pub }}" >>/root/.ssh/authorized_keys
         chmod 0600 /root/.ssh/authorized_keys

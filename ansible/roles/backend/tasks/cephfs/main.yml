@@ -15,11 +15,12 @@
         --ssh-private-key /root/.ssh/id_rsa
         --ssh-public-key /root/.ssh/id_rsa.pub
         --skip-monitoring-stack
+        --allow-fqdn-hostname
       args:
         creates: /etc/ceph/ceph.conf
 
     - name: Add other ceph nodes
-      command: /root/cephadm shell -- ceph orch host add "{{ item }}" --labels _admin
+      command: /root/cephadm shell -- ceph orch host add "{{ item }}.{{ config.nodes[item].domain }}" --labels _admin
       loop: "{{ config.groups['cluster'][1:] }}"
 
     - name: Set mon count to 3

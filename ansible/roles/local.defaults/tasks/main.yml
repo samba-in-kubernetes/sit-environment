@@ -10,6 +10,7 @@
     os: "{{ use_distro | default('centos10') }}"
     be: "{{ (backend | default('xfs') | split('.'))[0] }}"
     variant: "{{ (backend | default('xfs') | split('.'))[1] | default('default') }}"
+    ad: "{{ use_ad | default(1) | int | bool }}"
   block:
     - name: Load global settings
       include_vars:

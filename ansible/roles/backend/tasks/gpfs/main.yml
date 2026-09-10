@@ -1,4 +1,7 @@
 ---
+- name: Set default authentication configuration
+  command: authselect select sssd --force
+
 - name: Install GPFS
   delegate_to: "{{ config.groups['cluster'][0] }}"
   run_once: true
@@ -111,8 +114,39 @@
         - name: Deploy protocols
           command: "{{ gpfs_toolkit }} deploy"
 
-        - name: Configure authentication
+        - name: Configure local authentication
+          when: not config.ad.enabled or (site.ad == 'standalone')
           command: /usr/lpp/mmfs/bin/mmuserauth service create --data-access-method file --type userdefined
+
+        - name: Create password file
+          when:
+            - config.ad.enabled
+            - site.ad == 'member'
+          copy:
+            content: >
+              %fileauth:
+              password={{ config.ad.domains[site.domain].adminpass }}
+            dest: /var/mmfs/ssl/keyServ/tmp/pwd
+            mode: 0600
+
+        - name: Configure AD authentication
+          when:
+            - config.ad.enabled
+            - site.ad == 'member'
+          command: >-
+            /usr/lpp/mmfs/bin/mmuserauth service create
+              --data-access-method file
+              --type ad
+              --netbios-name "{{ site.netbios }}"
+              --user-name "{{ config.ad.domains[site.domain].admin }}"
+              --pwd-file pwd
+              --idmap-role master
+              --servers "{{ config.ad.domains[site.domain].dc[0] }}.{{ site.domain }}"
+              --idmap-range "{{ config.ad.idmap.min }}-{{ config.ad.idmap.min + config.ad.idmap.size - 1 }}"
+              --idmap-range-size "{{ config.ad.idmap.block }}"
+              {%- if config.ad.domains[site.domain].rfc2307 is defined +%}
+              --unixmap-domains "{{ config.ad.domains[site.domain].workgroup }}({{ config.ad.domains[site.domain].rfc2307.min }}-{{ config.ad.domains[site.domain].rfc2307.min + config.ad.domains[site.domain].rfc2307.size - 1 }}:win)"
+              {%- endif +%}
 
         - name: Create shares
           vars:
@@ -130,3 +164,12 @@
               {{ item[0].name }}-{{ config.be.name }}-{{ config.be.variant }}-{{ item[1] }}
               /gpfs/sit_fs/{{ item[0].name }}
           loop: "{{ samba_shares | product(config.be.methods) | list }}"
+          # Running mmuserauth to authenticate against a DC causes the smbd
+          # service to restart. This task is normally executed before the
+          # service is back online, so we may need to retry the task.
+          # TODO: add some previous task to wait for the service to come back
+          #       up.
+          register: smb_export
+          until: smb_export.rc == 0
+          retries: 30
+          delay: 2

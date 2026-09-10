@@ -137,10 +137,116 @@ accounts:
   default:
     users:
       test:
-        uid: 2001
-        password: x
+        uid: 1002001
+        password: Passw0rd
         instances: 2
+        groups:
+          - grp
         samba: true
+    groups:
+      grp:
+        gid: 1003001
+        instances: 2
+
+# Active Directory configuration:
+#
+# This section defines the available Active Directory (AD) domains and
+# configurations:
+#
+#   idmap: (required)
+#     Defines the range of IDs used for domain mappings. It will be used by
+#     the Samba's autorid idmap backend.
+#
+#       min: (required)
+#         The starting ID number of the range.
+#
+#       size: (required)
+#         The total size of the range.
+#
+#       block: (required)
+#         The size of the block allocated for an individual domain.
+#
+#   domains:
+#     Defines the list of known domanis. Each sub-object represents one domain
+#     that can be provisioned. Each domain has the following properties:
+#
+#       name: (required)
+#         The FQDN of the AD domain.
+#
+#       realm: (optional, default: the domain name in uppercase)
+#         The Kerberos realm name for the AD domain.
+#
+#       workgroup: (optional, default: the first component of the domain name
+#                   in uppercase)
+#         The short name of the AD domain.
+#
+#       admin: (optional, default: Administrator)
+#         The name of the AD domain administrator account.
+#
+#       adminpass: (required)
+#         The password for the AD domain administrator account.
+#
+#       functional_level: (optional, default: R2008_R2)
+#         The functional level of the AD domain when created. This only applies
+#         for domains provisioned inside the environment.
+#
+#       dns: (required for external domains)
+#         The IP of the DNS to use to access an external AD domain.
+#
+#       accounts: (required for internal domains)
+#         Reference to a predefined accounts object from the 'accounts' section
+#         that specifies which users and groups will be created in the domain.
+#         This only applies for domains provisioned inside the environment.
+#
+#       rfc2307: (optional)
+#         If present, it uses rfc2307 when provisioning the domain:
+#
+#           min: (required)
+#             The starting UID/GID number of the rfc2307 range.
+#
+#           size: (required)
+#             The total number of UIDs/GIDs in the rfc2307 range.
+#
+#           unix_primary_group: (optional, default: false)
+#             When set to true, the primary group of the user will come from
+#             Unix (a group with the same name as the user). When set to false,
+#             the primary group will come from Windows (normally Domain Users).
+#
+#           users: (optional)
+#             Each sub-object represents an existing AD user for which we want
+#             to create rfc2307 attributes.
+#
+#               uid: (required)
+#                 The rfc2307 uid to assign to the user.
+#
+#               primary_group: (required if unix_primary_group is true)
+#                 The rfc2307 gid to assign to the user.
+#
+#           groups: (optional)
+#             Each sub-object represents an existing AD group for which we want
+#             to create rfc2307 attributes. The value of each entry is the gid
+#             to assign to the group.
+#
+ad:
+  idmap:
+    min: 10000000
+    size: 10000000
+    block: 1000000
+
+  domains:
+    default:
+      name: "{{ site_name }}.site.test"
+      adminpass: Passw0rd
+      accounts: default
+      rfc2307:
+        min: 1000000
+        size: 1000000
+        users:
+          Administrator:
+            uid: 1000000
+            primary_group: 1000000
+        groups:
+          Domain Users: 1000100
 
 resources:
   # Percentage of free memory that will be used for sit-environment by default.
@@ -220,9 +326,17 @@ provisioners:
 #     Default minimum amount of memory (in MiB) assigned to each VM. This
 #     value can be overridden by specific VM type definitions.
 #
-#   domain: (optional, default: None)
-#     The DNS domain name to append to the VM's name to form a FQDN. If
-#     it's not present, the machine's hostname will be just its name.
+#   domain: (optional, default: '{{ site_name }}.site.test')
+#     The DNS domain name to append to the VM's name to form a FQDN. This value
+#     can be overridden by specific VM type definitions.
+#
+#   ad:
+#     This is an optional object that contains AD settings:
+#
+#     managed: (optional, default: true)
+#       If set, the ansible playbooks will control the addition of the member
+#       machines to the AD domain when it's enabled, otherwise it's assumed
+#       that the corresponding backend will automatically handle that step.
 #
 #   data: (optional, default: {})
 #     This field contains any extra data specific to the environment that
@@ -273,6 +387,21 @@ provisioners:
 #     List of additional disks for this type of VM (besides the system
 #     disk). For each disk, only the size (in GiB) is specified.
 #
+#   domain: (optional, default: the value of `domain` in the environment)
+#     The DNS domain name to append to the VM's name to form a FQDN.
+#
+#   ad: (optional, default: 'standalone')
+#     When Active Directory is enabled, this setting specifies the role of the
+#     VM in the domain. It could be:
+#
+#       'dc: The VM is configured as a domain controller and a new domain is
+#            provisioned.
+#
+#       'member': The VM is configured as a domain member.
+#
+#       'standalone': The VM is not added to any domain, even if the Active
+#                     Directory support has been enabled for the environment.
+#
 #   networks: (optional, default: {})
 #     This field enumerates the networks to connect to the VMs of this
 #     type. The networks are referenced using the name previously defined
@@ -311,6 +440,7 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
 
       storage:
@@ -323,8 +453,18 @@ environments:
           public: 100
         ctdb:
           public: 10
+        ad: member
         groups: [cluster]
         accounts: [default]
+
+      ad:
+        cpu_weight: 0
+        memory_weight: 0
+        memory: 2048
+        networks:
+          public: 200
+        ad: dc
+        groups: []
 
   xfs:
     cpus: 2
@@ -340,6 +480,7 @@ environments:
           public: 100
         ctdb:
           public: 10
+        ad: member
         groups: [cluster]
         accounts: [default]
 
@@ -349,13 +490,25 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
+
+      ad:
+        instances: 2
+        cpu_weight: 0
+        memory_weight: 0
+        networks:
+          public: 200
+        ad: dc
+        groups: []
 
   cephfs:
     cpus: 2
     memory: 1024
+    ad:
+      managed: "{{ variant != 'mgr' }}"
     samba: "{{ variant != 'mgr' }}"
-    users: "{{ variant != 'mgr' }}"
+    users: "{{ ad or (variant != 'mgr') }}"
 
     data:
       branch: main
@@ -374,6 +527,7 @@ environments:
           public: 100
         ctdb:
           public: 10
+        ad: member
         groups: [cluster]
         accounts: [default]
 
@@ -383,12 +537,22 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
+
+      ad:
+        cpu_weight: 0
+        memory_weight: 0
+        networks:
+          public: 200
+        ad: dc
+        groups: []
 
   gpfs:
     cpus: 2
     memory: 1024
-    domain: sit.test
+    ad:
+      managed: "{{ variant != 'scale' }}"
     samba: "{{ variant != 'scale' }}"
 
     data:
@@ -415,6 +579,7 @@ environments:
           public: 200
         ctdb:
           public: 20
+        ad: member
         groups: [cluster, installer, gui]
         accounts: [default]
 
@@ -424,6 +589,7 @@ environments:
         system_disk: 20
         networks:
           public: 5
+        ad: member
         groups: [clients]
 
       storage:
@@ -437,5 +603,14 @@ environments:
           public: 50
         ctdb:
           public: 10
+        ad: member
         groups: [cluster, nsd, quorum, manager]
         accounts: [default]
+
+      ad:
+        cpu_weight: 0
+        memory_weight: 0
+        networks:
+          public: 250
+        ad: dc
+        groups: []

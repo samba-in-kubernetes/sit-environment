@@ -1,0 +1,131 @@
+---
+- name: Prepare Active Directory domain
+  when:
+    - config.ad.enabled
+    - config.ad.managed or (site.ad == 'dc')
+    - site.ad != 'standalone'
+  block:
+    - name: Process OS specific tasks
+      include_tasks: "{{ include_file }}"
+      with_first_found:
+        - files: "{{ config.os[site.os].includes }}"
+      loop_control:
+        loop_var: include_file
+
+    - name: Remove existing smb.conf
+      file:
+        path: /etc/samba/smb.conf
+        state: absent
+
+    - name: Set kerberos configuration
+      template:
+        src: krb5.conf.j2
+        dest: /etc/krb5.conf
+        mode: '0644'
+
+    - name: Prepare Domain Controllers
+      when: site.ad == 'dc'
+      block:
+        - name: Get current DNS server
+          command: sed -n '/^nameserver/{s/^nameserver\s\+//p;q}' /etc/resolv.conf
+          register: current_dns
+
+        - name: Store default DNS
+          set_fact:
+            dns_forwarder: "{{ config.ad.domains[site.domain].dns | default(current_dns.stdout) }}"
+
+        - name: Allow active directory operations in selinux
+          seboolean:
+            name: samba_domain_controller
+            state: yes
+            persistent: yes
+
+        - name: Check firewall state
+          command: firewall-cmd --state
+          failed_when: false
+          register: firewall_state
+
+        - name: Configure firewall
+          when: firewall_state.stdout == 'running'
+          block:
+            - name: Open firewall for samba
+              firewalld:
+                service: "{{ item }}"
+                permanent: yes
+                state: enabled
+              with_items:
+                - samba
+                - kerberos
+                - ldap
+                - dns
+
+            - name: Reload firewall
+              command: firewall-cmd --reload
+
+        - name: Provision domain
+          when:
+            - config.ad.domains[site.domain].dc[0] == inventory_hostname
+            - config.ad.domains[site.domain].dns is not defined
+          block:
+            - name: Create domain
+              command: >-
+                samba-tool domain provision
+                --realm {{ config.ad.domains[site.domain].realm }}
+                --domain {{ config.ad.domains[site.domain].workgroup }}
+                --adminpass '{{ config.ad.domains[site.domain].adminpass }}'
+                --dns-backend SAMBA_INTERNAL
+                --server-role dc
+                --function-level {{ config.ad.domains[site.domain].functional_level }}
+                {{ '--use-rfc2307' if config.ad.domains[site.domain].rfc2307 is defined else '' }}
+                --option "dns forwarder = {{ dns_forwarder }}"
+                --option "interfaces = {{ config.nodes[inventory_hostname].networks.public }}"
+
+            - name: Rename administrator
+              when: config.ad.domains[site.domain].admin != "Administrator"
+              command: >-
+                samba-tool user rename Administrator --samaccountname "{{ config.ad.domains[site.domain].admin }}"
+
+            - name: Start AD service
+              systemd:
+                name: samba
+                state: started
+                enabled: yes
+
+            - name: Wait for AD DC to be ready
+              wait_for:
+                port: 389
+                delay: 1
+                timeout: 60
+
+        - name: Create additional AD DC
+          when: (config.ad.domains[site.domain].dc[0] != inventory_hostname) or (config.ad.domains[site.domain].dns is defined)
+          block:
+            - name: Join DCs to domain
+              command: >
+                samba-tool domain join
+                {{ site.domain }} DC
+                --server {{ config.nodes[config.ad.domains[site.domain].dc[0]].networks.public }}
+                --dns-backend SAMBA_INTERNAL
+                --username "{{ config.ad.domains[site.domain].admin }}"
+                --password {{ config.ad.domains[site.domain].adminpass }}
+                --option "dns forwarder = {{ dns_forwarder }}"
+                --option "interfaces = {{ config.nodes[inventory_hostname].networks.public }}"
+
+            - name: Start AD service
+              systemd:
+                name: samba
+                state: started
+                enabled: yes
+
+            - name: Wait for AD DC to be ready
+              wait_for:
+                port: 389
+                delay: 1
+                timeout: 60
+
+- name: Configure DNS to use a DC
+  when: config.ad.enabled
+  template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: '0644'

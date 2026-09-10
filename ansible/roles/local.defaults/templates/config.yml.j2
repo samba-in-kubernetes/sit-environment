@@ -27,9 +27,7 @@ config:
     methods: {{ methods }}
     {%- endif +%}
 
-{%- if settings.environments[be].domain is defined +%}
-  domain: "{{ settings.environments[be].domain }}"
-{%- endif +%}
+{%- set domain = settings.environments[be].domain | default(settings.ad.domains.keys() | first) +%}
 
   data: {{ settings.environments[be].data | default({}) }}
 
@@ -37,40 +35,54 @@ config:
 
   accounts:
   {%- for name in settings.accounts | default({}) +%}
+    {%- set account = settings.accounts[name] +%}
     {{ name }}:
       groups:
-    {%- for group in settings.accounts[name].groups | default({}) +%}
-      {%- set acct = settings.accounts[name].groups[group] +%}
-      {%- for idx in range(acct.instances | default(1)) +%}
+    {%- for group in account.groups | default({}) +%}
+      {%- set grp = account.groups[group] +%}
+      {%- for idx in range(grp.instances | default(1)) +%}
         {%- set group_name = group +%}
-        {%- if acct.instances is defined +%}
+        {%- if grp.instances is defined +%}
           {%- set group_name = group ~ (idx + 1) +%}
         {%- endif +%}
-        {{ group_name }}: {{ acct.gid + idx }}
+        {{ group_name }}:
+          gid: {{ grp.gid + idx }}
+          members:
+          {%- for user in account.users | default({}) +%}
+            {%- if group in account.users[user].groups | default([]) %}
+              {%- if account.users[user].instances is defined +%}
+                {%- for idx2 in range(account.users[user].instances) +%}
+            - {{ user }}{{ idx2 + 1}}
+                {%- endfor +%}
+              {%- else +%}
+            - {{ user }}
+              {%- endif +%}
+            {%- endif +%}
+          {%- endfor +%}
       {%- endfor +%}
     {%- endfor +%}
       users:
-    {%- for user in settings.accounts[name].users | default({}) +%}
-      {%- set acct = settings.accounts[name].users[user] +%}
-      {%- for idx in range(acct.instances | default(1)) +%}
+    {%- for user in account.users | default({}) +%}
+      {%- set usr = account.users[user] +%}
+      {%- for idx in range(usr.instances | default(1)) +%}
         {%- set user_name = user +%}
-        {%- if acct.instances is defined +%}
+        {%- if usr.instances is defined +%}
           {%- set user_name = user ~ (idx + 1) +%}
         {%- endif +%}
         {{ user_name }}:
-          uid: {{ acct.uid + idx }}
-          {%- if acct.primary_group is defined +%}
-          primary_group: {{ acct.primary_group }}
+          uid: {{ usr.uid + idx }}
+          {%- if usr.primary_group is defined +%}
+          primary_group: {{ usr.primary_group }}
           {%- endif +%}
-          password: {{ acct.password | default(user_name) }}
-          {%- if acct.comment is defined +%}
-          comment: {{ acct.comment }}
+          password: {{ usr.password | default(user_name) }}
+          {%- if usr.comment is defined +%}
+          comment: {{ usr.comment }}
           {%- endif +%}
-          {%- if acct.groups | default(false) +%}
+          {%- if usr.groups | default(false) +%}
           groups:
-            {%- for group in acct.groups | default([]) +%}
-              {%- if settings.accounts[name].groups[group].instances is defined +%}
-                {%- for idx in range(settings.accounts[name].groups[group].instances) +%}
+            {%- for group in usr.groups | default([]) +%}
+              {%- if account.groups[group].instances is defined +%}
+                {%- for idx in range(account.groups[group].instances) +%}
             - {{ group }}{{ idx + 1}}
                 {%- endfor +%}
               {%- else +%}
@@ -78,10 +90,47 @@ config:
               {%- endif +%}
             {%- endfor +%}
           {%- endif +%}
-          samba: {{ acct.samba | default('false') }}
+          samba: {{ usr.samba | default('false') }}
       {%- endfor +%}
     {%- endfor +%}
   {%- endfor +%}
+
+  ad:
+    enabled: {{ ad }}
+    managed: {{ settings.environments[be].ad.managed | default(true) }}
+    idmap: {{ settings.ad.idmap }}
+    domains:
+    {%- for dom in settings.ad.domains.values() +%}
+      {{ dom.name }}:
+        realm: {{ dom.realm | default(dom.name | upper) }}
+        workgroup: {{ dom.workgroup | default(dom.name.split('.')[0] | upper) }}
+        admin: {{ dom.admin | default('Administrator') }}
+        adminpass: {{ dom.adminpass }}
+        functional_level: {{ dom.functional_level | default('2008_R2') }}
+      {%- if dom.accounts is defined +%}
+        accounts: {{ dom.accounts }}
+      {%- endif +%}
+      {%- if dom.dns is defined +%}
+        dns: {{ dom.dns }}
+      {%- endif +%}
+      {%- if dom.rfc2307 is defined +%}
+        rfc2307:
+          min: {{ dom.rfc2307.min }}
+          size: {{ dom.rfc2307.size }}
+          unix_primary_group: {{ dom.rfc2307.unix_primary_group | default(false) }}
+          users: {{ dom.rfc2307.users | default({}) }}
+          groups: {{ dom.rfc2307.groups | default({}) }}
+      {%- endif +%}
+        dc:
+      {%- for name in settings.environments[be].nodes +%}
+        {%- set node = settings.environments[be].nodes[name] +%}
+        {%- if (settings.ad.domains[node.domain | default(domain)].name == dom.name) and (node.ad is defined) and (node.ad == 'dc') +%}
+          {%- for idx in range(node.instances | default(1)) +%}
+          - {{ name }}{{ idx }}
+          {%- endfor +%}
+        {%- endif +%}
+      {%- endfor +%}
+    {%- endfor %}
 
   tests: {{ settings.tests }}
 
@@ -97,10 +146,12 @@ config:
       hosts:
       {%- for name in settings.environments[be].nodes +%}
         {%- set data = settings.environments[be].nodes[name] +%}
-        {%- if data.provisioner | default(settings.environments[be].provisioner | default('vagrant')) == prov +%}
-        {%- for idx in range(data.instances | default(1)) +%}
+        {%- if (data.ad | default('standalone') != 'dc') or ad +%}
+          {%- if data.provisioner | default(settings.environments[be].provisioner | default('vagrant')) == prov +%}
+          {%- for idx in range(data.instances | default(1)) +%}
         - {{ name }}{{ idx }}
-        {%- endfor +%}
+          {%- endfor +%}
+          {%- endif +%}
         {%- endif +%}
       {%- endfor +%}
   {%- endfor +%}
@@ -137,31 +188,37 @@ config:
   nodes:
   {%- for name in settings.environments[be].nodes +%}
     {%- set data = settings.environments[be].nodes[name] +%}
-    {%- set prov = data.provisioner | default(settings.environments[be].provisioner | default('vagrant')) +%}
-    {%- for idx in range(data.instances | default(1)) +%}
+    {%- if (data.ad | default('standalone') != 'dc') or ad +%}
+      {%- set dom = settings.ad.domains[data.domain | default(domain)] +%}
+      {%- set prov = data.provisioner | default(settings.environments[be].provisioner | default('vagrant')) +%}
+      {%- for idx in range(data.instances | default(1)) +%}
     {{ name }}{{ idx }}:
       groups: {{ data.groups }}
       provisioner: {{ prov }}
       os: {{ data.os | default(settings.environments[be].os | default(os)) }}
-      {%- if data.kernel is defined +%}
+        {%- if data.kernel is defined +%}
       kernel: "{{ data.kernel }}"
-      {%- endif +%}
+        {%- endif +%}
       cpus: {{ (data.cpus | default(settings.environments[be].cpus)) + ((extra_cpu * (data.cpu_weight | default(1))) | int) }}
       memory: {{ (data.memory | default(settings.environments[be].memory)) + 1024 * ((extra_mem * (data.memory_weight | default(1))) | int) }}
-      {%- if data.system_disk is defined +%}
+        {%- if data.system_disk is defined +%}
       system_disk: {{ data.system_disk }}
-      {%- endif +%}
+        {%- endif +%}
       disks: {{ data.disks | default([]) }}
+      domain: "{{ dom.name }}"
+      ad: {{ data.ad | default('standalone') }}
+      netbios: {% if 'cluster' in data.groups %}SITE-{{ dom.workgroup | default(dom.name.split('.')[0] | upper) }}{% else %}{{ name | upper }}{{ idx }}{% endif +%}
       networks:
-      {%- for net in data.networks | default({}) +%}
+        {%- for net in data.networks | default({}) +%}
         {{ net }}: {{ settings.provisioners[prov].networks[net] | ansible.utils.ipaddr(data.networks[net] + idx) | ansible.utils.ipaddr('address') }}
-      {%- endfor +%}
+        {%- endfor +%}
       ctdb:
-      {%- for net in data.ctdb | default({}) +%}
+        {%- for net in data.ctdb | default({}) +%}
         {{ net }}: {{ settings.provisioners[prov].networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
-      {%- endfor +%}
+        {%- endfor +%}
       accounts: {{ data.accounts | default([]) }}
-    {%- endfor +%}
+      {%- endfor +%}
+    {%- endif +%}
   {%- endfor +%}
 
   groups:

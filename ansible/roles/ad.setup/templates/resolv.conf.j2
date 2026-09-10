@@ -1,0 +1,12 @@
+search {{ site.domain }}
+{%- if config.ad.domains[site.domain].dns is defined +%}
+nameserver {{ config.ad.domains[site.domain].dns }}
+{%- else +%}
+  {%- if site.ad == 'dc' +%}
+nameserver 127.0.0.1
+  {%- else +%}
+    {%- for dc in config.ad.domains[site.domain].dc +%}
+nameserver {{ config.nodes[dc].networks.public }}
+    {%- endfor +%}
+  {%- endif +%}
+{%- endif +%}

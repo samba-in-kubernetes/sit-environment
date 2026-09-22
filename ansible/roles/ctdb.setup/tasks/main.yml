@@ -72,6 +72,37 @@
       option: realtime scheduling
       value: "false"
 
+- name: Apply custom configuration to CTDB
+  ini_file:
+    path: "{{ config.paths.ctdb.etc }}/ctdb.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: >-
+    {%- set result = [] -%}
+    {%- for sect in site.options.ctdbd | default({}) | dict2items -%}
+      {%- if sect.key != 'tunables' -%}
+        {%- for item in sect.value | dict2items -%}
+          {%- set _ = result.append({
+            'section': sect.key,
+            'key': item.key,
+            'value': item.value})
+          -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {{ result }}
+
+- name: Apply custom tunables to CTDB
+  lineinfile:
+    path: "{{ config.paths.ctdb.etc }}/ctdb.tunables"
+    create: true
+    regexp: '^\s*{{ item.key }}\s*='
+    line: '{{ item.key }} = {{ item.value }}'
+    state: present
+  with_items: "{{ site.options.ctdbd.tunables | default({}) | dict2items }}"
+
 - name: Create {{ config.paths.ctdb.etc }}/nodes
   copy:
     content: |

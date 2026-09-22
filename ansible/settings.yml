@@ -71,6 +71,11 @@ install:
       url: git://git.samba.org/samba.git
       version: HEAD
 
+options:
+  default:
+    smbd:
+      allow unsafe cluster upgrade: yes
+
 paths:
   samba:
     etc: /etc/samba

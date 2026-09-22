@@ -1,10 +1,10 @@
 ---
 - name: Install samba and ctdb from rpm repositories
-  when: config.install.samba.repo is defined
+  when: site.install.samba.type == 'repo'
   include_tasks: repo/main.yml
 
 - name: Install samba and ctdb from git sources
-  when: config.install.samba.git is defined
+  when: site.install.samba.type == 'git'
   include_tasks: git/main.yml
 
 - name: Apply common settings to smb.conf

@@ -158,24 +158,27 @@ config:
 
   install:
     samba:
-    {%- if settings.install.samba.git is defined +%}
-      git:
-        repo: {{ settings.install.samba.git.repo | default('git://git.samba.org/samba.git') }}
-        dest: {{ settings.install.samba.git.dest | default('/tmp/samba.git') }}
-      {%- if settings.install.samba.git.mr is defined +%}
-        version: "mr_{{ settings.install.samba.git.mr }}"
-        refspec: "merge-requests/{{ settings.install.samba.git.mr }}/head:mr_{{ settings.install.samba.git.mr }}"
-      {%- elif settings.install.samba.git.pr is defined +%}
-        version: "pr_{{ settings.install.samba.git.pr }}"
-        refspec: "pull/{{ settings.install.samba.git.pr }}/head:pr_{{ settings.install.samba.git.pr }}"
+  {%- for cfg in settings.install.samba +%}
+      {{ cfg }}: &install_samba_{{ cfg }}
+    {%- set cfg = settings.install.samba[cfg] +%}
+        type: {{ cfg.type }}
+    {%- if cfg.type == 'git' +%}
+        url: {{ cfg.url | default('git://git.samba.org/samba.git') }}
+        dest: {{ cfg.dest | default('/tmp/samba.git') }}
+      {%- if cfg.mr is defined +%}
+        version: "mr_{{ cfg.mr }}"
+        refspec: "merge-requests/{{ cfg.mr }}/head:mr_{{ cfg.mr }}"
+      {%- elif cfg.pr is defined +%}
+        version: "pr_{{ cfg.pr }}"
+        refspec: "pull/{{ cfg.pr }}/head:pr_{{ cfg.pr }}"
       {%- else +%}
-        version: {{ settings.install.samba.git.version | default('HEAD') }}
-        refspec: {{ settings.install.samba.git.refspec | default('HEAD') }}
+        version: {{ cfg.version | default('HEAD') }}
+        refspec: {{ cfg.refspec | default('HEAD') }}
       {%- endif +%}
-    {%- else +%}
-      repo:
-        url: {{ settings.install.samba.repo.url | default('https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo') }}
+    {%- elif cfg.type == 'repo' +%}
+        url: {{ cfg.url | default('https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo') }}
     {%- endif +%}
+  {%- endfor +%}
 
 {%- set max_memory = max_memory | int +%}
 {%- set max_cpu = max_cpu | int +%}
@@ -240,6 +243,8 @@ config:
         {{ net }}: {{ settings.provisioners[prov].networks[net] | ansible.utils.ipaddr(data.ctdb[net] + idx) | ansible.utils.ipaddr('address') }}
         {%- endfor +%}
       accounts: {{ data.accounts | default([]) }}
+      install:
+        samba: *install_samba_{{ data.install.samba | default(settings.install.samba.keys() | first) }}
       {%- endfor +%}
     {%- endif +%}
   {%- endfor +%}

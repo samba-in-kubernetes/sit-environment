@@ -29,4 +29,4 @@
                 --with-systemd \
                 --systemd-install-services
   args:
-    chdir: "{{ config.install.samba.git.dest }}"
+    chdir: "{{ site.install.samba.dest }}"

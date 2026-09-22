@@ -52,6 +52,25 @@ misc:
 #     refspec: (optional)
 #       Additional refspec to specify branch or tag containing a commit.
 
+install:
+  samba:
+    default:
+      type: repo
+      url: https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo
+
+    latest:
+      type: repo
+      url: https://artifacts.ci.centos.org/samba/pkgs/4.25/centos/samba-nightly-4.25.repo
+
+    previous:
+      type: repo
+      url: https://artifacts.ci.centos.org/samba/pkgs/4.24/centos/samba-nightly-4.24.repo
+
+    master:
+      type: git
+      url: git://git.samba.org/samba.git
+      version: HEAD
+
 paths:
   samba:
     etc: /etc/samba

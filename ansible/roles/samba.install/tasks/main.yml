@@ -104,3 +104,12 @@
     value: "{{ item.value }}"
     state: present
   with_items: "{{ smb_conf | dict2items }}"
+
+- name: Apply custom settings to smb.conf
+  ini_file:
+    path: /etc/samba/smb.conf
+    section: global
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ site.options.smbd | default({}) | dict2items }}"

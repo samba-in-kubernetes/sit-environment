@@ -75,6 +75,11 @@ options:
   default:
     smbd:
       allow unsafe cluster upgrade: yes
+    ctdbd:
+#      logging:
+#        log level: 10
+      tunables:
+        AllowMixedVersions: 1
 
 paths:
   samba:

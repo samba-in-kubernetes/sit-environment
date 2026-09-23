@@ -43,7 +43,7 @@
       command: createrepo_c /root/repo
 
     - name: Avoid installing kernel from other repositories
-      shell: sed -i 's/^\[.*/&\nexclude=kernel*/' /etc/yum.repos.d/*.repo
+      shell: sed -i 's/^\[.*/&\nexclude=kernel kernel-core kernel-modules kernel-modules-core kernel-devel kernel-headers/' /etc/yum.repos.d/*.repo
 
     - name: Define local repository
       yum_repository:

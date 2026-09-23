@@ -25,16 +25,21 @@ misc:
 # Specify the installation method for Samba and CTDB using 'samba' subobject.
 # Each subobject can have following properties.
 #
-#   repo:
+#   type: (required)
+#     Indicates the installation method. It can be 'repo' or 'git'
+#
+# The remaining keys depends on the specified type:
+#
+#   type = 'repo':
 #     Indicates installation using rpms.
 #
 #     url: (optional, default: https://artifacts.ci.centos.org/samba/pkgs/master/centos/samba-nightly-master.repo)
 #       Link to yum/dnf repo file holding samba rpms.
 #
-#   git:
+#   type = 'git':
 #     Indicates installation from git repository.
 #
-#     repo: (optional, default: git://git.samba.org/samba.git)
+#     url: (optional, default: git://git.samba.org/samba.git)
 #       Git repository url to be cloned for installation.
 #
 #     dest: (optional, default: /tmp/samba.git)
@@ -70,6 +75,30 @@ install:
       type: git
       url: git://git.samba.org/samba.git
       version: HEAD
+
+# Configuration of components:
+#
+# Here we define any custom options that need to be applied to an installed
+# service using the 'options' object.
+#
+# Each subobject corresponds to a set of configuration options for several
+# services. The name of the subobject can be referenced using the 'options' key
+# in the node definition.
+#
+# A subkey in each set represents the configured service. Currently 'smbd' and
+# 'ctdbd' are supported.
+#
+# smbd options:
+#
+#   Each key-value is directly written into the 'global' section of smb.conf.
+#
+# ctdbd options:
+#
+#   Each subobject corresponds to a section inside the ctdb.conf, and the key-
+#   value pairs are written into that section.
+#
+#   An exception is the 'tunables' subobject, whose key-value pairs are written
+#   to ctdb.tunables.
 
 options:
   default:
@@ -460,6 +489,17 @@ provisioners:
 #     List of predefined account objects that will be used to create groups
 #     and users for this specific VM type.
 #
+#   install: (optional)
+#     Contains additional specific information to install components in this
+#     node. The valid subobjects are:
+#
+#       samba: (optional, default: first entry of "install.samba" section)
+#         Determines the samba source to use for samba and ctdb installation.
+#
+#   options: (optional, default: first entry of "options" section)
+#     Specific custom configuration to be used with installed services, like
+#     samba and ctdb.
+
 environments:
   glusterfs:
     os: centos9

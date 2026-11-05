@@ -351,9 +351,18 @@ tests:
 
 provisioners:
   vagrant:
+    # Box names or named images with provider-specific download URLs.
     images:
-      centos9: centos/stream9
-      centos10: centos/stream10
+      centos9:
+        name: centos/stream9
+        providers:
+          libvirt:
+            url: https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-Libvirt-9-latest.x86_64.vagrant-libvirt.box
+      centos10:
+        name: centos/stream10
+        providers:
+          libvirt:
+            url: https://cloud.centos.org/centos/10-stream/x86_64/images/CentOS-Stream-Vagrant-Libvirt-10-latest.x86_64.vagrant-libvirt.box
 
     networks:
       private: 192.168.122.0/24

@@ -22,8 +22,15 @@ Vagrant.configure("2") do |config|
     end
 {% for host in data.hosts %}
     {%- set node = config.nodes[host] %}
+    {%- set image = config.provisioners[node.provisioner].images[node.os] %}
     config.vm.define "{{ host }}" do |node|
-        node.vm.box = "{{ config.provisioners[node.provisioner].images[node.os] }}"
+        node.vm.box = "{{ image.name | default(image) }}"
+    {%- for provider, box in (image.providers | default({})).items() +%}
+        node.vm.provider :{{ provider }} do |_, override|
+            override.vm.box_url = "{{ box.url }}"
+            override.vm.box_check_update = false
+        end
+    {%- endfor +%}
         node.vm.hostname = "{{ host }}.{{ node.domain }}"
     {%- for net in node.networks +%}
         # Confine the DHCP pool to the upper half of the subnet so the lower

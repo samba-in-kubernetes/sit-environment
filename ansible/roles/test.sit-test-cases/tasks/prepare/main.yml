@@ -1,29 +1,29 @@
 ---
-- block:
-    - name: Fetch repo/switch to master branch
-      git:
-        repo: "{{ test_repo }}"
-        version: "{{ test_repo_branch }}"
-        dest: /root/sit-test-cases
+- name: Check out the test repo branch
+  git:
+    repo: "{{ test_repo }}"
+    version: "{{ test_repo_branch }}"
+    dest: /root/sit-test-cases
+  register: test_repo_checkout
 
+- block:
     - name: Fetching PR
       git:
         repo: "{{ test_repo }}"
         refspec: +pull/{{ test_repo_pr }}/head:pr{{ test_repo_pr }}
         dest: /root/sit-test-cases
 
-    - set_fact:
-        test_repo_branch: "pr{{ test_repo_pr }}"
+    - name: Check out the PR branch
+      git:
+        repo: "{{ test_repo }}"
+        version: "pr{{ test_repo_pr }}"
+        dest: /root/sit-test-cases
+      register: test_repo_pr_checkout
   when: test_repo_pr is defined
 
-- debug:
-    msg: "Preparing to checkout from test repo: {{ test_repo }}, branch {{test_repo_branch}}"
-
-- name: Fetching tests repo
-  git:
-    repo: "{{ test_repo }}"
-    version: "{{ test_repo_branch }}"
-    dest: /root/sit-test-cases
+- name: Log the checked-out test commit
+  debug:
+    msg: "Checked out {{ test_repo }} at {{ test_repo_pr_checkout.after | default(test_repo_checkout.after) }}"
 
 - name: Create the test-info.yml file with test cluster information
   template:
